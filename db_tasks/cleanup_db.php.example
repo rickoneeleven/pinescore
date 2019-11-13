@@ -1,0 +1,57 @@
+<?php
+///////////////////////// HOUSEHOLDGIFTS DB STUFF
+// MySQL host
+$mysql_host = 'localhost';
+// MySQL username
+$mysql_username = 'easyremote';
+// MySQL password
+$mysql_password = 'pw';
+// Database name
+$mysql_database = 'gifts';
+ 
+//////////////////////////////////////////////////////////////////////////////////////////////
+ 
+// Connect to MySQL server
+mysql_connect($mysql_host, $mysql_username, $mysql_password) or die('Error connecting to MySQL server: ' . mysql_error());
+// Select database
+mysql_select_db($mysql_database) or die('Error selecting MySQL database: ' . mysql_error());
+ 
+ //update the easyremote.co.uk URL
+$updateURL = "UPDATE  `gifts`.`core_config_data` SET  `value` =  'http://gifts.easyremote.co.uk/' WHERE  `core_config_data`.`config_id` =6 LIMIT 1 ;";
+$updateSecureURL = "UPDATE  `gifts`.`core_config_data` SET  `value` =  'https://giftssecure.easyremote.co.uk/' WHERE  `core_config_data`.`config_id` =7 LIMIT 1 ;";
+ 
+//delete files afterwards and update unsecure URL
+mysql_query($updateURL) or print('Error updating unsecure URL parameter in DB');
+mysql_query($updateSecureURL) or print('Error updating unsecure URL parameter in DB');
+
+
+///////////////////////// HOUSEHOLDGIFTS
+$old = getcwd(); // Save the current directory
+//sort out the local.xml
+chdir("/home/easyremote/domains/gifts.easyremote.co.uk/public_html/app/etc/");
+unlink("local.xml"); //delete real local
+
+$file = 'local.111'; //copy predefined to act as real
+$newfile = 'local.xml';
+
+if (!copy($file, $newfile)) {
+    echo "failed to copy $file...\n";
+}
+// sort out the robots file for gifts.easyremote.co.uk is not indexed
+chdir("/home/easyremote/domains/gifts.easyremote.co.uk/public_html/");
+unlink("robots.txt"); //delete real local
+
+$file = 'robots_block.111'; //copy predefined to act as real
+$newfile = 'robots.txt';
+
+if (!copy($file, $newfile)) {
+    echo "failed to copy $file...\n";
+}
+
+$dirpath="/home/easyremote/domains/gifts.easyremote.co.uk/public_html/downloader/";
+chdir($dirpath);
+unlink("cache.cfg"); 
+unlink("connect.cfg"); //fix the magento downloader not working after copy to dev site
+
+echo "Cleanup Complete";
+?>
