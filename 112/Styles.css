@@ -1,0 +1,374 @@
+::selection{ background-color: #E13300; color: white; }
+::moz-selection{ background-color: #E13300; color: white; }
+::webkit-selection{ background-color: #E13300; color: white; }
+ 
+.ryan {
+		display:inline-block;
+}
+  
+html, body,#wrap {
+	margin:0;
+	padding:0;
+	height:100%;
+}
+
+#wrap {
+	display:table;
+	width:100%
+}
+
+.content {
+	background:#fff;
+}
+
+/* styling of links */
+a.powerful {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+/* ping add container and side by side */
+#ping_add_container {
+    width: 1232px;
+}
+#pa_left {
+    float:left; /* add this */
+}
+#pa_right {
+    width: 600px;
+    float: right; /* add this */
+}
+#icmp_table {
+    width: 1232px;
+    clear: left; /* so it aligns to the left in wide displays when the user is not logged in */
+}
+/* ping add container and side by side */
+
+.full_width {
+    width: 1232px;
+    clear: left; /* so it aligns to the left in wide displays when the user is not logged in */
+}
+
+header {
+	background:#999;
+	color:#fff;
+	text-align:center;
+	padding:10px 0
+}
+
+header, .footer, main {
+	display:block
+}/* ie7 and under*/
+
+header, .footer, main {
+	display:table-row
+}
+
+/* height 1px on the header and footer is the sticky footer technique */
+header, .footer{
+	height:1px
+}
+
+h1{
+	padding:5px;margin:0;
+}
+
+
+.footer {
+	background:#999;
+	color:#fff;
+	text-align:center;
+}
+
+.footer p {
+	margin:0;
+	padding:10px
+}
+
+table {
+    background-color: rgba(160, 160, 160, .4);
+    border-collapse:collapse;
+}
+
+table.nowrap {
+	white-space:nowrap;
+}
+
+table.black {
+	background-color: #000000;
+}
+
+table.no {
+	background-color: #FFFFFF;
+}
+
+table.navbuttons {
+    border-collapse:separate;
+	background-color: #FFFFFF;
+}
+
+table td {
+    border:1px dotted #999966;
+}
+
+table td.noborder {
+    border:1px dotted #ffffff;
+}
+
+tr.darker td {
+	background-color: rgba(192, 192, 192, .4);
+}
+
+tr.red td {
+	background-color: #FF5733;
+}
+
+tr.onedayred td {
+	background-color: #FF6666;
+}
+
+tr.overonedayred td {
+	background-color: #F2917C;
+}
+
+tr.orange td {
+	background-color: #cdaf95;
+}
+
+tr.green td {
+	background-color: #98FB98;
+}
+
+tr.transition td {
+	background-color: #b266ff;
+}
+
+tr.hover:hover{
+ background:#d3d3d3;
+}
+
+hr.spaced { margin-top: 20px; margin-bottom: 20px }
+
+body {
+background-color: #fff;
+margin-left: 15px;
+margin-right: 15px;
+font: 13px/20px normal Helvetica, Arial, sans-serif;
+color: #4F5155;
+min-width: 1111px;
+}
+
+a {
+color: #003399;
+background-color: transparent;
+font-weight: normal;
+text-decoration: none;
+}
+
+code {
+font-family: Consolas, Monaco, Courier New, Courier, monospace;
+font-size: 12px;
+background-color: #f9f9f9;
+border: 1px solid #D0D0D0;
+color: #002166;
+display: block;
+margin: 14px 0 14px 0;
+padding: 12px 10px 12px 10px;
+}
+
+#container{
+margin: 10px;
+border: 1px solid #D0D0D0;
+-webkit-box-shadow: 0 0 8px #D0D0D0;
+}
+  
+/************************************************/
+.signup_wrap{
+height:35px;
+padding-top: 5px
+}
+.signin_form{
+float:right;
+}
+
+.topleft {
+	float:left;
+}
+
+.screenshots {
+    float:left;
+    margin-right: 20px;
+}
+
+.signin_form input{
+width:120px;
+}
+.reg_form{
+width:460px;
+padding:20px;
+margin:5px auto;
+border:1px solid #DFDFDF;
+background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#cbd4e5));
+background: -moz-linear-gradient(top,  #fff,  #cbd4e5);
+filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#cbd4e5');
+}
+.form_title,
+.form_sub_title{
+font-size:20px;
+
+font-family:"Lucida Grande",Tahoma,Verdana,Arial,sans-serif;
+font-size:20px;
+font-weight:bold;
+}
+.form_sub_title{
+font-weight:normal;
+padding:6px 0 15px 0;
+}
+.reg_form p{
+width: 300px;
+clear: left;
+margin: 0;
+padding: 5px 0 8px 0;
+padding-left: 155px; /*width of left column containing the label elements*/
+border-top: 1px dashed gray;
+height: 1%;
+}
+.reg_form label{
+font-weight: bold;
+float: left;
+margin-left: -155px; /*width of left column*/
+width: 150px; /*width of labels. Should be smaller than left column (155px) to create some right margin*/
+}
+input[type=submit]{
+color:#333333;
+border:1px solid #96A6C5;
+font-size:11px;
+padding: 0px 10px; height: 18px; vertical-align: middle;
+}
+.greenButton{
+width:auto;
+margin:10px 0 0 2px;
+padding:3px 4px 3px 4px;
+color:white;
+background-color:#589d39;
+outline:none;
+border:1px solid #006600;
+font-weight:bold;
+}
+.greenButton:active{
+background-color:#006600;
+padding:4px 3px 2px 5px;
+}
+.error{
+color:#F00;
+}
+#footer{
+color:#fff;
+padding-top:20px;
+text-align:center;
+background: #454546; 
+height: 20px;
+clear:both;
+}
+/************************* nav menu */
+
+ul {
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    list-style-type: none;
+	padding:0;
+	vertical-align: top;
+
+}
+
+#wrapper {
+     width: 100%;
+     
+}
+#leftcolumn, #rightcolumn {
+    border: 1px solid white;
+    float: left;
+    height: 100px;
+    color: #4F5155;
+}
+#leftcolumn {
+     min-width: 200px;
+	 width: 25%;
+     background-color: #fff;
+}
+
+#rightcolumn {
+     width: 70%;
+     background-color: #fff;
+	 min-width: 700px;
+	 height: 100px;
+}
+
+/*Dashboard CSS --------------------------- */
+.clientcard {
+    width: 300px;
+    border: 1px solid black;
+    overflow: hidden; /* will contain if #first is longer than #second */
+    float: left;
+    padding: 3px;
+    margin: 10px
+}
+
+.cli_spacer {
+    margin: 0px 10px 10px 10px;
+    overflow: hidden;
+}
+
+.cli_mon_contain {
+    width: 300px;
+}
+
+.cli_mon {
+    width: 48px;
+    height: 60px;
+    float: left;
+    padding:1px;
+    margin: 2px;
+    border: 1px solid grey;
+
+}
+
+.highlight {
+	color:#c31000;
+	background:yellow;
+	font-weight:bold;
+}
+
+/** blinking shit */
+.b {
+  animation-duration: 2000ms;
+  animation-name: tgle;
+  animation-iteration-count: infinite;
+}
+
+@keyframes tgle {
+  0% {
+    opacity: 0;
+  }
+
+  49.99% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+
+  99.99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/** blinking shit end */
+
+.underlined {
+    text-decoration: underline;
+}
