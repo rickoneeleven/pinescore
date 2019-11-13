@@ -15,3 +15,10 @@ application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 /vendor/
+
+#ryan's added bag of goodness
+/application/config/config.php
+/application/config/database.php
+/112/unique.php
+/db_tasks/backup_dbs_config.php
+/db_tasks/cleanup_db.php
