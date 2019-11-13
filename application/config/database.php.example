@@ -48,14 +48,11 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$database = "novascore";
-if(base_url() == "https://dev.novascore.io/") $database = "novascore_copy";
-
 $db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'dartabase';
 $db['default']['password'] = 'pw';
-$db['default']['database'] = $database;
-$db['default']['dbdriver'] = 'mysql';
+$db['default']['database'] = 'dartabase';
+$db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
 $db['default']['db_debug'] = TRUE;
