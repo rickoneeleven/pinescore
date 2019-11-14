@@ -22,3 +22,5 @@ application/logs/*
 /112/unique.php
 /db_tasks/backup_dbs_config.php
 /db_tasks/cleanup_db.php
+/application/libraries/tracker/Trackerlib.php
+/application/views/hits_view.php
