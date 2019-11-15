@@ -24,3 +24,4 @@ application/logs/*
 /db_tasks/cleanup_db.php
 /application/libraries/tracker/Trackerlib.php
 /application/views/hits_view.php
+/.vscode/
