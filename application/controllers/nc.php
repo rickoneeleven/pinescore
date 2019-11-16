@@ -9,7 +9,6 @@ class Nc extends CI_Controller {
                 report can see recent activity. Good for sharing with people when troubleshooting.",
             'keywords' => "share,report,public",
         );
-        $this->trackerlib->trackMe();
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -75,7 +74,6 @@ class Nc extends CI_Controller {
             }
         }
         $data['myReports'] = $this->cellblock7->getMyReports($this->session->userdata('user_id'));
-        $this->trackerlib->trackMe(); 
 	    $user_ip = $this->techbits_model->userIP();
 	    $data['user_ip'] = $user_ip;
 
@@ -252,7 +250,6 @@ class Nc extends CI_Controller {
            // 'refresh_content' => "2",
         );
         
-	    $this->trackerlib->trackMe();
 
         $this->db->where('id', $group_id);
         $data['group_details'] = $this->db->get('grouped_reports');
@@ -303,7 +300,6 @@ class Nc extends CI_Controller {
             'description' => "NovaScore is our unique method for rating the stability of a node. A score of 90-100 is top rated, 50-89 is good, 0-49 is suboptimal with potential issue, anything less than 0 usual indicates a problem with the node, or very high load over a sustained period of time.",
             'keywords' => "what,is,novascore",
         );
-        $this->trackerlib->trackMe();
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -316,7 +312,6 @@ class Nc extends CI_Controller {
             'description' => "We take a months worth of response times and average them out. We can then use this number to compare your current response times against the longer term average to help identify any performance improvements or drops.",
             'keywords' => "novascore,longtermaverage",
         );
-        $this->trackerlib->trackMe();
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -329,7 +324,6 @@ class Nc extends CI_Controller {
             'description' => "In your option, you've chosen to hide nodes that are offline for over 72 hours. So, if you choose to add this node to the group, be aware it won't actually be displayed within the group, as this node is hidden as per your option.",
             'keywords' => "what,does,this,mean",
         );
-        $this->trackerlib->trackMe();
         $confirmation_view['breadcrumbs'] = '<a href="'.base_url().'user_options/options">Change your options here</a>';
 
         $this->load->view('header_view', $data_meta);

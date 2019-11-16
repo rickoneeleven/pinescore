@@ -51,7 +51,6 @@ class Tools extends CI_Controller
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
 
-        $this->trackerlib->trackMe();
         $domain_of_email = substr(strrchr($this->input->post('to'), "@"), 1);
         $mx_lookup = $this->techbits_model->lookup($domain_of_email, "MX");
         //print_r($mx_lookup);
@@ -114,8 +113,6 @@ class Tools extends CI_Controller
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
 
-        $this->trackerlib->trackMe();
-
         $host = $this->input->post('host');
         if ($host == "") {
             $data['dom_bestguess'] = $this->techbits_model->getDomain();
@@ -175,9 +172,6 @@ class Tools extends CI_Controller
 
         );
 
-
-        $this->trackerlib->trackMe();
-
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
         $this->load->view('speedTest_view');
@@ -203,7 +197,6 @@ class Tools extends CI_Controller
         $data['myReports'] = $this->cellblock7->getMyReports($this->session->userdata('user_id'));
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
-        $this->trackerlib->trackMe();
 
         $user_ip = $this->techbits_model->userIP();
 
