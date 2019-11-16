@@ -24,3 +24,4 @@ application/logs/*
 /db_tasks/cleanup_db.php
 /application/views/hits_view.php
 /.vscode/
+/112/captcha/
