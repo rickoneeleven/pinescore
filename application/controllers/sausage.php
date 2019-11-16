@@ -3,12 +3,9 @@
 class Sausage extends CI_Controller {
 
     public function viewAllGroups() {
-        /**
-         * trackerlib now auto loads
-         */
+
         $this->load->model('icmpmodel');
         $this->load->model('cellblock7');
-        $this->trackerlib->trackMe(); 
         $data_meta = array(
             'title' => "View All Groups",
             'description' => "View all your groups in one easy to manage place. Hi.",
@@ -24,10 +21,6 @@ class Sausage extends CI_Controller {
     }
 
     public function smtpAuthTest($returned_output = null) {
-        /**
-         * trackerlib now auto loads
-         */
-        $this->trackerlib->trackMe(); 
         $data_meta = array(
             'title' => "SMTP Authentication and Relay Test",
             'description' => "Use our form to test smtp authentication and relaying on your server.",
