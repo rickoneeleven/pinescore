@@ -6,7 +6,8 @@
 /*
  *		ALL IN ONE FOLDER/FILE LISTER
  *
- *       Author:    Greg Johnson
+ *       Author:    Greg Johnson- Classic Greg! - test to see if a folder added to /.git/info/exclude on a local machine that pulled this repo, 
+ * 					will exclude stuff from the live central repo
  *         Info:    http://greg-j.com/some-url
  *      License:    Creative Commons 3.0
  *                  @ http://creativecommons.org/licenses/by-sa/3.0/us/
