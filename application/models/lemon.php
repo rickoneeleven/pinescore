@@ -77,7 +77,7 @@ class Lemon extends CI_model {
                     'status' => "Failed");
                 $this->db->insert('control', $data);
                 $this->email->from('noreply@novascore.io', 'Watch Dog');
-                $this->email->to('workforward@novascore.io');
+                $this->email->to('workforward@pinescore.com');
                 $this->email->subject('Control Failed');
                 $this->email->message('You are receiving this email because your server was just about to fail a client but failed the control check.');
 

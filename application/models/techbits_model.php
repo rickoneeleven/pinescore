@@ -169,13 +169,13 @@ class techBits_model extends CI_model {
         $send_to = set_value('to');
         $mailSettings = array('host' => $smtp_server,
                                                     'to' => set_value('to'),
-                                                    'from' => 'workforward@novascore.io',
+                                                    'from' => 'workforward@pinescore.com',
                                                     'from_domain' => ('novascore.io'),
                                                     'port' => '25',
                                                     'timeout' => '2',
                                                     'newLine' => "\r\n",
                                                     'ip_from' => $user_ip,
-                                                    'return' => 'workforward@novascore.io');
+                                                    'return' => 'workforward@pinescore.com');
         
         if(!($socket = @fsockopen($mailSettings['host'], $mailSettings['port'], $errno, $errstr, $mailSettings['timeout'])))
         {
