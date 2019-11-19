@@ -13,7 +13,7 @@
 	<meta name="keywords" content="<?php echo $keywords; ?>">
 	<meta name="author" content="Ryan Alexander Partington">
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>112/Styles.css">
-    <meta http-equiv="refresh" content="300">
+    <meta http-equiv="refresh" content="<?php echo $refresh_content;?>">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
