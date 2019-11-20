@@ -4,7 +4,6 @@
 
         function index() {
 
-            $this->load->model('locks');
-            vdebug($this->locks->checkForLock("2.2.2.2"));
+            echo ENVIRONMENTv2;
         }
     }
