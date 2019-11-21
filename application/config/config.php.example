@@ -17,6 +17,20 @@
 $config['base_url']	= '';
 
 /*
+// Setting the dev environment. The email_dev_or_no model does some environment checking to see whether or not to send out
+// emails for admin tasks and when nodes go online/offline.
+*/
+$dev_domain_tld = ".test";
+$domain = ! empty($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : 'cli';
+if (strpos($domain, $dev_domain_tld) !== false || $domain == 'cli')
+{
+   define('ENVIRONMENTv2', 'development');
+}
+else {
+   define('ENVIRONMENTv2', 'production');
+}
+
+/*
 |--------------------------------------------------------------------------
 | Index File
 |--------------------------------------------------------------------------

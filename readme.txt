@@ -12,6 +12,8 @@ cp ./application/config/config.php.example ./application/config/config.php
 cp ./application/config/database.php.example ./application/config/database.php
 
 vim ./application/config/config.php
+$dev_domain_tld = ".test";
+
 $config['encryption_key'] = 'breasts';
 :wq
 
