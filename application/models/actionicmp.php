@@ -1,16 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/** 
- * if $ping_ms == 0, we change it to 9999 as we want the average to increase for the reports when dropping
- * connections, not decrease.
- */
 class   ActionICMP extends CI_model {
 
     /**
      * $ip = returned get table statement from ping_ip_table
      */
     public function checkICMP($ip) {
-        $perf_started = microtime(true);
         $this->load->model('techbits_model');
         $this->load->model('icmpmodel');
         $this->load->model('lemon');
@@ -18,15 +13,13 @@ class   ActionICMP extends CI_model {
         $this->load->model('locks');
         $this->lemon->icmpControl();
         $process_id_parent = uniqid();
+        $perf_started = microtime(true);
         foreach ($ip->result() as $row)
         {
             if($this->locks->checkForLock($row->ip)) break 1;
             $this->locks->lockHost($row->ip);
 
             $last_result = $this->icmpmodel->lastResult($row->ip);
-            $perf_last_resultComplete = number_format(microtime(true) - $perf_started,0);
-            $this->db->where('id', 7);
-            $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_last_resultComplete seconds"));
 
             $last_result_result = $this->icmpmodel->lastResultResult($row->ip);
             $perf_last_result_resultComplete = number_format(microtime(true) - $perf_started,0);
@@ -49,6 +42,7 @@ class   ActionICMP extends CI_model {
                 'ms' => $ping_ms,
                 'result' => $result,
                 'change' => $change,
+                'email_sent' => 0,
             );
             $this->db->insert('ping_result_table', $data_db); //insert into big results table
 
@@ -81,6 +75,9 @@ class   ActionICMP extends CI_model {
             }
             $this->locks->releaseHost($row->ip);
         }
+        $perf_last_resultComplete = number_format(microtime(true) - $perf_started,0);
+        $this->db->where('id', 7);
+        $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_last_resultComplete seconds"));
         $this->locks->removeOldLocks();
     }
 
