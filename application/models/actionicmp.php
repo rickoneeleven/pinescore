@@ -85,6 +85,7 @@ class   ActionICMP extends CI_model {
             'name'                      => "checkICMP, out of loop",
             'datetime'                  => date('Y-m-d H:i:s'),
             'seconds'                   => $perf_mon1,
+            'other'                     => "proc id: ".$process_id_parent,
             )
         );
         $this->locks->removeOldLocks();
