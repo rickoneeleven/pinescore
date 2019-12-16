@@ -16,17 +16,21 @@ class   ActionICMP extends CI_model {
         $perf_started = microtime(true);
         foreach ($ip->result() as $row)
         {
+            $perf_started_inforeach = microtime(true);
             if($this->locks->checkForLock($row->ip)) break 1;
             $this->locks->lockHost($row->ip);
-
             $last_result = $this->icmpmodel->lastResult($row->ip);
-
             $last_result_result = $this->icmpmodel->lastResultResult($row->ip);
-            $perf_last_result_resultComplete = number_format(microtime(true) - $perf_started,0);
-            $this->db->where('id', 8);
-            $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_last_result_resultComplete seconds"));
 
             $ping_ms = $this->techbits_model->pingv2($row->ip); //up or down
+            $perf_mon2 = number_format(microtime(true) - $perf_started_inforeach,0);
+            $this->db->insert('perfmon', array(
+                'name'                      => "checkICMP, in loop",
+                'datetime'                  => date('Y-m-d H:i:s'),
+                'seconds'                   => $perf_mon2,
+                )
+            );
+            
             $result = $this->icmpmodel->onOrOff($ping_ms); //convert to Online or Offline word from number
             echo $row->ip.":".$result."<br>";
             if($result != $last_result_result['result']) {
@@ -75,9 +79,14 @@ class   ActionICMP extends CI_model {
             }
             $this->locks->releaseHost($row->ip);
         }
-        $perf_last_resultComplete = number_format(microtime(true) - $perf_started,0);
+        $perf_mon1 = number_format(microtime(true) - $perf_started,0);
         $this->db->where('id', 7);
-        $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_last_resultComplete seconds"));
+        $this->db->insert('perfmon', array(
+            'name'                      => "checkICMP, out of loop",
+            'datetime'                  => date('Y-m-d H:i:s'),
+            'seconds'                   => $perf_mon1,
+            )
+        );
         $this->locks->removeOldLocks();
     }
 
