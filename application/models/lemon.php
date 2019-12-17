@@ -63,7 +63,9 @@ class Lemon extends CI_model {
      * it was just linode having issues hitting further out nodes
      */
     public function icmpControl() {
+        return true; 
         $this->load->model('techbits_model');
+        $this->load->model('email_dev_or_no');
         $opendns = $this->techbits_model->pingv2('opendns.com',1);
 
         if($opendns > 1) {
@@ -81,7 +83,10 @@ class Lemon extends CI_model {
                 $this->email->subject('Control Failed');
                 $this->email->message('You are receiving this email because your server was just about to fail a client but failed the control check.');
 
-                $this->email->send();
+                $email_dev_array = array(
+                    'from_class__method'            => 'lemon__icmpControl'
+                );
+                if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                 die("<p>control failed</p>");
             }
         }

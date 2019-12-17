@@ -57,7 +57,7 @@ class techBits_model extends CI_model {
     function pingv2($host, $timeout = 2) { //changed to 2 because want less alerts because poor line qual
         $output = array();
         if(PHP_OS == "WINNT") {
-            $com = 'ping -w ' . $timeout . ' -c 1 ' . escapeshellarg($host);
+            $com = 'ping -w ' . $timeout . ' -n 1 ' . escapeshellarg($host);
         } else {
             $com = 'ping -n -w ' . $timeout . ' -c 1 ' . escapeshellarg($host);
         }

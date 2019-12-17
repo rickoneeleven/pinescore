@@ -40,6 +40,7 @@ class Sausage extends CI_Controller {
          * if validation passes, we turn off error_reporting as the CI email helper doesn't check to see if fsock connects and catches it gracefully it just goes full steam ahead and throws loads of PHP errors. We can see the problem in the mail output anyway, so we don't need PHP errors here.
          * null_fix is because the form validation fails if the form value is null, but it's null that you have to pass to CI if you want no auth. Also, if the value is null, it won't auto select it on reload when validation fails as it was null rather than a value.
          */
+        $this->load->model('email_dev_or_no');
         $this->form_validation->set_rules('server_address', 'Server Address', 'trim|required|xss_clean');
         $this->form_validation->set_rules('email_to', 'Email To Address', 'valid_email|required|trim|xss_clean');
         $this->form_validation->set_rules('port', 'Port', 'trim|required|xss_clean');
@@ -88,8 +89,10 @@ class Sausage extends CI_Controller {
             $this->email->reply_to($email_from, 'novascore.io');
             $this->email->subject('SMTP Authentication test from '.base_url());
             $this->email->message('You can now delete this message.');
-
-            $this->email->send();
+            $email_dev_array = array(
+                'from_class__method'            => 'sausage__smtpAuthTestFORM'
+            );
+            if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
             $this->smtpAuthTest($this->email->print_debugger(), true); 
         }
     }

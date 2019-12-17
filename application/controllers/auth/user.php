@@ -39,6 +39,8 @@
 		}
 		
 		public function mailConfirmation() {
+			$this->load->model('email_dev_or_no');
+
 			$data['title']= 'Are you human?';
 			$data['description'] = "Please check your email and click the link to activate your account. The link is only valid for two days, after that you'll need to register again.";
 			$data['keywords'] = "registration, confirmation";
@@ -54,7 +56,10 @@
 			$this->email->bcc("r@novascore.io");	    
 			$this->email->subject('novascore.io activation');
 			$this->email->message("Please activate your account with the link below. You have two days. \r\n\r\n ".base_url()."auth/user/activate/".$this->db->insert_id()."/".$insert['code']);	
-			$this->email->send();
+			$email_dev_array = array(
+				'from_class__method'            => 'user__mailConfirmation'
+			);
+			if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
 			
 			$this->load->view('header_view',$data);
 			$this->load->view('navTop_view');
@@ -115,6 +120,7 @@
 		
 		public function forgotFormProcess() {
 			$this->load->model('techbits_model');
+			$this->load->model('email_dev_or_no');
 			$this->load->library('form_validation');
 			$this->load->helper('string');
 
@@ -147,7 +153,10 @@
 						$this->email->bcc("r@novascore.io");	    
 						$this->email->subject('novascore.io password reset request');
 						$this->email->message("Please use the link below to confirm your password reset request. You have two days. \r\n\r\n".base_url()."auth/user/forgotFinal/".$this->db->insert_id()."/".$insert['code']."\r\n\r\nOnce the above has been clicked you're new password will be: ".$unhashedPw."\r\n\r\nIf you did not make this request, please delete this email and do not click the link. If you continue to receive this email it may mean someone is trying to compromise your account. Please contact us using the link at the bottom of the site for further assistance.\r\n\r\nThanks\r\nthe novascore.io team\r\n".base_url());	
-						$this->email->send();
+						$email_dev_array = array(
+							'from_class__method'            => 'user__forgotFormProcess'
+						);
+						if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
 					}
 				}
 				$data['sent'] = 1;

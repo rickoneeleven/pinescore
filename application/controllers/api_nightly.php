@@ -7,6 +7,7 @@
             {
                 $this->load->model('icmpmodel');
                 $this->load->model('cellblock7');
+                $this->load->model('email_dev_or_no');
 
                 $old =  "datetime < (NOW() - INTERVAL 48 HOUR)";
                 $old_3year = "logged < (NOW() - INTERVAL 3 YEAR)";
@@ -28,7 +29,10 @@
                     $this->email->subject('Expired Alert: '.$row->note);
                     $this->email->message($message);
                     
-                    $this->email->send();
+                    $email_dev_array = array(
+                        'from_class__method'            => 'api_nightly__index'
+                    );
+                    if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                     echo $this->email->print_debugger();
                     
                     $this->db->where('id', $row->id);

@@ -59,6 +59,7 @@
     function getDomainFromEmail($email)
     {
     // Get the data after the @ sign
+    $this->load->model('email_dev_or_no');
     $domain = substr(strrchr($email, "@"), 1);
     
     return $domain;
@@ -68,8 +69,10 @@
 			    $this->email->to('rick1_11@hotmail.com'); 	    
 			    $this->email->subject('telnet abuse check');
 			    $this->email->message('to: '.$mailSettings['to'].' from: '.$mailSettings['from']." body: test email from novascore.io \r\n\r\ngenerated: ".date('Y-m-d H:i:s')."\r\nfrom: ".$mailSettings['ip_from'].""."\r\n"."\r\n".".");	
-			    
-			    $this->email->send();*/
+			    $email_dev_array = array(
+                        'from_class__method'            => 'telnetBody_view__index'
+                    );
+			    if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();*/
     
 
     
