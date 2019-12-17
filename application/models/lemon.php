@@ -63,7 +63,6 @@ class Lemon extends CI_model {
      * it was just linode having issues hitting further out nodes
      */
     public function icmpControl() {
-        return true; 
         $this->load->model('techbits_model');
         $this->load->model('email_dev_or_no');
         $opendns = $this->techbits_model->pingv2('opendns.com',1);
