@@ -51,6 +51,7 @@ class BitsNbobs extends CI_Controller {
      */
     private function alertDifference($IPAndAverage) {
         $this->load->model('html_email');
+        $this->load->model('email_dev_or_no');
         vdebug($IPAndAverage);
         //THE PROBLEM IS THE DEAMON DOES NOT RUN AS THE LOGGED IN USER
         $this->db->where('ip', $IPAndAverage['ip']);
@@ -75,7 +76,10 @@ class BitsNbobs extends CI_Controller {
                     <br>
                     <br>Good luck commander.";
                 $this->email->message($this->html_email->htmlFormatted($array));
-                $this->email->send();
+                $email_dev_array = array(
+                    'from_class__method'            => 'bitnNbobs__alertDifference'
+                );
+                if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                 echo "<br>EMAIL SENT";
                 echo "<br>alert set for: ".$row->ip." | ".$row->alert;
             } else {

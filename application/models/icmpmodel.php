@@ -153,11 +153,15 @@ class IcmpModel extends CI_model {
             $this->email->to($alert['email']);
             $this->email->subject($data['note'] . " is now " . $data['current']);
             $this->email->set_mailtype("html");
+            $this->load->model('email_dev_or_no');
             $array['body'] = 'You are receiving this email because you have been setup to receive alerts when the online status of "' . $data['note'] . '"' . " changes. <br><br><strong>".$data['note'] . " is now " . $data['current'] . "</strong><br>
         <br><br>Recent Activity <br>" . $last10 . "<br><br>*You may see the online/offline status switches much more than the number of email alerts you receive. This is because we will only email you when the host has been down for a period of time rather than each dropped request. You can see a full report: <a href=\"" . base_url() . "tools/report/" . $id . "\">here</a>
         <br><br><br><br><a href=\"" . base_url() . "unsubscribe_alert/go/".$alert['ping_ip_id']."/".$alert['unsub_ref']."\">Stop email alerts</a><br><br>process parent id: ".$data['process_id_parent']." child id: ".$data['process_id'];
             $this->email->message($this->html_email->htmlFormatted($array));
-            $this->email->send();
+            $email_dev_array = array(
+                'from_class__method'            => 'icmpmodel__emailAlert'
+            );
+            if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
             echo "email sent to: ".$alert['email'];
             echo $this->email->print_debugger();
             unset($import); //good practice

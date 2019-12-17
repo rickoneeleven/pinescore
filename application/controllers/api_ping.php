@@ -18,6 +18,7 @@ class api_ping extends CI_Controller {
             $this->load->model('icmpmodel');
             $this->load->model('actionicmp');
             $this->load->model('lemon');
+            $this->load->model('email_dev_or_no');
             
             $filter['status'] = "Online"; //this process_api checks through online hosts only
             $ips = $this->icmpmodel->getIPs($filter);
@@ -29,14 +30,18 @@ class api_ping extends CI_Controller {
             $completion_time = substr($this->benchmark->elapsed_time('code_start', 'code_end'),0,-3);
             echo "<br>Script took: ".$completion_time." seconds to complete";
             
-            $rand = rand(0,101); //lazy man implementation
-            if($completion_time > 60 && $rand > 99) {
+            //$rand = rand(0,101); //lazy man implementation
+            //if($completion_time > 60 && $rand > 99) {
+            if($completion_time > 60 ) {
                     $this->email->from('script@novascore.io', 'Script');
                     $this->email->to('workforward@pinescore.com'); 	    
                     $this->email->subject('ICMP Script Exceeds 60 seconds');
                     $this->email->message('Script took: '.$completion_time.' to complete.');	
                     
-                    $this->email->send();
+                    $email_dev_array = array(
+                        'from_class__method'            => 'api_ping__index'
+                    );
+                    if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                     echo $this->email->print_debugger();
             }
             

@@ -7,6 +7,7 @@ class proc2d extends CI_Controller {
          *     //todo: you need to bring this back inline with the api_ping controller, I can't be having two controller/daemons
          * this daemon is just used for nodes that are OFFLINE, see api_ping in the directory above (I don't know why) for the script that pings IPs that are online
          */
+        $this->load->model('email_dev_or_no');
         $start = strtotime('now');
         $end = $start + 60;
         $timeleft = $end - strtotime('now');
@@ -29,14 +30,17 @@ class proc2d extends CI_Controller {
             $completion_time = substr($this->benchmark->elapsed_time('code_start', 'code_end'),0,-3);
             echo "<br>Script took: ".$completion_time." seconds to complete";
             
-            $rand = rand(0,101); //lazy man implementation
-            if($completion_time > 60 && $rand > 99) {
+            //$rand = rand(0,101); //lazy man implementation
+            //if($completion_time > 60 && $rand > 99) {
+            if($completion_time > 60 ) {
                     $this->email->from('script@novascore.io', 'Script');
                     $this->email->to('workforward@pinescore.com'); 	    
                     $this->email->subject('ICMP Script Exceeds 60 seconds');
                     $this->email->message('Script took: '.$completion_time.' to complete.');	
-                    
-                    $this->email->send();
+                    $email_dev_array = array(
+                        'from_class__method'            => 'proc2d__index'
+                    );
+                    if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                     echo $this->email->print_debugger();
             }
             
