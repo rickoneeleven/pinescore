@@ -28,6 +28,7 @@ class   ActionICMP extends CI_model {
                 'name'                      => "checkICMP, in loop",
                 'datetime'                  => date('Y-m-d H:i:s'),
                 'seconds'                   => $perf_mon2,
+                'other'                     => "proc id: ".$process_id_parent,
                 )
             );
             
