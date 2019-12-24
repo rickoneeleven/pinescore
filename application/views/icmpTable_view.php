@@ -59,9 +59,9 @@ foreach ($ips as $ip => $latest) {
     $last_online_toggle = new DateTime($latest['last_online_toggle']); // or e.g. 2016-01-01 21:00:02
     $wentoffline = strtotime($latest['last_online_toggle']);
     $wentoffline = date( 'd-m-Y - H:i:s', $wentoffline );
-    if(!$latest['average_longterm_ms']) $latest['average_longterm_ms'] = "??"; //no LTA defined yet, new node must have been added. so using current_ms
     $difference_ms = $latest['average_longterm_ms'] - $latest['ms'];
     if($latest['ms'] > "0") $difference_percent = round((1 - $latest['average_longterm_ms']/$latest['ms'])*100,0);
+    if(!$latest['average_longterm_ms']) $latest['average_longterm_ms'] = "??"; //no LTA defined yet, new node must have been added. so using current_ms
 
     $original_ip = $ip;
     echo form_open(base_url().'tools/icmpEdit#'.$latest['id']); 
