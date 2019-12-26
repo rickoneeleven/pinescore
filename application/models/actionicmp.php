@@ -102,7 +102,8 @@ class   ActionICMP extends CI_model {
 
         $data_db8 = array( //no stats for this ip yet, create a new one and set it to zero
             'ip' => $last_result['ip'],
-            'score' => 0
+            'score' => 0,
+            'datetime' => date('Y-m-d H:i:s'),
         );
         $exists = $this->db->get_where('stats_total', array('ip' => $row->ip)); //could have already been added by another client
         if($exists->num_rows() < 1) {

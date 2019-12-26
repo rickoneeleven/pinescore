@@ -257,7 +257,7 @@ class Tools extends CI_Controller
                 'ip'                    => $this->input->post('ip'),
                 'last_ran'              => '2000-08-08 09:30:10',
                 'note'                  => $this->input->post('note'),
-                'public'                => $this->input->post('public'),
+                'public'                => 0,
                 'owner'                 => $this->session->userdata('user_id'),
                 'last_online_toggle'    => date('Y-m-d H:i:s'),
             );
