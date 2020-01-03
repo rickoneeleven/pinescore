@@ -54,28 +54,35 @@ class techBits_model extends CI_model {
         
     }
     
-    function pingv2($host, $timeout = 2) { //changed to 2 because want less alerts because poor line qual
-        $output = array();
-        if(PHP_OS == "WINNT") {
-            $com = 'ping -w ' . $timeout . ' -n 1 ' . escapeshellarg($host);
-            sleep(1);
-        } else {
-            $com = 'ping -n -w ' . $timeout . ' -c 1 ' . escapeshellarg($host);
-        }
-        
-        $exitcode = 0;
-        exec($com, $output, $exitcode);
-        
-        if ($exitcode == 0 || $exitcode == 1)
-        { 
-            foreach($output as $cline)
-            {
-                if (strpos($cline, 'time') !== FALSE)
+    /*
+    / -Windows wait command is in miliseconds, whilst as the linux one is in seconds
+    / -Have to sleep the Windows command otherwise I start dropping packets from the live pinescore server when pinging home
+    */
+    function pingv2($host, $timeout = 2) {
+        for ($k = 0 ; $k < 2; $k++) {
+            $output = array();
+            if(PHP_OS == "WINNT") {
+                $com = 'ping -w ' . $timeout . '000 -n 1 ' . escapeshellarg($host);
+                sleep(1);
+            } else {
+                $com = 'ping -n -w ' . $timeout . ' -c 1 ' . escapeshellarg($host);
+            }
+            
+            $exitcode = 0;
+            exec($com, $output, $exitcode);
+            
+            if ($exitcode == 0 || $exitcode == 1)
+            { 
+                foreach($output as $cline)
                 {
-                    $out = (int)ceil(floatval(substr($cline, strpos($cline, 'time=') + 5)));
-                    return $out;
+                    if (strpos($cline, 'time') !== FALSE)
+                    {
+                        $out = (int)ceil(floatval(substr($cline, strpos($cline, 'time=') + 5)));
+                        return $out;
+                    }
                 }
             }
+            unset($output);
         }
         
         return FALSE;
