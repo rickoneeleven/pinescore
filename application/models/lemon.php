@@ -70,7 +70,7 @@ class Lemon extends CI_model {
         if($opendns > 1) {
             echo "<p>control passed</p>";
         } else {
-            $usatoday = $this->techbits_model->pingv2('usatoday.com', 1);
+            $usatoday = $this->techbits_model->pingv2('usatoday.com', 2);
             if($usatoday > 1) {
                  echo "<p>control passed</p>";
             } else {
