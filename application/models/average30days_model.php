@@ -81,7 +81,7 @@ class   Average30days_model extends CI_model {
                 $difference_algo = $difference_percent;
             }
         } else {
-            $difference_percent = ltrim(round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0),"-");
+            $difference_percent = round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0);
             if($difference_ms >= $percent_n_ms_diff['ms_diff'] && $difference_percent > $percent_n_ms_diff['percent_diff_quicker']) { //faster than usual response times
                 $difference_algo = "-".$difference_percent;
             }
@@ -90,20 +90,20 @@ class   Average30days_model extends CI_model {
     }
 
     public function getPercentAndMsForDiff() {
-        $retuenArray = array();
-        $this->db->where('id', 1);
-        $otherTable_percent = $this->db->get('other');
-        $retuenArray['percent_diff_quicker'] = $otherTable_percent->row('value');
+        $returnArray = array();
 
-        $retuenArray = array();
+        $this->db->where('id', 1);
+        $otherTable_percent_quicker = $this->db->get('other');
+        $returnArray['percent_diff_quicker'] = $otherTable_percent_quicker->row('value');
+
         $this->db->where('id', 9);
-        $otherTable_percent = $this->db->get('other');
-        $retuenArray['percent_diff_slower'] = $otherTable_percent->row('value');
+        $otherTable_percent_slower = $this->db->get('other');
+        $returnArray['percent_diff_slower'] = $otherTable_percent_slower->row('value');
 
         $this->db->where('id', 2);
         $otherTable_ms = $this->db->get('other');
-        $retuenArray['ms_diff'] = $otherTable_ms->row('value');
+        $returnArray['ms_diff'] = $otherTable_ms->row('value');
     
-        return $retuenArray;
+        return $returnArray;
     }
 } 
