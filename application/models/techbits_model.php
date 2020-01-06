@@ -63,7 +63,6 @@ class techBits_model extends CI_model {
             $output = array();
             if(PHP_OS == "WINNT") {
                 $com = 'ping -w ' . $timeout . '000 -n 1 ' . escapeshellarg($host);
-                sleep(1);
             } else {
                 $com = 'ping -n -w ' . $timeout . ' -c 1 ' . escapeshellarg($host);
             }

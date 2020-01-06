@@ -73,15 +73,15 @@ class   Average30days_model extends CI_model {
         $percent_n_ms_diff = $this->average30days_model->getPercentAndMsForDiff();
         $difference_algo = 0;
         $difference_percent = 0;
+        if(!$array['average_longterm_ms']) return $difference_algo;
 
         $difference_ms = $array['average_longterm_ms'] - $array['last_ms'];
+        $difference_percent = round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0);
         if($difference_ms != 0 && $difference_ms < 0) {
-            $difference_percent = round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0);
             if($difference_ms <= "-".$percent_n_ms_diff['ms_diff'] && $difference_percent < $percent_n_ms_diff['percent_diff_slower']) { //slower than usual response times
                 $difference_algo = $difference_percent;
             }
         } else {
-            $difference_percent = round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0);
             if($difference_ms >= $percent_n_ms_diff['ms_diff'] && $difference_percent > $percent_n_ms_diff['percent_diff_quicker']) { //faster than usual response times
                 $difference_algo = "-".$difference_percent;
             }
