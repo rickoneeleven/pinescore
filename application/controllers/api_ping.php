@@ -45,7 +45,6 @@ class api_ping extends CI_Controller {
                     echo $this->email->print_debugger();
             }
             
-            sleep(2);
             $timeleft = $end - strtotime('now');
         }
         $this->lemon->tallyScore(); //sets the number of failures for each client so when the baseline command below runs its gets the correct offset
