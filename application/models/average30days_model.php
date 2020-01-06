@@ -64,6 +64,10 @@ class   Average30days_model extends CI_model {
      * page.
      * 'last_ms'                    =>
      * 'average_longterm_ms'        =>
+     * 
+     * basically. you can't have one number as -100 for a worse node, and 100 for a better, as SQL sorts by the this algo count, so you need both the slow and quicker nodes to both return as minus numbers,
+     * i.e. -100. As we throw the minus numbers at the top of the table. Now a node imrpoving speed, can never increase by over 100%, as it would essentially make it zero. So we know improving nodes will never exceeed
+     * -100, whilst slower nodes need to be 500% worse off (>-500), so that's how we color them in the icmpView table.
      */
     public function ltaCurrentMsDifference($array) {
         $percent_n_ms_diff = $this->average30days_model->getPercentAndMsForDiff();
@@ -71,15 +75,16 @@ class   Average30days_model extends CI_model {
         $difference_percent = 0;
 
         $difference_ms = $array['average_longterm_ms'] - $array['last_ms'];
-        if($array['last_ms'] != 0) $difference_percent = round((1 - $array['average_longterm_ms']/$array['last_ms'])*100,0);
-
-        if($difference_ms < 0) { //slower than usual response times
-            if($difference_ms <="-".$percent_n_ms_diff['ms_diff'] && $difference_percent > $percent_n_ms_diff['percent_diff']) {
-                $difference_algo = "-".$difference_percent-100; //need the minus so the nodes, both slow and fast, are stored at the top of the icmpview
-                //we minus 100 to amke it easier to select the slow ones from the fast ones in our views
-            }
-        } else if($difference_ms >= $percent_n_ms_diff['ms_diff'] && $difference_percent < "-".$percent_n_ms_diff['percent_diff']) { //faster than usual response times
+        if($difference_ms != 0 && $difference_ms < 0) {
+            $difference_percent = round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0);
+            if($difference_ms <= "-".$percent_n_ms_diff['ms_diff'] && $difference_percent < $percent_n_ms_diff['percent_diff_slower']) { //slower than usual response times
                 $difference_algo = $difference_percent;
+            }
+        } else {
+            $difference_percent = ltrim(round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0),"-");
+            if($difference_ms >= $percent_n_ms_diff['ms_diff'] && $difference_percent > $percent_n_ms_diff['percent_diff_quicker']) { //faster than usual response times
+                $difference_algo = "-".$difference_percent;
+            }
         }
         return $difference_algo;
     }
@@ -88,11 +93,17 @@ class   Average30days_model extends CI_model {
         $retuenArray = array();
         $this->db->where('id', 1);
         $otherTable_percent = $this->db->get('other');
-        $retuenArray['percent_diff'] = $otherTable_percent->row('value');
+        $retuenArray['percent_diff_quicker'] = $otherTable_percent->row('value');
+
+        $retuenArray = array();
+        $this->db->where('id', 9);
+        $otherTable_percent = $this->db->get('other');
+        $retuenArray['percent_diff_slower'] = $otherTable_percent->row('value');
 
         $this->db->where('id', 2);
         $otherTable_ms = $this->db->get('other');
         $retuenArray['ms_diff'] = $otherTable_ms->row('value');
+    
         return $retuenArray;
     }
 } 
