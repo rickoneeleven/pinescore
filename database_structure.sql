@@ -1,6 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `novascore` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `novascore`;
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: novascore
 -- ------------------------------------------------------
@@ -9,7 +9,7 @@ USE `novascore`;
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -23,7 +23,7 @@ USE `novascore`;
 
 DROP TABLE IF EXISTS `alerts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `alerts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(254) NOT NULL,
@@ -49,7 +49,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `ci_cookies`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ci_cookies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cookie_id` varchar(255) DEFAULT NULL,
@@ -79,7 +79,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `ci_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ci_sessions` (
   `session_id` varchar(40) NOT NULL DEFAULT '0',
   `ip_address` varchar(45) NOT NULL DEFAULT '0',
@@ -106,13 +106,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `control`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `control` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `datetime` datetime NOT NULL,
   `status` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=3719 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +130,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `grouped_reports`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `grouped_reports` (
   `id` int(6) NOT NULL AUTO_INCREMENT,
   `name` varchar(16) DEFAULT NULL,
@@ -157,7 +157,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `historic_novascore`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `historic_novascore` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `logged` datetime DEFAULT NULL,
@@ -183,7 +183,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `history_email_alerts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `history_email_alerts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `owner` int(11) NOT NULL,
@@ -209,14 +209,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `node_locks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `node_locks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(70) NOT NULL,
   `locked` tinyint(4) NOT NULL,
   `datetime` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=175472 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=241707159 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -234,13 +234,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `other`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `other` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` tinytext NOT NULL,
   `value` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +249,7 @@ CREATE TABLE `other` (
 
 LOCK TABLES `other` WRITE;
 /*!40000 ALTER TABLE `other` DISABLE KEYS */;
-INSERT INTO `other` VALUES (1,'percent difference required to highlight on main page','50'),(2,'ms difference required to highlight on main page. is used on conjuction with percent difference','3'),(3,'hasStatusChanged query time','2019-12-23 04:16:10 | query took 0 seconds | updated to: Online | IP: 84.21.152.114'),(4,'perf_dupComplete','2019-12-24 09:26:26 | query took 0 seconds'),(5,'perf_preCheckIP','2019-12-24 09:26:26 | query took 0 seconds'),(6,'perf_checkICMP','2019-12-24 09:26:27 | query took 0 seconds');
+INSERT INTO `other` VALUES (1,'percent difference for improving nodes','25'),(2,'ms difference required to highlight on main page. is used on conjuction with percent difference','3'),(3,'hasStatusChanged query time','2020-01-07 02:17:27 | query took 0 seconds | updated to: Online | IP: 84.21.152.72'),(9,'percent difference for slower nodes to be highlighted','-500');
 /*!40000 ALTER TABLE `other` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +259,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `perfmon`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `perfmon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL,
@@ -268,7 +268,7 @@ CREATE TABLE `perfmon` (
   `other` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -277,7 +277,6 @@ CREATE TABLE `perfmon` (
 
 LOCK TABLES `perfmon` WRITE;
 /*!40000 ALTER TABLE `perfmon` DISABLE KEYS */;
-INSERT INTO `perfmon` VALUES (1,'checkICMP, out of loop',0,'2019-12-25 18:05:10','proc id: 5e03a4d6f08a1'),(2,'checkICMP, out of loop',0,'2019-12-25 18:05:13','proc id: 5e03a4d918f5c'),(3,'checkICMP, out of loop',0,'2019-12-25 18:05:15','proc id: 5e03a4db373f4'),(4,'checkICMP, out of loop',0,'2019-12-25 18:05:17','proc id: 5e03a4dd540ec'),(5,'checkICMP, out of loop',0,'2019-12-25 18:05:19','proc id: 5e03a4df7220a'),(6,'checkICMP, out of loop',0,'2019-12-25 18:05:21','proc id: 5e03a4e18e6a6'),(7,'checkICMP, out of loop',0,'2019-12-25 18:05:23','proc id: 5e03a4e3ab352'),(8,'checkICMP, out of loop',0,'2019-12-25 18:05:25','proc id: 5e03a4e5c7881'),(9,'checkICMP, out of loop',0,'2019-12-25 18:05:27','proc id: 5e03a4e7f0556'),(10,'checkICMP, out of loop',0,'2019-12-25 18:05:30','proc id: 5e03a4ea187f4'),(11,'checkICMP, out of loop',0,'2019-12-25 18:05:32','proc id: 5e03a4ec34936'),(12,'checkICMP, out of loop',0,'2019-12-25 18:05:34','proc id: 5e03a4ee5063e'),(13,'checkICMP, out of loop',0,'2019-12-25 18:05:36','proc id: 5e03a4f0781dc'),(14,'checkICMP, out of loop',0,'2019-12-25 18:05:38','proc id: 5e03a4f294047'),(15,'checkICMP, out of loop',0,'2019-12-25 18:05:40','proc id: 5e03a4f4b2c52');
 /*!40000 ALTER TABLE `perfmon` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -287,7 +286,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `ping_ip_table`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ping_ip_table` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(70) NOT NULL,
@@ -325,7 +324,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `ping_result_table`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ping_result_table` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(50) NOT NULL,
@@ -354,7 +353,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `stats`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `stats` (
   `ip` varchar(70) NOT NULL,
   `datetime` datetime NOT NULL,
@@ -377,7 +376,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `stats_total`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `stats_total` (
   `ip` varchar(70) NOT NULL,
   `score` int(11) NOT NULL,
@@ -401,13 +400,13 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int(50) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `lastlogin` datetime DEFAULT NULL,
-  `hideOffline` tinyint(4) DEFAULT NULL,
+  `lastlogin` datetime NOT NULL,
+  `hideOffline` tinyint(4) NOT NULL,
   `default_EA` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -428,7 +427,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `verify_email`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `verify_email` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` text NOT NULL,
@@ -436,7 +435,7 @@ CREATE TABLE `verify_email` (
   `datetime` datetime NOT NULL,
   `password` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=58 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -445,6 +444,7 @@ CREATE TABLE `verify_email` (
 
 LOCK TABLES `verify_email` WRITE;
 /*!40000 ALTER TABLE `verify_email` DISABLE KEYS */;
+INSERT INTO `verify_email` VALUES (1,'tests@testing.com','2','2099-12-12 12:12:12','this_is_unencrypted_usually_they_are_hashed');
 /*!40000 ALTER TABLE `verify_email` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -457,4 +457,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-12-25 18:05:41
+-- Dump completed on 2020-01-07 10:12:29
