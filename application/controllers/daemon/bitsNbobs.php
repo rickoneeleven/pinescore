@@ -52,17 +52,19 @@ class BitsNbobs extends CI_Controller {
     private function alertDifference($IPAndAverage) {
         $this->load->model('html_email');
         $this->load->model('email_dev_or_no');
-        vdebug($IPAndAverage);
-        //THE PROBLEM IS THE DEAMON DOES NOT RUN AS THE LOGGED IN USER
+        $this->load->model('get_emailalerts');
+        //vdebug($IPAndAverage);
+
         $this->db->where('ip', $IPAndAverage['ip']);
         $ping_ip_tableTable = $this->db->get('ping_ip_table');
         foreach($ping_ip_tableTable->result() as $row) {
-            if($row->alert) {
+            $email_addresses_set_for_alerts = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
+            if($email_addresses_set_for_alerts) {
                 $this->email->from('noreply@novascore.io', 'novascore');
                 $state = "DECREASED";
                 $ms_cleaned = number_format(abs($IPAndAverage['difference_ms']),0);
                 if($IPAndAverage['difference'] > "1") $state = "INCREASED";
-                $this->email->to($row->alert); 	    
+                $this->email->to($email_addresses_set_for_alerts); 	    
                     $this->email->subject($row->note." round time (ping ms) has $state by [$ms_cleaned]ms");
                 $this->email->set_mailtype("html");
                 $array['body'] = "You have chosen to receive alerts for: ".$row->note."
@@ -81,7 +83,7 @@ class BitsNbobs extends CI_Controller {
                 );
                 if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                 echo "<br>EMAIL SENT";
-                echo "<br>alert set for: ".$row->ip." | ".$row->alert;
+                echo "<br>alert set for: ".$row->ip." | ".$email_addresses_set_for_alerts;
             } else {
                 echo "<br>no alert for: $row->ip";
             }
