@@ -77,7 +77,7 @@ class BitsNbobs extends CI_Controller {
                     <br>Good luck commander.";
                 $this->email->message($this->html_email->htmlFormatted($array));
                 $email_dev_array = array(
-                    'from_class__method'            => 'bitnNbobs__alertDifference'
+                    'from_class__method'            => 'bitsNbobs__alertDifference'
                 );
                 if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                 echo "<br>EMAIL SENT";
@@ -117,8 +117,9 @@ class BitsNbobs extends CI_Controller {
             $average_array = array_filter($average_array);
 
             $values = array_count_values($average_array);
-            $mode = array_search(max($values), $values);
-
+            if($values) {
+                $mode = array_search(max($values), $values);
+            }
             //$average = array_sum($average_array)/count($average_array);
             //$average = round($average,0);
         }
