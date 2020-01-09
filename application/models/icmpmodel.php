@@ -98,7 +98,7 @@ class IcmpModel extends CI_model {
             $data[$row->owner] = array(
                 'last_email_status' => $row->last_email_status,
                 'note' => $row->note,
-                'alert' => $this->get_emailalerts->alertsFromIDasArray($row->id),
+                'alert' => $this->get_emailalerts->returnAlertsFromIDasArray($row->id),
                 'count' => $row->count,
                 'owner' => $row->owner,
                 'ip' => $row->ip,

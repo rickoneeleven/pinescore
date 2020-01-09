@@ -2,7 +2,7 @@
 
 class get_emailalerts extends CI_model {
 
-    public function alertsFromIDasArray($id) {
+    public function returnAlertsFromIDasArray($id) {
         $this->db->where('ping_ip_id', $id);
         $alertsTable = $this->db->get('alerts');
         $email_addresses = array();
@@ -17,7 +17,7 @@ class get_emailalerts extends CI_model {
     }
 
     //substr to remove first two chars ", " from returned string
-    public function alertsFromIDasString($id) {
+    public function returnAlertsFromIDasString($id) {
         $this->db->where('ping_ip_id', $id);
         $alertsTable = $this->db->get('alerts');
         $email_addresses = "";

@@ -60,7 +60,7 @@ class Cellblock7 extends CI_model {
         $data2 = array(); //if no results the array wont get created below so we have to declare here otherwise customers with no tables will get erros as it will try to return data2, but it does not exist
         foreach ($ips->result() as $row) {
             $data2[$row->ip]['note'] = $row->note;
-            $data2[$row->ip]['alert'] = $this->get_emailalerts->alertsFromIDasString($row->id);
+            $data2[$row->ip]['alert'] = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
             $data2[$row->ip]['id'] = $row->id;
             $data2[$row->ip]['score'] = $row->novaScore;
             $data2[$row->ip]['score_change_date'] = $row->novaScore_change;
