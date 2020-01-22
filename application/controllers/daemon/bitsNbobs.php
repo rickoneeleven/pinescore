@@ -3,6 +3,9 @@
 class BitsNbobs extends CI_Controller {
 
     public function updateNovaScore() {
+        $this->load->model("cron_protect");
+        $this->cron_protect->AllowedIPs();
+
         $this->load->model('lemon');
         $this->lemon->novaScoreDaemon();
     }
@@ -14,6 +17,9 @@ class BitsNbobs extends CI_Controller {
      * existing ms, and we want to compare it to the ms once the node is back online
      */
     public function updateDailyAverageMs() {
+        $this->load->model("cron_protect");
+        $this->cron_protect->AllowedIPs();
+        
         $IPsAndAverage = $this->getIPsAndAverage();
         $this->db->distinct();
         $this->db->group_by('ip');
