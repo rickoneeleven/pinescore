@@ -3,7 +3,7 @@
     class Partytest extends CI_Controller {
 
         function index() {
-            $this->input->ip_address();
+            echo $this->input->ip_address();
             
         }
     }
