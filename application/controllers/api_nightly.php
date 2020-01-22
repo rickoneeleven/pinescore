@@ -8,6 +8,8 @@
                 $this->load->model('icmpmodel');
                 $this->load->model('cellblock7');
                 $this->load->model('email_dev_or_no');
+                $this->load->model("cron_protect");
+                $this->cron_protect->AllowedIPs();        
 
                 $old =  "datetime < (NOW() - INTERVAL 48 HOUR)";
                 $old_3year = "logged < (NOW() - INTERVAL 3 YEAR)";
