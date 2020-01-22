@@ -5,6 +5,8 @@ class average30days extends CI_Controller {
     public function index() {
         $this->load->model('average30days_model');
         $this->load->model('icmpmodel');
+        $this->load->model("cron_protect");
+        $this->cron_protect->AllowedIPs();
 
         $all_IPs = $this->icmpmodel->getIPs();
         foreach($all_IPs->result() as $row) {

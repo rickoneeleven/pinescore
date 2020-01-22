@@ -3,6 +3,8 @@
     class Partytest extends CI_Controller {
 
         function index() {
-            echo PHP_OS;
+            $this->load->model("cron_protect");
+            $this->cron_protect->AllowedIPs();
+            
         }
     }
