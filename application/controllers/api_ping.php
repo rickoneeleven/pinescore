@@ -6,6 +6,9 @@ class api_ping extends CI_Controller {
     //damn SMELLY
     public function index()
     {
+        $this->load->model("cron_protect");
+        $this->cron_protect->AllowedIPs();
+
         $start = strtotime('now');
         $end = $start + 60;
         $timeleft = $end - strtotime('now');

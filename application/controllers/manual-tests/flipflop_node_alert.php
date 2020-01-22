@@ -9,6 +9,9 @@ class Flipflop_node_alert extends CI_controller
      */
     public function index()
     {
+        $this->load->model("cron_protect");
+        $this->cron_protect->AllowedIPs();
+        
         $this->db->where('ping_ip_id', 181);
         $alertsTable = $this->db->get('alerts');
         if($alertsTable->num_rows() < 1) {
