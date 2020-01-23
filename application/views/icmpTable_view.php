@@ -88,6 +88,8 @@ foreach ($ips as $ip => $latest) {
             $tr = '<tr class="orange">';
         } else if ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
             $tr = '<tr class="green">';
+        } else if($latest['score'] < 50) {
+            $tr = '<tr class="pink">';
         } else {
             $tr = '<tr class="hover">';	
         }
@@ -245,6 +247,9 @@ Key:
     </tr>
     <tr class="transition">
     <td>Node has been online, and is starting to drop packets. Or - Node was offline and has just started responding. It's in limbo.</td>
+    </tr>
+    <tr class="pink">
+    <td>Novascore is below 50, node appears to be suffering intermittent drops. Worth investigating.</td>
     </tr>
     <tr>
         <td>NovaScore (the score of the node), <strong>bold</strong> and <font color="red"><strong>Red</strong></font>: 
