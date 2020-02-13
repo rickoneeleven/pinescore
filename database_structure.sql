@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `novascore` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `novascore`;
 -- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: novascore
@@ -112,7 +110,7 @@ CREATE TABLE `control` (
   `datetime` datetime NOT NULL,
   `status` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3719 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +214,7 @@ CREATE TABLE `node_locks` (
   `locked` tinyint(4) NOT NULL,
   `datetime` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=241707159 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +247,7 @@ CREATE TABLE `other` (
 
 LOCK TABLES `other` WRITE;
 /*!40000 ALTER TABLE `other` DISABLE KEYS */;
-INSERT INTO `other` VALUES (1,'percent difference for improving nodes','25'),(2,'ms difference required to highlight on main page. is used on conjuction with percent difference','3'),(3,'hasStatusChanged query time','2020-01-07 02:17:27 | query took 0 seconds | updated to: Online | IP: 84.21.152.72'),(9,'percent difference for slower nodes to be highlighted','-500');
+INSERT INTO `other` VALUES (1,'percent difference for improving nodes','10'),(2,'ms difference required to highlight on main page. is used on conjuction with percent difference','3'),(3,'hasStatusChanged query time','2020-02-10 11:19:03 | query took 0 seconds | updated to: Offline | IP: 84.21.153.21'),(9,'percent difference for slower nodes to be highlighted','-500');
 /*!40000 ALTER TABLE `other` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -292,7 +290,6 @@ CREATE TABLE `ping_ip_table` (
   `ip` varchar(70) NOT NULL,
   `last_ran` datetime NOT NULL,
   `note` text NOT NULL,
-  `alert` text,
   `last_email_status` varchar(15) DEFAULT NULL,
   `count` int(1) DEFAULT NULL,
   `owner` int(11) NOT NULL,
@@ -435,7 +432,7 @@ CREATE TABLE `verify_email` (
   `datetime` datetime NOT NULL,
   `password` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=58 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -444,7 +441,6 @@ CREATE TABLE `verify_email` (
 
 LOCK TABLES `verify_email` WRITE;
 /*!40000 ALTER TABLE `verify_email` DISABLE KEYS */;
-INSERT INTO `verify_email` VALUES (1,'tests@testing.com','2','2099-12-12 12:12:12','this_is_unencrypted_usually_they_are_hashed');
 /*!40000 ALTER TABLE `verify_email` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -457,4 +453,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-07 10:12:29
+-- Dump completed on 2020-02-13  7:12:35
