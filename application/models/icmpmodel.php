@@ -156,7 +156,7 @@ class IcmpModel extends CI_model {
             $this->load->model('email_dev_or_no');
             $array['body'] = 'You are receiving this email because you have been setup to receive alerts when the online status of "' . $data['note'] . '"' . " changes. <br><br><strong>".$data['note'] . " is now " . $data['current'] . "</strong><br>
         <br><br>Recent Activity <br>" . $last10 . "<br><br>*You may see the online/offline status switches much more than the number of email alerts you receive. This is because we will only email you when the host has been down for a period of time rather than each dropped request. You can see a full report: <a href=\"" . base_url() . "tools/report/" . $id . "\">here</a>
-        <br><br><br><br><a href=\"" . base_url() . "unsubscribe_alert/go/".$alert['ping_ip_id']."/".$alert['unsub_ref']."\">Stop email alerts</a><br><br>process parent id: ".$data['process_id_parent']." child id: ".$data['process_id'];
+        <br><br><br><br><a href=\"" . base_url() . "unsubscribe_alert/go/".$alert['ping_ip_id']."/".$alert['unsub_ref']."\">Remove me from this node alert</a><br><br>process parent id: ".$data['process_id_parent']." child id: ".$data['process_id'];
             $this->email->message($this->html_email->htmlFormatted($array));
             $email_dev_array = array(
                 'from_class__method'            => 'icmpmodel__emailAlert'
