@@ -148,14 +148,16 @@ foreach ($ips as $ip => $latest) {
     }
 
     $count_with_color = $latest['count'];
-    if($latest['last_email_status'] == "Offline" && $latest['count_direction'] == "Up") {
-        $count_with_color =  "<font color=\"green\"><strong>".$count_with_color."</strong></font>";
-    } else if($latest['last_email_status'] == "Offline" && $latest['count_direction'] == "Down") {
-       $count_with_color = "<font color=\"red\"><strong>".$count_with_color."</strong></font>";
-    } else if($latest['last_email_status'] == "Online" && $latest['count_direction'] == "Down") {
-        $count_with_color = "<font color=\"green\"><strong>".$count_with_color."</strong></font>";
-    } else if($latest['last_email_status'] == "Online" && $latest['count_direction'] == "Up") {
-        $count_with_color = "<font color=\"red\"><strong>" . $count_with_color . "</strong></font>";
+    if($count_with_color) {
+        if($latest['last_email_status'] == "Offline" && $latest['count_direction'] == "Up") {
+            $count_with_color =  "<font color=\"green\"><strong>".$count_with_color."</strong></font>";
+        } else if($latest['last_email_status'] == "Offline" && $latest['count_direction'] == "Down") {
+        $count_with_color = "<font color=\"red\"><strong>".$count_with_color."</strong></font>";
+        } else if($latest['last_email_status'] == "Online" && $latest['count_direction'] == "Down") {
+            $count_with_color = "<font color=\"green\"><strong>".$count_with_color."</strong></font>";
+        } else if($latest['last_email_status'] == "Online" && $latest['count_direction'] == "Up") {
+            $count_with_color = "<font color=\"red\"><strong>" . $count_with_color . "</strong></font>";
+        }
     }
 
     echo'<td> '.$latest['last_email_status'].' ['.$count_with_color.']&nbsp;</td>
