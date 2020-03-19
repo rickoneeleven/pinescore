@@ -259,8 +259,6 @@ Key:
     </tr>
         <tr>
         <td>[0] (the number in the box) <br>
-            if [<font color="green"><strong>0</strong></font>]: node has dropped a request at some point today<br>
-            if [<font color="red"><strong>0</strong></font>]: node has been offline at some point today<br>
             if [><font color="red"><strong>0</strong></font>]: node is moving towards an offline state<br>
             if [><font color="green"><strong>0</strong></font>]: node is moving towards an online state<br>
         </td>
