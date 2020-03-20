@@ -6,7 +6,7 @@ RewriteRule ^(application|system|\.svn|\.git) index.php/$1 [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php/$1 [QSA,L]
+RewriteRule ^(.*)$ index.php?/$1 [QSA,L]
 
 RewriteCond %{HTTP_HOST} ^novascore\.io$ [NC]
 RewriteCond %{SERVER_PORT} 80
