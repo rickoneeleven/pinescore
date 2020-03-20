@@ -26,7 +26,7 @@
 <div id="wrap">
 <div class="signup_wrap">
 <div class="topleft"><a name="first"></a>
-    <a href="<?php echo base_url();?>"><img src="<?php echo base_url();?>112/trans-black-horiz.png"/></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ <a href="https://reddit.com/r/novascore/" target="_blank">community</a></ahref></div>
+    <a href="<?php echo base_url();?>"><img src="<?php echo base_url();?>112/trans-black-horiz.png"/></a></div>
 	<div class="signin_form">
 		<?php
             echo form_open("auth/user/login");
