@@ -2,11 +2,6 @@
 
 class Flipflop_node_alert extends CI_controller
 {
-    /**
-     * todo: when flipping the node status, you get an email alert but it does not contain any entries for "recent"
-     *  as it's not a true flip, no entries were stored in the (ping_ip_results?) table with the offline status
-     *  for it to pull and include in the "recent acticity" part of the email template.
-     */
     public function index()
     {
         $this->load->model("cron_protect");

@@ -3,10 +3,6 @@
 class proc2d extends CI_Controller {
     
     public function index() {
-        /**
-         *     //todo: you need to bring this back inline with the api_ping controller, I can't be having two controller/daemons
-         * this daemon is just used for nodes that are OFFLINE, see api_ping in the directory above (I don't know why) for the script that pings IPs that are online
-         */
         $this->load->model("cron_protect");
         $this->cron_protect->AllowedIPs();
         
