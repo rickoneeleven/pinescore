@@ -132,8 +132,6 @@ class Tools extends CI_Controller
         $this->load->library('form_validation');
         $this->form_validation->set_rules('host', 'Hostname', 'trim|required|xss_clean');
         if ($this->form_validation->run() == FALSE) {
-        //todo: remove this comment $this->dns($data); //was failing phpstorm validation, but didn't want to remove on
-            // the large commit i'm currently working on.
             $this->dns();
         } else {
             $this->form_validation->set_rules('host', 'Hostname', 'valid_ip');
@@ -394,7 +392,6 @@ class Tools extends CI_Controller
             $update_ping_ip_table = array(
                 'note'   => $this->input->post('note'),
                 'ip'     => $this->input->post('ip'),
-                //'alert'  => $this->input->post('alert'), //todo: delete this line
                 'public' => $this->input->post('ea'),
             );
             $this->db->where('owner', $this->session->userdata('user_id'));
