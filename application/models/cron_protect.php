@@ -10,6 +10,7 @@ class   Cron_protect extends CI_model {
         $allowedIPs[] = "81.174.163.10"; //vtl plusnet
         $allowedIPs[] = "84.21.150.125"; //vtl Inf
         $allowedIPs[] = "139.162.250.57"; //novascore's "local IP" - this is where it's requests come from, not 127.
+        $allowedIPs[] = "192.168.1.205"; //daniel server where the devleopment is now done
 
         if(in_array($this->input->ip_address(), $allowedIPs)) return TRUE;
         die("who dis new fone?");
