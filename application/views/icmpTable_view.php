@@ -44,7 +44,7 @@ echo '
     <td width="180px" ><strong>IP</strong></td>';
     if($owner_matches_table) { //only show alert column header if logged in
         echo '
-        <td width="200px" ><strong>Alert</strong></td>';
+        <td width="200px" ><strong>Email Add. Alert</strong> (comma, separated)</td>';
     }
     echo '
     <td width="80px" ><strong><a title="Public" href="'.base_url().'nc/externalAccess">Public</a></strong></td>';

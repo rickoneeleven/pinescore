@@ -365,6 +365,7 @@ class Tools extends CI_Controller
         $this->load->model('actionicmp');
         $this->load->model('sqlqu');
         $this->load->model('securitychecks');
+        $this->load->library('form_validation');
 
         if ($_POST['action'] == 'Edit') {
             $data['edit'] = 1;
@@ -377,6 +378,15 @@ class Tools extends CI_Controller
         }
 
         if ($_POST['action'] == 'Update') {
+            $this->form_validation->set_rules('alert', 'Alert', 'xss_clean|valid_emails');
+            $this->form_validation->set_rules('note', 'Note', 'xss_clean|required');
+            $this->form_validation->set_rules('ip', 'ip', 'xss_clean|required');
+            $this->form_validation->set_rules('public', 'public', 'xss_clean|boolean');
+
+            if($this->form_validation->run() == FALSE) {
+                die("datas validation failed, please restart your modem and try again.");
+            }
+
             $duplicate_check = $this->icmpmodel->ipExists($this->input->post('ip'), $this->session->userdata('user_id'));
             if ($this->input->post('ip') !== $this->input->post('ip_existing')) {
                 if ($duplicate_check->num_rows() > 0) {
