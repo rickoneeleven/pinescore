@@ -17,6 +17,9 @@ $dev_domain_tld = ".test";
 $config['encryption_key'] = 'breasts';
 :wq
 
+vim application/models/email_dev_or_no.php
+	update the various email bits to decide if you get alerted in your development environment
+
 vim ./application/config/database.php
 	'username' => 'db_user',
 	'password' => 'harrylikesherchainberofsecrets',
