@@ -66,7 +66,7 @@ class BitsNbobs extends CI_Controller {
         foreach($ping_ip_tableTable->result() as $row) {
             $email_addresses_set_for_alerts = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
             if($email_addresses_set_for_alerts) {
-                $this->email->from('noreply@novascore.io', 'novascore');
+                $this->email->from(from_email, 'novascore');
                 $state = "DECREASED";
                 $ms_cleaned = number_format(abs($IPAndAverage['difference_ms']),0);
                 if($IPAndAverage['difference'] > "1") $state = "INCREASED";

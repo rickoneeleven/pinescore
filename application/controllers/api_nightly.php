@@ -25,7 +25,7 @@
                     $message = $message.'You are receiving this email because "'.$row->note.'" ('.$row->ip.')'.
                         " has not been online in the last 6 months. We automatically delete inactive nodes to keep our system optimum.\r\n\r\nYou can setup the alert again if you like at ".base_url()."\r\n\r\nThanks\nRyan";
                     $owner_email = $this->cellblock7->getOwnerEmail($row->owner);
-                    $this->email->from('noreply@novascore.io', 'novascore');
+                    $this->email->from(from_email, 'novascore');
                     $this->email->to($owner_email); 	    
                     $this->email->bcc("r@novascore.io"); 	    
                     $this->email->subject('Expired Alert: '.$row->note);
