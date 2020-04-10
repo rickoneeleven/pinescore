@@ -36,7 +36,7 @@ class api_ping extends CI_Controller {
             //$rand = rand(0,101); //lazy man implementation
             //if($completion_time > 60 && $rand > 99) {
             if($completion_time > 60 ) {
-                    $this->email->from('script@novascore.io', 'Script');
+                    $this->email->from(from_email, 'Script');
                     $this->email->to('workforward@pinescore.com'); 	    
                     $this->email->subject('ICMP Script Exceeds 60 seconds');
                     $this->email->message('Script took: '.$completion_time.' to complete.');	

@@ -149,7 +149,7 @@ class IcmpModel extends CI_model {
         }
 
         foreach ($data['alert'] as $alert) {
-            $this->email->from('noreply@novascore.io', 'novascore');
+            $this->email->from(from_email, 'novascore');
             $this->email->to($alert['email']);
             $this->email->subject($data['note'] . " is now " . $data['current']);
             $this->email->set_mailtype("html");

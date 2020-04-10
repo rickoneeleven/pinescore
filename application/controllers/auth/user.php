@@ -51,7 +51,7 @@
 			$insert['password'] = md5(set_value('password'));			
 			$this->db->insert('verify_email', $insert);
 			
-			$this->email->from('activation@novascore.io', 'Activation');
+			$this->email->from(from_email, 'Activation');
 			$this->email->to(set_value('email_address'));
 			$this->email->bcc("r@novascore.io");	    
 			$this->email->subject('novascore.io activation');
@@ -148,7 +148,7 @@
 						$insert['password'] = md5($unhashedPw);			
 						$this->db->insert('verify_email', $insert);
 						
-						$this->email->from('reset@novascore.io', 'Password Reset Request');
+						$this->email->from(from_email, 'Password Reset Request');
 						$this->email->to(set_value('email'));
 						$this->email->bcc("r@novascore.io");	    
 						$this->email->subject('novascore.io password reset request');
