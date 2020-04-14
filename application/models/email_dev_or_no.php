@@ -28,16 +28,16 @@ class email_dev_or_no extends CI_model {
         switch($array['from_class__method'])
         {
             case "icmpmodel__emailAlert":
-                return false;
+                return true;
             break;
             case "bitsNbobs__alertDifference":
                 return false;
             break;
             case "api_ping__index":
-                return true;
+                return false;
             break;
             case "proc2d__index":
-                return true;
+                return false;
             break;
             case "api_nightly__index":
                 return true;
