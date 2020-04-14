@@ -25,9 +25,11 @@ $domain = ! empty($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : '
 if (strpos($domain, $dev_domain_tld) !== false || $domain == 'cli')
 {
    define('ENVIRONMENTv2', 'development');
+      define('from_email', 'dev_server@pinescore.test');
 }
 else {
    define('ENVIRONMENTv2', 'production');
+      define('from_email', 'dave@novascore.io');
 }
 
 /*
@@ -238,7 +240,7 @@ $config['cache_path'] = '';
 | MUST set an encryption key.  See the user guide for info.
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = 'imsorandomlol';
 
 /*
 |--------------------------------------------------------------------------
