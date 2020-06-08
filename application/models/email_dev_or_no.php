@@ -52,7 +52,7 @@ class email_dev_or_no extends CI_model {
                 return true;
             break;
             case "lemon__icmpControl":
-                return true;
+                return false;
             break;
 
             default;
