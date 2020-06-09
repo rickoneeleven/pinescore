@@ -65,10 +65,10 @@
     return $domain;
     }
     
-    /*$this->email->from(from_email, 'novascore telnet');
+    /*$this->email->from(from_email, 'pinescore telnet');
 			    $this->email->to('rick1_11@hotmail.com'); 	    
 			    $this->email->subject('telnet abuse check');
-			    $this->email->message('to: '.$mailSettings['to'].' from: '.$mailSettings['from']." body: test email from novascore.io \r\n\r\ngenerated: ".date('Y-m-d H:i:s')."\r\nfrom: ".$mailSettings['ip_from'].""."\r\n"."\r\n".".");	
+			    $this->email->message('to: '.$mailSettings['to'].' from: '.$mailSettings['from']." body: test email from pinescore.com \r\n\r\ngenerated: ".date('Y-m-d H:i:s')."\r\nfrom: ".$mailSettings['ip_from'].""."\r\n"."\r\n".".");	
 			    $email_dev_array = array(
                         'from_class__method'            => 'telnetBody_view__index'
                     );

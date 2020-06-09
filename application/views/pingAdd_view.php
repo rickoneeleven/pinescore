@@ -71,10 +71,10 @@ if(($this->session->userdata('user_email')!="")) {//is user logged in check [tru
     echo"</tr></table>";
     echo form_close();
 } else {
-    echo "<p>".anchor('auth/user/register', 'Register')." to find out your NovaScore and get alerts when your node drops.
+    echo "<p>".anchor('auth/user/register', 'Register')." to find out your pinescore and get alerts when your node drops.
         <font color=\"red\">Your IP: $user_ip </font></p>";
-    $gitExcludes111Folder = "https://novascore.io/";
-    if(base_url() != "https://dev.novascore.io/") $gitExcludes111Folder = base_url();
+    $gitExcludes111Folder = "https://pinescore.com/";
+    if(base_url() != "https://dev.pinescore.com/") $gitExcludes111Folder = base_url();
     echo '<div>';
     echo '<div class="screenshots"><a href="'.$gitExcludes111Folder.'111/ns_homepage1.png"><img src="'.$gitExcludes111Folder.'111/ns_homepage1.png" border="1" width="283px"></a></div>';
     echo '<div class="screenshots"><a href="'.$gitExcludes111Folder.'111/ns_homepage2.png"><img src="'.$gitExcludes111Folder.'111/ns_homepage2.png" border="1" width="283px"></a></div>';

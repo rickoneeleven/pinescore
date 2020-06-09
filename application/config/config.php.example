@@ -29,7 +29,7 @@ if (strpos($domain, $dev_domain_tld) !== false || $domain == 'cli')
 }
 else {
    define('ENVIRONMENTv2', 'production');
-      define('from_email', 'dave@novascore.io');
+      define('from_email', 'dave@pinescore.com');
 }
 
 /*

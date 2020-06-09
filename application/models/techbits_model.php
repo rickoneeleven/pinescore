@@ -181,7 +181,7 @@ class techBits_model extends CI_model {
         $mailSettings = array('host' => $smtp_server,
                                                     'to' => set_value('to'),
                                                     'from' => 'workforward@pinescore.com',
-                                                    'from_domain' => ('novascore.io'),
+                                                    'from_domain' => ('pinescore.com'),
                                                     'port' => '25',
                                                     'timeout' => '2',
                                                     'newLine' => "\r\n",
@@ -212,7 +212,7 @@ class techBits_model extends CI_model {
                 $headers .= "To: " . $mailSettings['to']  . $mailSettings['newLine'];
                 $headers .= "From: " . $mailSettings['from'] .  $mailSettings['newLine'];
                 $headers .= "Subject: Test Email #".$count." of ".$total." mx: $smtp_server" . $mailSettings['newLine'];
-                $body = "MX Record: $smtp_server \r\n\r\ntest email from novascore.io to $send_to \r\n\r\ngenerated: ".date('Y-m-d H:i:s')."\r\nfrom: ".$mailSettings['ip_from'].""."\r\n"."\r\n".".";
+                $body = "MX Record: $smtp_server \r\n\r\ntest email from pinescore.com to $send_to \r\n\r\ngenerated: ".date('Y-m-d H:i:s')."\r\nfrom: ".$mailSettings['ip_from'].""."\r\n"."\r\n".".";
                 $headers .= $body;
         
                 $this->smtpParse($socket, $headers, '250');

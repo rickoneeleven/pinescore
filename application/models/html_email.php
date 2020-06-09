@@ -11,7 +11,7 @@ class html_email extends CI_model {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>novascore.io notification</title>
+<title>pinescore.com notification</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 </html>
@@ -23,7 +23,7 @@ class html_email extends CI_model {
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
 <tr>
 <td align="center" bgcolor="#FFF" style="padding: 40px 0 30px 0;">
- <img src="https://novascore.io/111/ns_trans_long.png" alt="novascore.io" width="300" height="36.76" style="display: block;" />
+ <img src="https://pinescore.com/111/ns_trans_long.png" alt="pinescore.com" width="300" height="36.76" style="display: block;" />
 </td>
 </tr>
 <tr>
@@ -48,7 +48,7 @@ class html_email extends CI_model {
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
      <tr>
         <td>
-         <p>&reg; novascore.io 2014<br/></p>
+         <p>&reg; pinescore.com 2014<br/></p>
         </td>
      </tr>
     </table>
