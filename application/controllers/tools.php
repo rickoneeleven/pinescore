@@ -186,8 +186,8 @@ class Tools extends CI_Controller
         $this->load->model('average30days_model');
 
         $data_meta = array(
-            'title'       => "novascore.io | internet monitoring",
-            'description' => "Rate your connection with our unique algorithm. NovaScore [90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]",
+            'title'       => "pinescore.com | internet monitoring",
+            'description' => "Rate your connection with our unique algorithm. pinescore [90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]",
             'keywords'    => "ip,ping,monitoring,report,online,offline,alert",
         );
 
@@ -301,7 +301,7 @@ class Tools extends CI_Controller
 
         $data_meta = array('title'       => "Visitor Tracking",
                            'description' => "View recent activity on our website",
-                           'keywords'    => "page,tracker,novascore"
+                           'keywords'    => "page,tracker,pinescore"
 
         );
         $this->load->view('header_view', $data_meta);
@@ -461,7 +461,7 @@ class Tools extends CI_Controller
         $data_meta = array('title'       => "Activity Report",
                            'description' => "Dropped requests over the last <strong><u>week</u></strong>. You'll only receive an email when a node has been down for a minute, not for each dropped request.",
                            'keywords'    => "icmp,report,activity"
-            //It's also the metric used for the novascore ICMP score which is (100 minus the number of sensitive status changes).
+            //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
             //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
         );
         $this->load->view('header_view', $data_meta);
@@ -481,7 +481,7 @@ class Tools extends CI_Controller
         $data_meta = array('title'       => "Control Results",
                            'description' => "See when our server has failed the stability test. When we are not happy that the server is performing at maximum capacity it will not mark any nodes as failed.",
                            'keywords'    => "control,check,report"
-            //It's also the metric used for the novascore ICMP score which is (100 minus the number of sensitive status changes).
+            //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
             //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
         );
         $this->load->view('header_view', $data_meta);
@@ -499,7 +499,7 @@ class Tools extends CI_Controller
         $data_meta = array('title'       => "Email Alert History",
                            'description' => "Take a trip down memory lane and see what alerts have been sent out over the last couple of days.",
                            'keywords'    => "memory,lane"
-            //It's also the metric used for the novascore ICMP score which is (100 minus the number of sensitive status changes).
+            //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
             //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
         );
         $this->load->view('header_view', $data_meta);

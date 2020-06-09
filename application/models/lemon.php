@@ -96,22 +96,22 @@ class Lemon extends CI_model {
         return $this->db->get('control');
     }
 
-    //calculates the novaScore for all monitored IPs and updates database with score. This used to be done on the
+    //calculates the pinescore for all monitored IPs and updates database with score. This used to be done on the
     //fly, each time a user refreshed a page/group that contained their node. now this is just done once a
     //minute.
     //we also try and rand which should hit about once a day, and store score, ip, time and ms for a historical
     //record.
-    public function novaScoreDaemon() {
+    public function pinescoreDaemon() {
         $this->load->model('sqlqu');
         $array['request_type'] = 'distinct_ips';
         $ping_ip_tableTable = $this->sqlqu->getPingIpTable($array);
         foreach($ping_ip_tableTable->result() as $row) {
-            $novaScore = $this->myScore($row->ip);
+            $pinescore = $this->myScore($row->ip);
             $update_data = array(
-                'novaScore'     => $novaScore,
+                'pinescore'     => $pinescore,
             );
-            if($this->myScore($row->ip) < $row->novaScore) {
-                $update_data['novaScore_change'] = date('Y-m-d H:i:s');
+            if($this->myScore($row->ip) < $row->pinescore) {
+                $update_data['pinescore_change'] = date('Y-m-d H:i:s');
             }
             $this->db->where('ip', $row->ip);
             $this->db->update('ping_ip_table', $update_data);
@@ -123,10 +123,10 @@ class Lemon extends CI_model {
                 $log_for_history = array(
                     'logged'        => date('Y-m-d H:i:s'),
                     'ms'            => $row->last_ms,
-                    'novaScore'     => $novaScore,
+                    'pinescore'     => $pinescore,
                     'ip'            => $row->ip,
                 );
-                $this->db->insert('historic_novaScore', $log_for_history);
+                $this->db->insert('historic_pinescore', $log_for_history);
                 unset($log_for_history);
             }
         }

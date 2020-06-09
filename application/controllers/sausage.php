@@ -50,7 +50,7 @@ class Sausage extends CI_Controller {
         $this->form_validation->set_rules('crypto', 'Encryption', 'required|xss_clean');
 
         if(!$this->input->post('email_from')) {
-            $email_from = "testing@novascore.io";
+            $email_from = "testing@pinescore.com";
         } else {
             $email_from = $this->input->post('email_from');
         }
@@ -86,7 +86,7 @@ class Sausage extends CI_Controller {
 
             $this->email->from($email_from);
             $this->email->to($this->input->post('email_to'));
-            $this->email->reply_to($email_from, 'novascore.io');
+            $this->email->reply_to($email_from, 'pinescore.com');
             $this->email->subject('SMTP Authentication test from '.base_url());
             $this->email->message('You can now delete this message.');
             $email_dev_array = array(

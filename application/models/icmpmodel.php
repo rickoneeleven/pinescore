@@ -7,7 +7,7 @@ class IcmpModel extends CI_model {
      * passing to the where clause.
      */
     public function getIPs($filter=null) {
-        $order_by = "(CASE WHEN last_email_status='Offline' THEN last_online_toggle END) DESC, count DESC, last_email_status, lta_difference_algo, novaScore, note";
+        $order_by = "(CASE WHEN last_email_status='Offline' THEN last_online_toggle END) DESC, count DESC, last_email_status, lta_difference_algo, pinescore, note";
         if(isset($filter['order_alpha'])) $this->db->order_by('note');
         if(!isset($filter['group_id'])) {
             $this->db->group_by('ip'); //if two customers monitor the same ip, ive already tested and they get
@@ -149,7 +149,7 @@ class IcmpModel extends CI_model {
         }
 
         foreach ($data['alert'] as $alert) {
-            $this->email->from(from_email, 'novascore');
+            $this->email->from(from_email, 'pinescore');
             $this->email->to($alert['email']);
             $this->email->subject($data['note'] . " is now " . $data['current']);
             $this->email->set_mailtype("html");

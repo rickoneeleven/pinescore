@@ -3,8 +3,8 @@ CodeIgniter 2.2.0 Project
 
 --------------------------------------------------
 Database
-mysqladmin -u root -p create novascore
-mysql -u root -p novascore < database_structure.sql
+mysqladmin -u root -p create pinescore
+mysql -u root -p pinescore < database_structure.sql
 
 --------------------------------------------------
 Setup
@@ -35,26 +35,26 @@ otherwise you get this error: https://stackoverflow.com/questions/34115174/error
 --------------------------------------------------
 crontabs
 #the star of the show, check if nodes are online/offline. We have a deamon for each state - "Online" / "Offline".
-* * * * * lynx --dump https://novascore.test/api_ping/ > /dev/null 2>&1
-* * * * * lynx --dump https://novascore.test/daemon/proc2d/ > /dev/null 2>&1
+* * * * * lynx --dump https://pinescore.test/api_ping/ > /dev/null 2>&1
+* * * * * lynx --dump https://pinescore.test/daemon/proc2d/ > /dev/null 2>&1
 
 #daily clean up tasks and general db maintenance
-26 04 * * * lynx --dump https://novascore.test/api_nightly/onceAday > /dev/null 2>&1
+26 04 * * * lynx --dump https://pinescore.test/api_nightly/onceAday > /dev/null 2>&1
 
 #Think this deletes old ping results, we need to keep this table as small as we can, so adding/updating nodes is quick
-24 * * * * lynx --dump https://novascore.test/api_nightly/ > /dev/null 2>&1                                            
+24 * * * * lynx --dump https://pinescore.test/api_nightly/ > /dev/null 2>&1                                            
 
-#delete files from novascore.test/111 older than 30 days - and touches the index file to stop it being deleted
-10 09 * * * touch /home/novascore/pinescore.git/111/index.php && find /home/novascore/pinescore.git/111/* -mtime +30 -type f -delete
+#delete files from pinescore.test/111 older than 30 days - and touches the index file to stop it being deleted
+10 09 * * * touch /home/pinescore/pinescore.git/111/index.php && find /home/pinescore/pinescore.git/111/* -mtime +30 -type f -delete
 
 #more touching of files we want to remain
-11 11 11 * * touch /home/novascore/pinescore.git/111/ns_*
+11 11 11 * * touch /home/pinescore/pinescore.git/111/ns_*
 
-#calculate the "novaScore" and update database for each IP
-* * * * * lynx --dump https://novascore.test/daemon/bitsNbobs/updateNovaScore > /dev/null 2>&1
+#calculate the "pinescore" and update database for each IP
+* * * * * lynx --dump https://pinescore.test/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
 
 #daily average ms update and alert
-31 08 * * * lynx --dump https://novascore.test/daemon/bitsNbobs/updateDailyAverageMs > /dev/null 2>&1
+31 08 * * * lynx --dump https://pinescore.test/daemon/bitsNbobs/updateDailyAverageMs > /dev/null 2>&1
 
 #monthly average ms update (updates every 4 hours)
-35 00,06,12,18 * * * lynx --dump https://novascore.test/daemon/average30days > /dev/null 2>&1
+35 00,06,12,18 * * * lynx --dump https://pinescore.test/daemon/average30days > /dev/null 2>&1

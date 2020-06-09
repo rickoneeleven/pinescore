@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: novascore
+-- Host: 127.0.0.1    Database: pinescore
 -- ------------------------------------------------------
 -- Server version	5.7.24
 
@@ -150,29 +150,29 @@ LOCK TABLES `grouped_reports` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `historic_novascore`
+-- Table structure for table `historic_pinescore`
 --
 
-DROP TABLE IF EXISTS `historic_novascore`;
+DROP TABLE IF EXISTS `historic_pinescore`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `historic_novascore` (
+CREATE TABLE `historic_pinescore` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `logged` datetime DEFAULT NULL,
   `ip` varchar(64) DEFAULT NULL,
   `ms` varchar(5) DEFAULT NULL,
-  `novaScore` varchar(6) DEFAULT NULL,
+  `pinescore` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `historic_novascore`
+-- Dumping data for table `historic_pinescore`
 --
 
-LOCK TABLES `historic_novascore` WRITE;
-/*!40000 ALTER TABLE `historic_novascore` DISABLE KEYS */;
-/*!40000 ALTER TABLE `historic_novascore` ENABLE KEYS */;
+LOCK TABLES `historic_pinescore` WRITE;
+/*!40000 ALTER TABLE `historic_pinescore` DISABLE KEYS */;
+/*!40000 ALTER TABLE `historic_pinescore` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -296,8 +296,8 @@ CREATE TABLE `ping_ip_table` (
   `last_ms` smallint(4) DEFAULT NULL,
   `last_online_toggle` datetime NOT NULL,
   `public` int(11) NOT NULL,
-  `novaScore` smallint(6) DEFAULT NULL,
-  `novaScore_change` datetime DEFAULT NULL,
+  `pinescore` smallint(6) DEFAULT NULL,
+  `pinescore_change` datetime DEFAULT NULL,
   `average_daily_ms` smallint(6) DEFAULT NULL,
   `average_longterm_ms` smallint(6) DEFAULT NULL,
   `lta_difference_algo` smallint(6) DEFAULT NULL,

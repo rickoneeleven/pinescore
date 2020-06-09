@@ -9,7 +9,7 @@ class   Average30days_model extends CI_model {
             'request_type'          => 'single_ip_one_month',
             'host'                    => $receive_array['host'],
         );
-        $one_months_worth = $this->sqlqu->getHistoricNovascore($request_array);
+        $one_months_worth = $this->sqlqu->getHistoricpinescore($request_array);
 
         foreach($one_months_worth->result() as $row) {
             if($row->ms !== '0') {

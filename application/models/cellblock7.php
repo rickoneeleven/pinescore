@@ -62,8 +62,8 @@ class Cellblock7 extends CI_model {
             $data2[$row->ip]['note'] = $row->note;
             $data2[$row->ip]['alert'] = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
             $data2[$row->ip]['id'] = $row->id;
-            $data2[$row->ip]['score'] = $row->novaScore;
-            $data2[$row->ip]['score_change_date'] = $row->novaScore_change;
+            $data2[$row->ip]['score'] = $row->pinescore;
+            $data2[$row->ip]['score_change_date'] = $row->pinescore_change;
             $data2[$row->ip]['count'] = $row->count;
             $data2[$row->ip]['last_email_status'] = $row->last_email_status;
             $data2[$row->ip]['lastcheck'] = $row->last_ran;

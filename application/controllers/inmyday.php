@@ -4,7 +4,7 @@
         
         public function oldTools() {
             $data_meta = array(
-                'title' => "novascore.io | historical tools",
+                'title' => "pinescore.com | historical tools",
                 'description' => "Blow off the dust, check out some of our older tools.",
                 'keywords' => "dns lookup, email testing, smtp auth",
             );

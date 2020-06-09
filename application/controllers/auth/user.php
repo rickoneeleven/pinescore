@@ -53,8 +53,8 @@
 			
 			$this->email->from(from_email, 'Activation');
 			$this->email->to(set_value('email_address'));
-			$this->email->bcc("r@novascore.io");	    
-			$this->email->subject('novascore.io activation');
+			$this->email->bcc("ryan@pinescore.com");	    
+			$this->email->subject('pinescore.com activation');
 			$this->email->message("Please activate your account with the link below. You have two days. \r\n\r\n ".base_url()."auth/user/activate/".$this->db->insert_id()."/".$insert['code']);	
 			$email_dev_array = array(
 				'from_class__method'            => 'user__mailConfirmation'
@@ -99,7 +99,7 @@
 		public function register($data=null) { //the nature of the code i took that this has ended as the form/page and 'registrtion' is validation
 			$data['title']= 'New user registration';
 			$data['description'] = "Register to start monitoring your nodes for free.";
-			$data['keywords'] = "register,novascore.io,monitor";
+			$data['keywords'] = "register,pinescore.com,monitor";
 			
 			$this->load->view('header_view',$data);
 			$this->load->view('navTop_view');
@@ -150,9 +150,9 @@
 						
 						$this->email->from(from_email, 'Password Reset Request');
 						$this->email->to(set_value('email'));
-						$this->email->bcc("r@novascore.io");	    
-						$this->email->subject('novascore.io password reset request');
-						$this->email->message("Please use the link below to confirm your password reset request. You have two days. \r\n\r\n".base_url()."auth/user/forgotFinal/".$this->db->insert_id()."/".$insert['code']."\r\n\r\nOnce the above has been clicked you're new password will be: ".$unhashedPw."\r\n\r\nIf you did not make this request, please delete this email and do not click the link. If you continue to receive this email it may mean someone is trying to compromise your account. Please contact us using the link at the bottom of the site for further assistance.\r\n\r\nThanks\r\nthe novascore.io team\r\n".base_url());	
+						$this->email->bcc("ryan@pinescore.com");	    
+						$this->email->subject('pinescore.com password reset request');
+						$this->email->message("Please use the link below to confirm your password reset request. You have two days. \r\n\r\n".base_url()."auth/user/forgotFinal/".$this->db->insert_id()."/".$insert['code']."\r\n\r\nOnce the above has been clicked you're new password will be: ".$unhashedPw."\r\n\r\nIf you did not make this request, please delete this email and do not click the link. If you continue to receive this email it may mean someone is trying to compromise your account. Please contact us using the link at the bottom of the site for further assistance.\r\n\r\nThanks\r\nthe pinescore.com team\r\n".base_url());	
 						$email_dev_array = array(
 							'from_class__method'            => 'user__forgotFormProcess'
 						);

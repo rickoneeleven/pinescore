@@ -283,22 +283,22 @@ class Nc extends CI_Controller {
             'request_type'      => 'single_ip',
             'ip'                => $ping_ip_TableTable->row('ip'),
         );
-        $view['historic_novaScoreTable'] = $this->sqlqu->getHistoricNovascore($historicSQLrequest);
+        $view['historic_pinescoreTable'] = $this->sqlqu->getHistoricpinescore($historicSQLrequest);
         $data_meta = array('title' => "3 Year Log [ ".$ping_ip_TableTable->row('ip')." ]",
             'description' => "We save some limited data for a period of 3 years." ,
-            'keywords' => "long, term, behaviour, novascore"
+            'keywords' => "long, term, behaviour, pinescore"
         );
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
-        $this->load->view('reports/novaScore_history_view', $view);
+        $this->load->view('reports/pinescore_history_view', $view);
         $this->load->view('footer_view');
     }
 
-    public function whatIsNovascore() {
+    public function whatIspinescore() {
         $data_meta = array(
-            'title' => "NovaScore defined",
-            'description' => "NovaScore is our unique method for rating the stability of a node. A score of 90-100 is top rated, 50-89 is good, 0-49 is suboptimal with potential issue, anything less than 0 usual indicates a problem with the node, or very high load over a sustained period of time.",
-            'keywords' => "what,is,novascore",
+            'title' => "pinescore defined",
+            'description' => "pinescore is our unique method for rating the stability of a node. A score of 90-100 is top rated, 50-89 is good, 0-49 is suboptimal with potential issue, anything less than 0 usual indicates a problem with the node, or very high load over a sustained period of time.",
+            'keywords' => "what,is,pinescore",
         );
 
         $this->load->view('header_view', $data_meta);
@@ -310,7 +310,7 @@ class Nc extends CI_Controller {
         $data_meta = array(
             'title' => "Long Term Average | hello",
             'description' => "We take a months worth of response times and average them out. We can then use this number to compare your current response times against the longer term average to help identify any performance improvements or drops.",
-            'keywords' => "novascore,longtermaverage",
+            'keywords' => "pinescore,longtermaverage",
         );
 
         $this->load->view('header_view', $data_meta);

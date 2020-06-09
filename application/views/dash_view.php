@@ -5,7 +5,7 @@
             <div class="clientcard">
                 <div class="cli_spacer">
                     <div class="cli_banner">
-                        <p style="text-align:center">'.$latest['note'].' | NovaScore: '.$latest['score'].'<br>
+                        <p style="text-align:center">'.$latest['note'].' | pinescore: '.$latest['score'].'<br>
                         '.$ip.'</p>
                     </div>
                     <div class="cli_mon_contain">

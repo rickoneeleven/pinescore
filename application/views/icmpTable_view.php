@@ -36,8 +36,8 @@ echo '
     <td>#</td>
     <td width="180px" ><strong>Note</strong></td>
     <td width="100px" ><strong>Status</strong></td>
-    <td width="85px" ><strong>NovaScore</strong> <a class="underlined" title="[90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]" 
-        href="'.base_url().'nc/whatIsNovascore">?</a> </td>
+    <td width="85px" ><strong>pinescore</strong> <a class="underlined" title="[90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]" 
+        href="'.base_url().'nc/whatIspinescore">?</a> </td>
     <td width="70px" ><strong>Recent ms</strong></td>
     <td width="85px" ><strong>LTA</strong> <a class="underlined" title="Longer Term Average. Response time averaged from over a months worth of data" href="'.base_url().'nc/whatIsLongTermAverage">?</a> </td>
     <td width="145px" ><strong>Last Checked</strong></td>
@@ -251,10 +251,10 @@ Key:
     <td>Node has been online, and is starting to drop packets. Or - Node was offline and has just started responding. It's in limbo.</td>
     </tr>
     <tr class="pink">
-    <td>Novascore is below 50, node appears to be suffering intermittent drops. Worth investigating.</td>
+    <td>pinescore is below 50, node appears to be suffering intermittent drops. Worth investigating.</td>
     </tr>
     <tr>
-        <td>NovaScore (the score of the node), <strong>bold</strong> and <font color="red"><strong>Red</strong></font>: 
+        <td>pinescore (the score of the node), <strong>bold</strong> and <font color="red"><strong>Red</strong></font>: 
             score has dropped in last 15 minutes</td>
     </tr>
         <tr>
@@ -266,5 +266,5 @@ Key:
 </table>
 <p>[ ] The brackets at the end of the <strong>Status</strong> show how many times the ping has returned a different result from the current status.
 Once this is > 10 it will be considered a change in <strong>Status</strong> rather than a temporary hiccup.</p>
-<p><strong>NovaScore</strong> is our score up to 100 for the stability of the host over the last 48 hours.</p>
+<p><strong>pinescore</strong> is our score up to 100 for the stability of the host over the last 48 hours.</p>
 </div>

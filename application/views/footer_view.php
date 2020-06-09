@@ -9,9 +9,9 @@ if(rand(1,111) === 109) $footer_note = "Success is not final, failure is not fat
 </div> <!-- <div class="content"> -->
 <a name="last"</a>
 <footer class="footer"><p>
-      <?php echo safe_mailto('contact@novascore.io').' | Your captain for today, Ryan Partington'; ?>
+      <?php echo safe_mailto('contact@pinescore.com').' | Your captain for today, Ryan Partington'; ?>
       <br>
-          novascore.io Copyright &#169; 2014 | do more with less | <?php echo $footer_note;?>
+          pinescore.com Copyright &#169; 2014 | do more with less | <?php echo $footer_note;?>
       <br>
       <?php
       $this->benchmark->mark('code_end');

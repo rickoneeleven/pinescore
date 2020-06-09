@@ -5,8 +5,8 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                     $public = "Private";
                     if($rowpi->public) $public = "Public";
                     echo '<strong>'.$rowpi->note." ($public)</strong> - ".$rowpi->last_email_status."</br></br>".
-                        "<span style=\"letter-spacing: 1.1px; font-weight:bold; color: red;\">NovaScore: </span>".
-                        "<span style=\"letter-spacing: 2px; font-weight:bold; color: red;\">$rowpi->novaScore</span>";
+                        "<span style=\"letter-spacing: 1.1px; font-weight:bold; color: red;\">pinescore: </span>".
+                        "<span style=\"letter-spacing: 2px; font-weight:bold; color: red;\">$rowpi->pinescore</span>";
                     $more_history_link = anchor(base_url()."nc/storyTimeNode/$rowpi->id", '3 Year Log');
 				}
 	echo	'</p>';

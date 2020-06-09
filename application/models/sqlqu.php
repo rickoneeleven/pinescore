@@ -14,7 +14,7 @@ class Sqlqu extends CI_model {
         }
     }
 
-    public function getHistoricNovascore($array) {
+    public function getHistoricpinescore($array) {
         if($array['request_type'] === 'single_ip') {
             $this->db->where('ip', $array['ip']);
             $this->db->order_by('id', 'DESC');
@@ -25,7 +25,7 @@ class Sqlqu extends CI_model {
             $this->db->where($one_month_ago);
             $this->db->order_by('id', 'DESC');
         }
-        return $this->db->get('historic_novaScore');
+        return $this->db->get('historic_pinescore');
     }
 
     /**

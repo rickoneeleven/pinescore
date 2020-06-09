@@ -213,7 +213,7 @@ function time_ago($timestamp, $recursive = 0)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>novascore.io | downloads</title>
+<title>pinescore.com | downloads</title>
 <style type="text/css">
 body{
 	font-family: "Lucida Grande",Calibri,Arial;
@@ -294,7 +294,7 @@ table{
 <table cellpadding="0" cellspacing="1">
 	<thead>
 		<tr>
-			<td colspan="3">novascore.io | downloads | <?=$this_folder?></td>
+			<td colspan="3">pinescore.com | downloads | <?=$this_folder?></td>
 		</tr>
 	</thead>
 	<tfoot>
