@@ -135,6 +135,7 @@ do
 
 	echo
 	echo
+
 	echo Aggregated upload test to pinescore.com
 	write_output upload >> speedtest.log &
 	sleep 1
