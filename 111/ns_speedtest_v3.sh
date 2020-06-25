@@ -98,7 +98,7 @@ do
 	###########################################################################
 	echo
 	echo
-	echo 3x simultaneous downloads from thinkbroadband, novascore and apple cdn, measuring the total aggregated throuput of the external interface
+	echo 3x simultaneous downloads from thinkbroadband, pinescore and apple cdn, measuring the total aggregated throuput of the external interface
         write_output download >> speedtest.log &
 	wget http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw -o /dev/null &
 	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null &
@@ -174,4 +174,4 @@ echo " +++++++++++++++++   example one liner: wget https://pinescore.com/111/ns_
 rm ns_speedtest_v3.s*
 rm iPad_Pro_HFR* > /dev/null 2>&1
 rm ns_1GB.zip* > /dev/null 2>&1
-rm 1GB.zip* > /dev/null 2>&1
+rm 1GB.zip* > /dev/null 2>&l
