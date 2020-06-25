@@ -32,6 +32,12 @@ paste the below at the bottom
 sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 sudo service mysql restart
 otherwise you get this error: https://stackoverflow.com/questions/34115174/error-related-to-only-full-group-by-when-executing-a-query-in-mysql
+
+OTHER:
+the pine engine wasn't quite working on webadmin Server Configuration, Website options until I changed:
+PHP script execution mode: CGI Wrapper
+Maximum PHP script run time: 3600
+this all speaks to the fact the ping engine needs to be rewritten. 
 --------------------------------------------------
 crontabs
 #the star of the show, check if nodes are online/offline. We have a deamon for each state - "Online" / "Offline".
