@@ -1,0 +1,1 @@
+alias ls='ls -AFovh --color --group-directories-first'
