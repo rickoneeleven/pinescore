@@ -12,9 +12,9 @@ class api_ping extends CI_Controller {
         $start = strtotime('now');
         $end = $start + 60;
         $timeleft = $end - strtotime('now');
+        $loops = 0;
 
         while($timeleft > 5) {
-                
             $this->benchmark->mark('code_start');
             
             $this->load->model('techbits_model');
@@ -49,7 +49,9 @@ class api_ping extends CI_Controller {
             }
             
             $timeleft = $end - strtotime('now');
+            $loops++;
         }
+        echo "<br><br>total loops: ".$loops;
         $this->lemon->tallyScore(); //sets the number of failures for each client so when the baseline command below runs its gets the correct offset
         $this->lemon->scoreBaseline(); //update baseline in those last 5 secs of the minute, can also add some other tasks here
     }

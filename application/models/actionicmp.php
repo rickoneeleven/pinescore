@@ -17,79 +17,81 @@ class   ActionICMP extends CI_model {
         foreach ($ip->result() as $row)
         {
             $perf_started_inforeach = microtime(true);
-            if($this->locks->checkForLock($row->ip)) break 1;
-            $this->locks->lockHost($row->ip);
-            $last_result = $this->icmpmodel->lastResult($row->ip);
-            $last_result_result = $this->icmpmodel->lastResultResult($row->ip);
+            if($this->locks->checkForLock($row->ip) === false) {
+                $this->locks->lockHost($row->ip);
+                $last_result = $this->icmpmodel->lastResult($row->ip);
+                $last_result_result = $this->icmpmodel->lastResultResult($row->ip);
 
-            $ping_ms = $this->techbits_model->pingv2($row->ip); //up or down
-            $perf_mon2 = number_format(microtime(true) - $perf_started_inforeach,0);
+                $ping_ms = $this->techbits_model->pingv2($row->ip); //up or down
+                $perf_mon2 = number_format(microtime(true) - $perf_started_inforeach,0);
+                $this->db->insert('perfmon', array(
+                    'name'                      => "checkICMP, in loop",
+                    'datetime'                  => date('Y-m-d H:i:s'),
+                    'seconds'                   => $perf_mon2,
+                    'other'                     => "proc id: ".$process_id_parent,
+                    )
+                );
+                
+                $result = $this->icmpmodel->onOrOff($ping_ms); //convert to Online or Offline word from number
+                echo $row->ip.":".$result."<br>";
+                if($result != $last_result_result['result']) {
+                    $change = 1;
+                    $this->lemon->score($row->ip);
+                } else {
+                    $change = 0;
+                }
+
+                $data_db = array(
+                    'ip' => $row->ip ,
+                    'datetime' => date('Y-m-d H:i:s'),
+                    'ms' => $ping_ms,
+                    'result' => $result,
+                    'change' => $change,
+                    'email_sent' => 0,
+                );
+                $this->db->insert('ping_result_table', $data_db); //insert into big results table
+
+                $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
+                    'last_ran' => date('Y-m-d H:i:s'),
+                    'last_ms' => $last_result_result['average']
+                );
+                $this->db->where('ip', $row->ip);
+                $this->db->update('ping_ip_table', $data_static); //insert into quick table
+
+                if($data_db['result']=="Online") { //update last online date toggle so we can filter for stuff that is offline with a 72hour+ online toggle and then it can be hidden 
+                    $data2 = array( //update table status
+                        'last_online_toggle' => date('Y-m-d H:i:s'),
+                    );
+                    $this->db->where('ip', $row->ip);
+                    $this->db->update('ping_ip_table', $data2); 
+                }
+                $arrayForAlgo = array(
+                        'last_ms'               => $last_result_result['average'],
+                        'average_longterm_ms'   => $row->average_longterm_ms,
+                    );
+                $lta_difference_algo = $this->average30days_model->ltaCurrentMsDifference($arrayForAlgo);
+                $this->db->where('ip', $row->ip);
+                $this->db->update('ping_ip_table', array('lta_difference_algo' => $lta_difference_algo));
+
+                foreach($last_result as $last_result) {
+                    $last_result['process_id_parent'] = $process_id_parent;
+                    $last_result['process_id'] = uniqid();
+                    $this->hasStatusChanged($last_result, $data_db, $row);
+                }
+                $this->locks->releaseHost($row->ip);
+            }
+            $perf_mon1 = number_format(microtime(true) - $perf_started,0);
+            $this->db->where('id', 7);
             $this->db->insert('perfmon', array(
-                'name'                      => "checkICMP, in loop",
+                'name'                      => "checkICMP, out of loop",
                 'datetime'                  => date('Y-m-d H:i:s'),
-                'seconds'                   => $perf_mon2,
+                'seconds'                   => $perf_mon1,
                 'other'                     => "proc id: ".$process_id_parent,
                 )
             );
+            $this->locks->removeOldLocks();
+            }
             
-            $result = $this->icmpmodel->onOrOff($ping_ms); //convert to Online or Offline word from number
-            echo $row->ip.":".$result."<br>";
-            if($result != $last_result_result['result']) {
-                $change = 1;
-                $this->lemon->score($row->ip);
-            } else {
-                $change = 0;
-            }
-
-            $data_db = array(
-                'ip' => $row->ip ,
-                'datetime' => date('Y-m-d H:i:s'),
-                'ms' => $ping_ms,
-                'result' => $result,
-                'change' => $change,
-                'email_sent' => 0,
-            );
-            $this->db->insert('ping_result_table', $data_db); //insert into big results table
-
-            $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
-                'last_ran' => date('Y-m-d H:i:s'),
-                'last_ms' => $last_result_result['average']
-            );
-            $this->db->where('ip', $row->ip);
-            $this->db->update('ping_ip_table', $data_static); //insert into quick table
-
-            if($data_db['result']=="Online") { //update last online date toggle so we can filter for stuff that is offline with a 72hour+ online toggle and then it can be hidden 
-                $data2 = array( //update table status
-                    'last_online_toggle' => date('Y-m-d H:i:s'),
-                );
-                $this->db->where('ip', $row->ip);
-                $this->db->update('ping_ip_table', $data2); 
-            }
-            $arrayForAlgo = array(
-                    'last_ms'               => $last_result_result['average'],
-                    'average_longterm_ms'   => $row->average_longterm_ms,
-                );
-            $lta_difference_algo = $this->average30days_model->ltaCurrentMsDifference($arrayForAlgo);
-            $this->db->where('ip', $row->ip);
-            $this->db->update('ping_ip_table', array('lta_difference_algo' => $lta_difference_algo));
-
-            foreach($last_result as $last_result) {
-                $last_result['process_id_parent'] = $process_id_parent;
-                $last_result['process_id'] = uniqid();
-                $this->hasStatusChanged($last_result, $data_db, $row);
-            }
-            $this->locks->releaseHost($row->ip);
-        }
-        $perf_mon1 = number_format(microtime(true) - $perf_started,0);
-        $this->db->where('id', 7);
-        $this->db->insert('perfmon', array(
-            'name'                      => "checkICMP, out of loop",
-            'datetime'                  => date('Y-m-d H:i:s'),
-            'seconds'                   => $perf_mon1,
-            'other'                     => "proc id: ".$process_id_parent,
-            )
-        );
-        $this->locks->removeOldLocks();
     }
 
     public function noPreviousEmailStatus($data_db, $last_result, $row) {
