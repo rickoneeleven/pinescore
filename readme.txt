@@ -50,8 +50,8 @@ crontabs
 #Think this deletes old ping results, we need to keep this table as small as we can, so adding/updating nodes is quick
 24 * * * * lynx --dump https://pinescore.test/api_nightly/ > /dev/null 2>&1                                            
 
-#delete files from pinescore.test/111 older than 30 days - and touches the index file to stop it being deleted
-10 09 * * * touch /home/pinescore/pinescore.git/111/index.php && find /home/pinescore/pinescore.git/111/* -mtime +30 -type f -delete
+#delete files from pinescore.test/111 older than 30 days
+10 09 * * * find /home/pinescore/pinescore.git/111/* -mtime +30 -type f -delete
 
 #more touching of files we want to remain
 11 11 11 * * touch /home/pinescore/pinescore.git/111/ns_*
