@@ -26,8 +26,9 @@ class proc2d extends CI_Controller {
             
             $this->benchmark->mark('code_end');
     
-            $completion_time = substr($this->benchmark->elapsed_time('code_start', 'code_end'),0,-3);
-            echo "<br>Script took: ".$completion_time." seconds to complete";
+            $start_time = date('H:i:s');
+            $message = "<br>Script start: $start_time || Script took: ".$completion_time." seconds to complete";
+            echo $message;
             
             //$rand = rand(0,101); //lazy man implementation
             //if($completion_time > 60 && $rand > 99) {
@@ -35,7 +36,7 @@ class proc2d extends CI_Controller {
                     $this->email->from(from_email, 'Script');
                     $this->email->to('workforward@pinescore.com'); 	    
                     $this->email->subject('ICMP Script Exceeds 60 seconds');
-                    $this->email->message('Script took: '.$completion_time.' to complete.');	
+                    $this->email->message($message);
                     $email_dev_array = array(
                         'from_class__method'            => 'proc2d__index'
                     );
