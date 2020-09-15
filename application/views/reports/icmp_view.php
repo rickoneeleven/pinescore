@@ -25,8 +25,8 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         <tr>
             <td width="200"><strong>IP / Hostname</strong></td>
             <td width="160"><strong>Time</strong></td>
-            <td width="75"><strong>Status</strong></td>
-            <td width="100"><strong>E-mail Sent</strong></td>
+            <td width="75"><strong>Last alert status</strong></td>
+            <td width="100"><strong>New update</strong></td>
             <td width="150px"><strong>Day of Week</strong></td>
         </tr>';
         
@@ -38,11 +38,7 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             echo "<td>".$row->ip."</td>";
             echo "<td>".$row->datetime."</td>";
             echo "<td>".$row->result."</td>";
-            if($row->email_sent==0) {
-		    echo "<td>No</td>";
-		} else {
-		    echo "<td>Yes</td>";
-		}
+		    echo "<td>".$row->email_sent."</td>";
             echo "<td>".date( "l", strtotime($row->datetime))."</td>";
             echo "</tr>";
         }
