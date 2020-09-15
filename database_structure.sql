@@ -326,7 +326,7 @@ CREATE TABLE `ping_result_table` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(50) NOT NULL,
   `datetime` datetime NOT NULL,
-  `result` varchar(15) NOT NULL,
+  `result` varchar(100) NOT NULL,
   `ms` int(5) NOT NULL,
   `change` tinyint(1) NOT NULL,
   `email_sent` tinyint(4) NOT NULL,
