@@ -33,7 +33,7 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         foreach($report->result() as $row) {
             //if($row->result == "Offline") $row->result = "<strong>Offline</strong>";
             $tr = '<tr>';
-            if($row->result == "Offline") $tr = '<tr bgcolor="#F38E78">';
+            if($row->email_sent == "ICMP timed out") $tr = '<tr bgcolor="#F38E78">';
             echo $tr;
             echo "<td>".$row->ip."</td>";
             echo "<td>".$row->datetime."</td>";
