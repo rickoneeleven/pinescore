@@ -329,7 +329,7 @@ CREATE TABLE `ping_result_table` (
   `result` varchar(100) NOT NULL,
   `ms` int(5) NOT NULL,
   `change` tinyint(1) NOT NULL,
-  `email_sent` tinyint(4) NOT NULL,
+  `email_sent` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `datetime` (`datetime`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
