@@ -4,7 +4,7 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 				foreach($pi->result() as $rowpi) {
                     $public = "Private";
                     if($rowpi->public) $public = "Public";
-                    echo '<strong>'.$rowpi->note." ($public)</strong> - ".$rowpi->last_email_status."</br></br>".
+                    echo '<strong>'.$rowpi->note." ($public)</strong> $link_space $link_space <font size =\"22\" color=\"green\">".$rowpi->last_email_status."</font></br></br>".
                         "<span style=\"letter-spacing: 1.1px; font-weight:bold; color: red;\">pinescore: </span>".
                         "<span style=\"letter-spacing: 2px; font-weight:bold; color: red;\">$rowpi->pinescore</span>";
                     $more_history_link = anchor(base_url()."nc/storyTimeNode/$rowpi->id", '3 Year Log');
@@ -44,6 +44,5 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         }
         echo "</table></p>";
         echo '<a href="#first">Jump Top</a>'.$link_space.$more_history_link;
-	echo '<p>You may see the online/offline status switches much more than the number of emails sent. This is because we will only email you when the host has been down for a period of time rather than each dropped request.</p>';
     }
 ?>
