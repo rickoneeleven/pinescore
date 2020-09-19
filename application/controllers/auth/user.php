@@ -103,7 +103,8 @@
 			
 			$this->load->view('header_view',$data);
 			$this->load->view('navTop_view');
-			$this->load->view("auth/registration_view.php");
+			//$this->load->view("auth/registration_view.php");
+			$this->load->view("auth/signups_closed");
 			$this->load->view('footer_view');
 		}
 		
