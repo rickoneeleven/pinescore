@@ -10,8 +10,6 @@ class api_ping extends CI_Controller {
         $this->cron_protect->AllowedIPs();
         $this->load->model('lemon');
 
-
-        //wip111
         $this->lemon->tallyScore(); //sets the number of failures for each client so when the baseline command below runs its gets the correct offset
         $this->lemon->scoreBaseline(); //update baseline in those last 5 secs of the minute, can also add some other tasks here
     }
