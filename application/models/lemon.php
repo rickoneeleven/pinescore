@@ -23,7 +23,14 @@ class Lemon extends CI_model {
                 'datetime' => date('Y-m-d H:i:s')
             );
             $this->db->where('ip', $row->ip);
-            $this->db->update('stats_total', $data_static);
+            $result = $this->db->get("stats_total");
+            if($result->num_rows() > 0 ) {
+                $this->db->where('ip', $row->ip);
+                $this->db->update('stats_total', $data_static);
+            } else {
+                $data_static['ip'] = $row->ip;
+                $this->db->insert('stats_total', $data_static);
+            }
         }
     }
 
