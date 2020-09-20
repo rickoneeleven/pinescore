@@ -2,8 +2,7 @@
 
 class api_ping extends CI_Controller {
 
-    //running doing ther exact same thing, other than one is filtering for offline nodes! the code's just too god
-    //damn SMELLY
+    //used to be the old ping engine, now just runs to do some score offset stuff
     public function index()
     {
         $this->load->model("cron_protect");
