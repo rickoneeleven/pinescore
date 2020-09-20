@@ -43,7 +43,8 @@ class Lemon extends CI_model {
         $query = $this->db->get('stats_total', 1, $offset); //limit, offset
         foreach ($query->result() as $row) {
             $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
-                'score' => $row->score
+                'score' => $row->score,
+                'datetime' => date('Y-m-d H:i:s')
             );
             $this->db->where('ip', "baseline"); //where we store the baseline for all compares
             $this->db->update('stats_total', $data_static); //insert into quick table
