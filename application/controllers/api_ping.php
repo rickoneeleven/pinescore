@@ -8,54 +8,10 @@ class api_ping extends CI_Controller {
     {
         $this->load->model("cron_protect");
         $this->cron_protect->AllowedIPs();
+        $this->load->model('lemon');
 
-        $start = strtotime('now');
-        $end = $start + 60;
-        $timeleft = $end - strtotime('now');
-        $loops = 0;
 
-        while($timeleft > 5) {
-            $this->benchmark->mark('code_start');
-            
-            $this->load->model('techbits_model');
-            $this->load->model('icmpmodel');
-            $this->load->model('actionicmp');
-            $this->load->model('lemon');
-            $this->load->model('email_dev_or_no');
-            
-            $filter['status'] = "Online"; //this process_api checks through online hosts only
-            $ips = $this->icmpmodel->getIPs($filter);
-    
-            $this->actionicmp->checkICMP($ips);
-            
-            $this->benchmark->mark('code_end');
-    
-            $completion_time = substr($this->benchmark->elapsed_time('code_start', 'code_end'),0,-3);
-            $start_time = date('H:i:s');
-            $message = "<br>Script start: $start_time || Script took: ".$completion_time." seconds to complete";
-            echo $message;
-            
-            //$rand = rand(0,101); //lazy man implementation
-            //if($completion_time > 60 && $rand > 99) {
-            if($completion_time > 60 ) {
-                    $this->email->from(from_email, 'Script');
-                    $this->email->to('workforward@pinescore.com'); 	    
-                    $this->email->subject('ICMP Script Exceeds 60 seconds');
-                    $this->email->message($message);	
-                    
-                    $email_dev_array = array(
-                        'from_class__method'            => 'api_ping__index'
-                    );
-                    if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
-                    echo $this->email->print_debugger();
-            }
-            
-            $timeleft = $end - strtotime('now');
-            $loops++;
-        }
-
-        //we're not replacing these two lines currently in the new engine code - maybe in the future
-        echo "<br><br>total loops: ".$loops;
+        //wip111
         $this->lemon->tallyScore(); //sets the number of failures for each client so when the baseline command below runs its gets the correct offset
         $this->lemon->scoreBaseline(); //update baseline in those last 5 secs of the minute, can also add some other tasks here
     }
