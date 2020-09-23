@@ -72,7 +72,7 @@
                 $this->db->delete('historic_pinescore');
                 echo $this->db->last_query()."<p>";
 
-                $this->db->where($old_1week);
+                $this->db->where("datetime < (NOW() - INTERVAL 48 HOUR)");
                 $this->db->delete('ping_result_table');
                 echo $this->db->last_query()."<p>";
             }
