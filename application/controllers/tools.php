@@ -225,16 +225,10 @@ class Tools extends CI_Controller
         $this->form_validation->set_rules('ip', 'IP or Hostname', 'trim|required|xss_clean');
         $this->form_validation->set_rules('note', 'Note', 'required|xss_clean');
         $this->form_validation->set_rules('email', 'Email', 'xss_clean|valid_emails');
-        //$this->form_validation->set_rules('verify','Verify','required|matches[image]');
         if ($this->form_validation->run() == FALSE) {
 
-            /*$data = array('captcha_requested' => "yes",
-                          'message' => "",
-                          'cap_img' => $this->techbits_model->captcha111()
-            );*/
             $this->pingAdd();
         } else {
-            $perf_started = microtime(true);
             $duplicate_check = $this->icmpmodel->ipExists($this->input->post('ip'), $this->session->userdata('user_id'));
             if ($duplicate_check->num_rows() > 0) {
                 $this->session->set_flashdata('message', '<span class="b"><font color="red"><strong>IP or Hostname 
@@ -247,9 +241,6 @@ class Tools extends CI_Controller
                 $this->session->set_flashdata('message', '200 Monitors reached, please edit/delete you existing monitors or upgrade your account.<br><br>');
                 redirect(current_url()); //reloads the page and uses the session message to pass error (how does for repop?)
             }
-            $perf_dupComplete = number_format(microtime(true) - $perf_started,0);
-            $this->db->where('id', 4);
-            $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_dupComplete seconds"));
 
             $ping_ip_table_data = array(
                 'ip'                    => $this->input->post('ip'),
@@ -258,6 +249,9 @@ class Tools extends CI_Controller
                 'public'                => 0,
                 'owner'                 => $this->session->userdata('user_id'),
                 'last_online_toggle'    => date('Y-m-d H:i:s'),
+                'count'                 => 0,
+                'last_email_status'     => "New",
+                'count_direction'       => "-",
             );
 
             $this->db->insert('ping_ip_table', $ping_ip_table_data);
@@ -268,20 +262,6 @@ class Tools extends CI_Controller
                 'alert'      => $this->input->post('email'),
             );
             $this->sqlqu->insertEmailAlert($insertEmailAlert_data);
-
-            $data = array('single_ip' => $this->input->post('ip')); //new array as we don't want to send 'owner' details to object as it does a isset for something else
-            //print_r($data); die();
-            $single_ip = $this->icmpmodel->getIPs($data); //so the return is in the correct format for the $this->checkICMP but with filter on just this IP
-
-            $perf_preCheckIP = number_format(microtime(true) - $perf_started,0);
-            $this->db->where('id', 5);
-            $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_preCheckIP seconds"));
-
-            $this->actionicmp->checkICMP($single_ip); //to get this IP monitored before we refresh the view, but don't have to wait for all of them to be checked we pass the
-
-            $perf_checkICMP = number_format(microtime(true) - $perf_started,0);
-            $this->db->where('id', 6);
-            $this->db->update('other', array('value' => date('Y-m-d H:i:s') . " | query took $perf_checkICMP seconds"));
 
             if ($this->input->post('viewGroup') !== FALSE) { //user was viewing a group when adding node, so we're
                 //going to auto add that node to the group
