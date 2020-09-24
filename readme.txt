@@ -40,27 +40,30 @@ Maximum PHP script run time: 3600
 this all speaks to the fact the ping engine needs to be rewritten. 
 --------------------------------------------------
 crontabs
-#the star of the show, check if nodes are online/offline. We have a deamon for each state - "Online" / "Offline".
-* * * * * lynx --dump https://pinescore.test/api_ping/ > /dev/null 2>&1
-* * * * * lynx --dump https://pinescore.test/daemon/proc2d/ > /dev/null 2>&1
+#creates score stats for offset
+*/5 * * * * lynx --dump http://pinescore.com/api_ping/ > /dev/null 2>&1
 
 #daily clean up tasks and general db maintenance
-26 04 * * * lynx --dump https://pinescore.test/api_nightly/onceAday > /dev/null 2>&1
+26 04 * * * lynx --dump https://pinescore.com/api_nightly/onceAday > /dev/null 2>&1
 
-#Think this deletes old ping results, we need to keep this table as small as we can, so adding/updating nodes is quick
-24 * * * * lynx --dump https://pinescore.test/api_nightly/ > /dev/null 2>&1                                            
+#Cleans up tables
+24 * * * * lynx --dump https://pinescore.com/api_nightly/ > /dev/null 2>&1
+*/5 * * * * lynx --dump https://pinescore.com/api_nightly/flushPingResultTable > /dev/null 2>&1
 
-#delete files from pinescore.test/111 older than 30 days
-10 09 * * * find /home/pinescore/pinescore.git/111/* -mtime +30 -type f -delete
+#delete files from pinescore.com/111 older than 30 days
+10 09 * * * find /home/pinescore/public_html/111/* -mtime +30 -type f -delete
 
 #more touching of files we want to remain
-11 11 11 * * touch /home/pinescore/pinescore.git/111/ns_*
+11 11 11 * * touch /home/pinescore/public_html/111/ns_*
 
 #calculate the "pinescore" and update database for each IP
-* * * * * lynx --dump https://pinescore.test/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
+* * * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
 
 #daily average ms update and alert
-31 08 * * * lynx --dump https://pinescore.test/daemon/bitsNbobs/updateDailyAverageMs > /dev/null 2>&1
+31 08 * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updateDailyAverageMs > /dev/null 2>&1
 
 #monthly average ms update (updates every 4 hours)
-35 00,06,12,18 * * * lynx --dump https://pinescore.test/daemon/average30days > /dev/null 2>&1
+35 00,06,12,18 * * * lynx --dump https://pinescore.com/daemon/average30days > /dev/null 2>&1
+
+#engine.pinescore.com
+* * * * * cd /home/pinescore/domains/engine.pinescore.com/public_html && php artisan schedule:run >> /dev/null 2>&1
