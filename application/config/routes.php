@@ -38,7 +38,7 @@
 |
 */
 
-$route['default_controller'] = "tools";
+$route['default_controller'] = "tools/popOut";
 $route['404_override'] = '';
 
 
