@@ -16,39 +16,32 @@ class BitsNbobs extends CI_Controller {
      * we only process and update if existing ping is not 0, if it is, we don't need to alert or update
      * existing ms, and we want to compare it to the ms once the node is back online
      */
-    public function updateDailyAverageMs() {
+    public function checkChangeOfCurrentMsAgainstLTA() {        
         $this->load->model("cron_protect");
         $this->cron_protect->AllowedIPs();
         
-        $IPsAndAverage = $this->getIPsAndAverage();
         $this->db->distinct();
         $this->db->group_by('ip');
         $ping_ip_tableTable =  $this->db->get('ping_ip_table'); 
         foreach($ping_ip_tableTable->result() as $row) {
-            if($IPsAndAverage[$row->ip]['todayAverageMs'] != "0") {
-                $IPsAndAverage[$row->ip]['yesterdaysAverageMs'] = $row->average_daily_ms;
-                $difference = round((1 - $IPsAndAverage[$row->ip]['yesterdaysAverageMs']/$IPsAndAverage[$row->ip]['todayAverageMs'])*100,0);
-                echo "<br>yest:".$IPsAndAverage[$row->ip]['yesterdaysAverageMs']." today:".$IPsAndAverage[$row->ip]['todayAverageMs']
+            $ms_now = $this->getRecentAverage($row->ip);
+            if($ms_now) { //if returns zero, it means the node is offline, we don't need an alert or division by zero errors
+                $difference = round((1 - $row->average_longterm_ms/$ms_now)*100,0);
+                echo "<br>IP: ".$row->ip."  LTA:".$row->average_longterm_ms." now:".$ms_now
                     ." difference: $difference";
-                $difference_ms = $IPsAndAverage[$row->ip]['yesterdaysAverageMs'] - $IPsAndAverage[$row->ip]['todayAverageMs'];
+                $difference_ms = $row->average_longterm_ms - $ms_now;
                 if($difference <="-25" || $difference >="25") {
                     if($difference_ms <="-5" || $difference_ms >="5") {
-                        $IPsAndAverage[$row->ip]['difference'] = $difference;
-                        $IPsAndAverage[$row->ip]['difference_new'] = $difference;
-                        $IPsAndAverage[$row->ip]['ip'] = $row->ip;
-                        $IPsAndAverage[$row->ip]['difference_ms'] = $difference_ms;
-                        $this->alertDifference($IPsAndAverage[$row->ip]);
+                        $data_for_alertDifference[$row->ip]['difference'] = $difference;
+                        $data_for_alertDifference[$row->ip]['difference_new'] = $difference;
+                        $data_for_alertDifference[$row->ip]['ip'] = $row->ip;
+                        $data_for_alertDifference[$row->ip]['difference_ms'] = $difference_ms;
+                        $data_for_alertDifference[$row->ip]['ms_now'] = $ms_now;
+                        $this->alertDifference($data_for_alertDifference[$row->ip]);
                     }
                 }
-                $update_array = array(
-                    'average_daily_ms'  => $IPsAndAverage[$row->ip]['todayAverageMs'],
-                );
-                $this->db->where('ip', $row->ip);
-                $this->db->update('ping_ip_table', $update_array);
             }
         }
-        //store new daily average
-        //remove "testing new feature, no one other than Ryan should be getting this| //for TESTING ONLY
     }
 
     /**
@@ -78,8 +71,8 @@ class BitsNbobs extends CI_Controller {
                     <br>
                     <br>
                     We check this value once daily.<br><br>
-                    Yesterdays average ms: ".$IPAndAverage['yesterdaysAverageMs']."<br>
-                    Current average ms: ".$IPAndAverage['todayAverageMs']."<br><br> 
+                    Long Term Average ms: ".$row->average_longterm_ms."<br>
+                    Current average ms: ".$IPAndAverage['ms_now']."<br><br> 
                     To get a sense of how things have been historically and how they have developed, you'd benefit from checking our 3 Year Log <a href=\"".base_url()."nc/storyTimeNode/".$row->id."\">here</a>
                     <br>
                     <br>Good luck commander.";
@@ -96,26 +89,13 @@ class BitsNbobs extends CI_Controller {
         }
     }
 
-    private function getIPsAndAverage() {
-        $this->db->distinct();
-        $this->db->group_by('ip');
-        $ping_ip_tableTable =  $this->db->get('ping_ip_table'); 
-        foreach($ping_ip_tableTable->result() as $row) {
-            $todays_average = $this->getTodaysAverageMs($row->ip);
-            $array[$row->ip]['todayAverageMs'] = $todays_average;
-        }
-        return $array;
-    }
-
     /**
      * array_filter() - remove empty values to make average better
      * changed average to actually give "mode" of results, the result which returns most often
      */
-    private function getTodaysAverageMs($ip) {
-        //get all ms's for today for this IP
-        $last_x_hours = "datetime > NOW() - INTERVAL 1 HOUR";
+    private function getRecentAverage($ip) {
+        //ping_result_table is quite pruned these days, so we don't need a datetime filter
         $this->db->where('ip', $ip);
-        $this->db->where($last_x_hours);
         $this->db->order_by('id', 'DESC');
         $ping_result_tableTable = $this->db->get('ping_result_table');
         $average_array = array();
