@@ -69,7 +69,6 @@ class Cellblock7 extends CI_model {
             $data2[$row->ip]['lastcheck'] = $row->last_ran;
             $data2[$row->ip]['ms'] = $row->last_ms;
             $data2[$row->ip]['public'] = $row->public;
-            $data2[$row->ip]['average_daily_ms'] = $row->average_daily_ms;
             $data2[$row->ip]['average_longterm_ms'] = $row->average_longterm_ms;
             $data2[$row->ip]['lta_difference_algo'] = $row->lta_difference_algo;
             $data2[$row->ip]['last_online_toggle'] = $row->last_online_toggle;
