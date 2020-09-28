@@ -298,7 +298,6 @@ CREATE TABLE `ping_ip_table` (
   `public` int(11) NOT NULL,
   `pinescore` smallint(6) DEFAULT NULL,
   `pinescore_change` datetime DEFAULT NULL,
-  `average_daily_ms` smallint(6) DEFAULT NULL,
   `average_longterm_ms` smallint(6) DEFAULT NULL,
   `lta_difference_algo` smallint(6) DEFAULT NULL,
   `count_direction` varchar(4) DEFAULT NULL,
