@@ -38,7 +38,7 @@ echo '
     <td width="100px" ><strong>Status</strong></td>
     <td width="85px" ><strong>pinescore</strong> <a class="underlined" title="[90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]" 
         href="'.base_url().'nc/whatIspinescore">?</a> </td>
-    <td width="70px" ><strong>Recent ms</strong></td>
+    <td width="70px" ><strong>Recent ms/Last online</strong></td>
     <td width="85px" ><strong>LTA</strong> <a class="underlined" title="Longer Term Average. Response time averaged from over a months worth of data" href="'.base_url().'nc/whatIsLongTermAverage">?</a> </td>
     <td width="145px" ><strong>Last Checked</strong></td>
     <td width="180px" ><strong>IP</strong></td>';
