@@ -24,3 +24,7 @@ db_tasks/backup_dbs_config.php
 db_tasks/cleanup_db.php
 .vscode/
 112/captcha/
+111/dave.log
+111/mail.log
+111/ns_*
+111/ftp_speedtest/*
