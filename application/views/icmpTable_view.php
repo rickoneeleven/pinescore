@@ -75,7 +75,7 @@ foreach ($ips as $ip => $latest) {
         $ea_disabled = TRUE;
     }
 
-    if($latest['count'] > 0) {
+    if($latest['count'] > 1) {
         $tr = '<tr class="transition">';
     } else {
         if($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days === 0) {
