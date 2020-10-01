@@ -75,23 +75,27 @@ foreach ($ips as $ip => $latest) {
         $ea_disabled = TRUE;
     }
 
-    if($latest['count'] > 1) {
-        $tr = '<tr class="transition">';
+    if($latest['last_email_status'] == "Online" && $latest['count'] == 1) {
+        $tr = '<tr class="orange">';
     } else {
-        if($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days === 0) {
-            $tr = '<tr class="red">';
-        } else if ($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days === 1) {
-            $tr = '<tr class="onedayred">';
-        } else if ($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days > 1) {
-            $tr = '<tr class="overonedayred">';
-        } else if ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] < -100) {
-            $tr = '<tr class="orange">';
-        } else if ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
-            $tr = '<tr class="green">';
-        } else if($latest['score'] < 50) {
-            $tr = '<tr class="pink">';
+        if($latest['count'] > 1) {
+            $tr = '<tr class="transition">';
         } else {
-            $tr = '<tr class="hover">';	
+            if($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days === 0) {
+                $tr = '<tr class="red">';
+            } else if ($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days === 1) {
+                $tr = '<tr class="onedayred">';
+            } else if ($latest['last_email_status'] == "Offline" && $now->diff($last_online_toggle)->days > 1) {
+                $tr = '<tr class="overonedayred">';
+            } else if ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] < -100) {
+                $tr = '<tr class="orange">';
+            } else if ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
+                $tr = '<tr class="green">';
+            } else if($latest['score'] < 50) {
+                $tr = '<tr class="pink">';
+            } else {
+                $tr = '<tr class="hover">';	
+            }
         }
     }
 
@@ -242,7 +246,7 @@ Key:
     <td>Node stopped responding to requests more than 48 hours ago</td>
     </tr>
         <tr class="orange">
-    <td>We take an average on the node response times over the last month, and we've found this node is currently responding <strong>slower</strong> than normal</td>
+    <td>We take an average on the node response times over the last month, and we've found this node is currently responding <strong>slower</strong> than normal. Or it has dropped a single request.</td>
     </tr>
         <tr class="green">
     <td>We take an average on the node response times over the last month, and we've found this node is currently responding <strong>quicker</strong> than normal</td>
