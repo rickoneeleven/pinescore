@@ -168,7 +168,7 @@ foreach ($ips as $ip => $latest) {
         <td> ';
     $fifteenminsago = date('Y-m-d H:i:s', strtotime('-15 minute'));
 
-    if(strtotime($latest['score_change_date']) > strtotime($fifteenminsago)) {
+    if(strtotime($latest['pinescore_change']) > strtotime($fifteenminsago)) {
         echo "<font color=\"red\"><strong>".$latest['score']."</strong></font>";
     } else {
         echo $latest['score'];
