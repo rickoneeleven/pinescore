@@ -3,14 +3,14 @@
 class Group extends CI_model {
 
     //'name'
-    //'user'
+    //'user_id'
     //RETURN group_id
     public function create($array) {
 
     }
 
     //'group_id'
-    //'user'
+    //'user_id'
     //RETURN name or FALSE
     public function read($array) {
         
@@ -18,16 +18,16 @@ class Group extends CI_model {
 
     //'group_id'
     //'name'
-    //'user'
+    //'user_id'
     //RETURN TRUE or FALSE
-    public function update() {
+    public function update($array) {
         
     }
 
     //'group_id'
-    //'user'
+    //'user_id'
     //RETURN TRUE or FALSE
-    public function delete() {
+    public function delete($array) {
         
     }
 
