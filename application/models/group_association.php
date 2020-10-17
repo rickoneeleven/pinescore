@@ -2,19 +2,36 @@
 
 class Group_Association extends CI_model {
 
+    //'group_id'
+    //'ping_ip_id'
+    //'user_id'
     public function create() {
 
     }
 
+    //'group_id'
+    //'user_id'
+    //RETURN all rows
     public function read() {
         
     }
 
+    //'group_id'
+    //'ping_ip_id'
+    //'user_id'
     public function update() {
         
     }
 
-    public function delete() {
+    //'group_id'
+    //'user_id'
+    public function delete_all_associations_based_on_group_id() {
+        
+    }
+
+    //'ping_ip_id'
+    //'user_id'
+    public function delete_all_associations_based_on_ping_ip_id() {
         
     }
 
