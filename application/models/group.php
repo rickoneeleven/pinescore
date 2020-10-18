@@ -6,7 +6,13 @@ class Group extends CI_model {
     //'user_id'
     //RETURN group_id
     public function create($array) {
+        $group = array(
+            'name' => $array['name'],
+            'user_id' => $array['user_id'],
+        ); 
+        $this->db->insert('groups', $group);
 
+        return $this->db->insert_id();
     }
 
     //'group_id'
