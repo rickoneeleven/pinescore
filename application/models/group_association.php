@@ -19,6 +19,7 @@ class Group_Association extends CI_model {
     //'group_id'
     //'ping_ip_id'
     //'user_id'
+    //wrapper for delete_all_associations_based_on_group_id() and create()?
     public function update() {
         
     }
