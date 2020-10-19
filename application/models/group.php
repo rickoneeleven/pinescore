@@ -15,10 +15,11 @@ class Group extends CI_model {
         return $this->db->insert_id();
     }
 
-    //'group_id'
     //'user_id'
-    //RETURN name or FALSE
+    //RETURN Table Object
     public function read($array) {
+        $this->db->where('user_id', $array['user_id']);
+        $groupsTable = $this->db->get('groups');
         
     }
 
