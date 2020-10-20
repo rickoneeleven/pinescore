@@ -26,9 +26,13 @@ class Group extends CI_model {
     //'group_id'
     //'name'
     //'user_id'
-    //RETURN TRUE or FALSE
     public function update($array) {
-        
+        $update = array(
+            'name'          => $array['name'],
+        );
+        $this->db->where('user_id', $array['user_id']);
+        $this->db->where('user_id', $array['group_id']);
+        $this->db->update('groups', $update);
     }
 
     //'group_id'
