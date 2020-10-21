@@ -31,15 +31,16 @@ class Group extends CI_model {
             'name'          => $array['name'],
         );
         $this->db->where('user_id', $array['user_id']);
-        $this->db->where('user_id', $array['group_id']);
+        $this->db->where('group_id', $array['group_id']);
         $this->db->update('groups', $update);
     }
 
     //'group_id'
     //'user_id'
-    //RETURN TRUE or FALSE
     public function delete($array) {
-        
+        $this->db->where('user_id', $array['user_id']);
+        $this->db->where('group_id', $array['group_id']);
+        $this->db->delete('groups');
     }
 
     
