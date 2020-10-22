@@ -19,7 +19,7 @@ class Group extends CI_model {
     //RETURN Table Object
     public function read($array) {
         $this->db->where('user_id', $array['user_id']);
-        $groupsTable = $this->db->get('groups');
+        return $this->db->get('groups');
         
     }
 

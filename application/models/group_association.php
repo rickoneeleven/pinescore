@@ -19,27 +19,35 @@ class Group_Association extends CI_model {
     //'group_id'
     //'user_id'
     //RETURN all rows
-    public function read() {
-        
+    public function read($array) {
+        $this->db->where('user_id', $array['user_id']);
+        $this->db->where('group_id', $array['user_id']);
+        return $this->db->get('group_associations');
     }
 
     //'group_id'
     //'ping_ip_id'
     //'user_id'
     //wrapper for delete_all_associations_based_on_group_id() and create()?
-    public function update() {
-        
+    public function update($array) {
+        $this->delete_all_associations_based_on_group_id($array);
+        $this->create($array);
     }
 
     //'group_id'
     //'user_id'
-    public function delete_all_associations_based_on_group_id() {
-        
+    public function delete_all_associations_based_on_group_id($array) {
+        $this->db->where('user_id', $array['user_id']);
+        $this->db->where('group_id', $array['group_id']);
+        $this->db->delete('group_associations');
     }
 
     //'ping_ip_id'
     //'user_id'
-    public function delete_all_associations_based_on_ping_ip_id() {
+    public function delete_all_associations_based_on_ping_ip_id($array) {
+        $this->db->where('user_id', $array['user_id']);
+        $this->db->where('ping_ip_id', $array['ping_ip_id']);
+        $this->db->delete('group_associations');
         
     }
 
