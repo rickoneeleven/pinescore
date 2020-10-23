@@ -4,11 +4,13 @@ class Group extends CI_model {
 
     //'name'
     //'user_id'
+    //'public'
     //RETURN group_id
     public function create($array) {
         $group = array(
             'name' => $array['name'],
             'user_id' => $array['user_id'],
+            'public' => $array['public'],
         ); 
         $this->db->insert('groups', $group);
 
@@ -26,9 +28,11 @@ class Group extends CI_model {
     //'group_id'
     //'name'
     //'user_id'
+    //'public'
     public function update($array) {
         $update = array(
             'name'          => $array['name'],
+            'public'        => $array['public'],
         );
         $this->db->where('user_id', $array['user_id']);
         $this->db->where('group_id', $array['group_id']);

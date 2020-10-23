@@ -130,7 +130,13 @@ class Nc extends CI_Controller {
                 'public'        => $this->input->post('public'),
             );
             $this->db->insert('grouped_reports', $new_monitor_group);
-            //vdebug($ids_for_new_group);
+            
+            
+            //create group name
+            ////'user_id'
+            ////'name'
+
+
             redirect(base_url('nc/viewGroup/'.$this->db->insert_id()));
 		}
     }
