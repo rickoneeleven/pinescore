@@ -93,6 +93,8 @@ class Nc extends CI_Controller {
         $ids_for_new_group = '';
         $this->load->model('icmpmodel');
         $this->load->model('securitychecks');
+        $this->load->model('group');
+        $this->load->model('group_association');
         $this->load->library('form_validation');
 
         $logged_in_user = array(
@@ -103,6 +105,7 @@ class Nc extends CI_Controller {
 		$this->form_validation->set_rules('public', 'Public Access', 'xss_clean');
         
         $data_for_view['possible_ids'] = $this->icmpmodel->getIPs($logged_in_user);
+        $ids_for_new_group = array();
         foreach($data_for_view['possible_ids']->result() as $row){
             $form_label_id = $row->id;
             $is_id_checked = $this->input->post($form_label_id);
@@ -110,7 +113,7 @@ class Nc extends CI_Controller {
             
             switch($is_id_checked) {
                 case 1: {
-                    $ids_for_new_group = $ids_for_new_group.$form_label_id.", ";
+                    $ids_for_new_group[] = $form_label_id;
                 }
             }
         }
@@ -122,22 +125,24 @@ class Nc extends CI_Controller {
 		else
 		{
             $this->securitychecks->ownerCheckRedirect($logged_in_user['owner']);
-            $new_monitor_group = array(
-                'name' => $this->input->post('groupname'),
-                'datetime' => date('Y-m-d H:i:s'),
-                'ping_ip_ids' => $ids_for_new_group,
-                'owner_id' => $logged_in_user['owner'],
+   
+            $new_group = array(
+                'name'          => $this->input->post('groupname'),
+                'user_id'       => $logged_in_user['owner'],
                 'public'        => $this->input->post('public'),
             );
-            $this->db->insert('grouped_reports', $new_monitor_group);
-            
-            
-            //create group name
-            ////'user_id'
-            ////'name'
+            $insert_id = $this->group->create($new_group);
 
+            foreach($ids_for_new_group as $ping_ip_id) {
+                $new_associations = array(
+                    'group_id'          => $insert_id,
+                    'user_id'           => $logged_in_user['owner'],
+                    'ping_ip_id'        => $ping_ip_id,
+                );
+                $this->group_association->create($new_associations);
+            }
 
-            redirect(base_url('nc/viewGroup/'.$this->db->insert_id()));
+            redirect(base_url('nc/viewGroup/'.$insert_id));
 		}
     }
 
