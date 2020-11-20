@@ -25,7 +25,6 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         <tr>
             <td width="200"><strong>IP / Hostname</strong></td>
             <td width="160"><strong>Time</strong></td>
-            <td width="75"><strong>Last alert status</strong></td>
             <td width="300"><strong>Ping result</strong></td>
             <td width="150px"><strong>Day of Week</strong></td>
         </tr>';
@@ -33,7 +32,7 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         foreach($report->result() as $row) {
             $tr = '<tr>';
             $last_state = "Offline";
-            if($row->email_sent == "ICMP timed out" || $row->email_sent == "Node is now <strong>Offline</strong>") 
+            if(strpos($row->email_sent, 'dropped') || $row->email_sent == "Node is now <strong>Offline</strong>") 
             {
                 $tr = '<tr bgcolor="#F38E78">';
                 $last_state = "Online";
@@ -41,7 +40,6 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             echo $tr;
             echo "<td>".$row->ip."</td>";
             echo "<td>".$row->datetime."</td>";
-            echo "<td>".$last_state."</td>";
 		    echo "<td>".$row->email_sent."</td>";
             echo "<td>".date( "l", strtotime($row->datetime))."</td>";
             echo "</tr>";
