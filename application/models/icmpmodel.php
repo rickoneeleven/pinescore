@@ -18,14 +18,24 @@ class IcmpModel extends CI_model {
             $query = $this->ownerSet($filter);
 		} else if(isset($filter['group_id'])) {
             $filter_grp_id = $filter['group_id']; 
-            $this->db->where('id', $filter_grp_id);
-            $grouped_report_row = $this->db->get('grouped_reports');
+            $this->db->where('group_id', $filter_grp_id);
+            $grouped_report_row = $this->db->get('group_associations');
             if($grouped_report_row->num_rows() < 1) {
                 die('error code: if you need a cab just let Davey boy know');
             }
+
+
+            //wip get array of ids associated with group
+            foreach($grouped_report_row->result() as $row)
+            {
+                $ping_ids_array[] = $row->ping_ip_id;
+            }
+            vdebug($ping_ids_array);
+
+            //wip define a varible with ids the array of associated nodes to this group to a string
             $ping_ids_in_grp = $grouped_report_row->row('ping_ip_ids');
             $ping_ids_in_grp = $ping_ids_in_grp."' '";
-            $ping_ids_array = explode(',', $ping_ids_in_grp);
+            //////////////
 
             if($this->session->userdata('hideOffline') == 1) {
                 $query_request = "last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND id IN ($ping_ids_in_grp) 

@@ -3,7 +3,10 @@
     class Partytest extends CI_Controller {
 
         function index() {
-            echo $this->input->ip_address();
+            echo "test";
+            echo "wank";
             
-        }
+        } //wip1.1 okay xdebug seems to be loaded in phpinfo now, but the breakpoint in partytest isn't stopping
+        //double check your loading partytest from dev server where xdeug is configured, and check vsc xdebug config is
+        //on same server
     }

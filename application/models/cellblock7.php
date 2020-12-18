@@ -3,9 +3,9 @@
 class Cellblock7 extends CI_model {
 
     public function getMyReports($userid) {
-        $this->db->where('owner_id', $userid);
+        $this->db->where('user_id', $userid);
         $this->db->order_by('name', 'ASC');
-        return $this->db->get('grouped_reports');
+        return $this->db->get('groups');
     }
 
     public function getOwnerEmail($ownerid) {
@@ -34,11 +34,11 @@ class Cellblock7 extends CI_model {
      */
     public function groupPublicCheck($array) {
         $this->db->where('id', $array['group_id']);
-        $grouped_reportsTable = $this->db->get('grouped_reports');
+        $this->db->where('user_id', $array['owner_id']);
+        $groupsTable = $this->db->get('groups');
 
-        if($array['group_id'] != null) {
-            if($grouped_reportsTable->row('public') == "1") return TRUE;
-            else if($grouped_reportsTable->row('owner_id') == $array['owner_id']) return TRUE;
+        if($groupsTable->num_rows() < 1) {
+            if($groupsTable->row('public') == "1") return TRUE;
             return FALSE;
         }
         return TRUE;

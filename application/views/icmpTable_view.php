@@ -186,7 +186,7 @@ foreach ($ips as $ip => $latest) {
         }
         echo '
         <td> '.$latest['public'].'</td>';
-    //if(!isset($owner_matches_table)) $owner_matches_table = FALSE; //wip delete this line
+    //wip3.0 delete this line //if(!isset($owner_matches_table)) $owner_matches_table = FALSE;
     if($owner_matches_table) { //only show action buttons if logged in
         echo'<td>';	    
 

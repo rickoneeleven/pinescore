@@ -263,7 +263,7 @@ class Nc extends CI_Controller {
         
 
         $this->db->where('id', $group_id);
-        $data['group_details'] = $this->db->get('grouped_reports');
+        $data['group_details'] = $this->db->get('groups');
         $data['ips'] = $this->cellblock7->icmpTableData($group_id);
         $data['myReports'] = $this->cellblock7->getMyReports($this->session->userdata('user_id'));
         $data['group_id'] = $group_id;
