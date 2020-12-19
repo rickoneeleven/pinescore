@@ -303,7 +303,7 @@ class Tools extends CI_Controller
         );
 
         $array = array(
-            'owner_id'      => $this->session->userdata('user_id'),
+            'user_id'      => $this->session->userdata('user_id'),
             'group_id'      => $filter_group,
             'error_message' => "This group is private, please <a href=\"" . base_url() . "\">Login</a> to view, or
             request the group owner makes it public. ptfoh",
