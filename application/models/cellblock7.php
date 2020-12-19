@@ -1,27 +1,33 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
-class Cellblock7 extends CI_model {
-
-    public function getMyReports($userid) {
-        $this->db->where('owner_id', $userid);
+if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+class Cellblock7 extends CI_model
+{
+    public function getMyReports($userid)
+    {
+        $this->db->where('user_id', $userid);
         $this->db->order_by('name', 'ASC');
+
         return $this->db->get('grouped_reports');
     }
 
-    public function getOwnerEmail($ownerid) {
+    public function getOwnerEmail($ownerid)
+    {
         $this->db->where('id', $ownerid);
         $userDetails = $this->db->get('user');
-        foreach ($userDetails->result() as $row)
-        {
+        foreach ($userDetails->result() as $row) {
             return $row->email;
         }
     }
 
-    public function addNodeToGroup($group_id, $ping_ip_id) {
-        $groupedReportsRow = $this->db->get_where('grouped_reports', array('id' => $group_id));
-        $update_data = array(
-            'ping_ip_ids'   => $groupedReportsRow->row('ping_ip_ids')."$ping_ip_id,",
-        );
+    public function addNodeToGroup($group_id, $ping_ip_id)
+    {
+        $groupedReportsRow = $this->db->get_where('grouped_reports', ['id' => $group_id]);
+        $update_data = [
+            'ping_ip_ids' => $groupedReportsRow->row('ping_ip_ids')."$ping_ip_id,",
+        ];
         $this->db->where('id', $group_id);
         $this->db->update('grouped_reports', $update_data);
     }
@@ -30,34 +36,41 @@ class Cellblock7 extends CI_model {
      * array(
      * 'owner_id'
      * 'group_id'
-     * )
+     * ).
      */
-    public function groupPublicCheck($array) {
+    public function groupPublicCheck($array)
+    {
         $this->db->where('id', $array['group_id']);
-        $grouped_reportsTable = $this->db->get('grouped_reports');
+        $groupsTable = $this->db->get('groups');
 
-        if($array['group_id'] != null) {
-            if($grouped_reportsTable->row('public') == "1") return TRUE;
-            else if($grouped_reportsTable->row('owner_id') == $array['owner_id']) return TRUE;
-            return FALSE;
+        if ($array['group_id'] != null) {
+            if ($groupsTable->row('public') == '1') {
+                return true;
+            } elseif ($groupsTable->row('owner_id') == $array['owner_id']) {
+                return true;
+            }
+
+            return false;
         }
-        return TRUE;
+
+        return true;
     }
 
-    public function icmpTableData($group_id=null) {
+    public function icmpTableData($group_id = null)
+    {
         $this->load->model('icmpmodel');
         $this->load->model('lemon');
         $this->load->model('get_emailalerts');
         $user = $this->icmpmodel->getUserID();
 
-        if(isset($group_id)) {
-            $group_id_filter = array('group_id' => $group_id);
+        if (isset($group_id)) {
+            $group_id_filter = ['group_id' => $group_id];
             $ips = $this->icmpmodel->getIPs($group_id_filter);
         } else {
-            $data3 = array('owner' => $user);
+            $data3 = ['owner' => $user];
             $ips = $this->icmpmodel->getIPs($data3); //get ips from ip table
         }
-        $data2 = array(); //if no results the array wont get created below so we have to declare here otherwise customers with no tables will get erros as it will try to return data2, but it does not exist
+        $data2 = []; //if no results the array wont get created below so we have to declare here otherwise customers with no tables will get erros as it will try to return data2, but it does not exist
         foreach ($ips->result() as $row) {
             $data2[$row->ip]['note'] = $row->note;
             $data2[$row->ip]['alert'] = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
@@ -74,12 +87,15 @@ class Cellblock7 extends CI_model {
             $data2[$row->ip]['last_online_toggle'] = $row->last_online_toggle;
             $data2[$row->ip]['count_direction'] = $row->count_direction;
         }
+
         return $data2;
     }
 
-    public function getGroupName($id) {
+    public function getGroupName($id)
+    {
         $this->db->where('id', $id);
         $grouped_reportsTable = $this->db->get('grouped_reports');
+
         return $grouped_reportsTable->row('name');
     }
 }
