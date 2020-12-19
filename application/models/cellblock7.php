@@ -10,7 +10,7 @@ class Cellblock7 extends CI_model
         $this->db->where('user_id', $userid);
         $this->db->order_by('name', 'ASC');
 
-        return $this->db->get('grouped_reports');
+        return $this->db->get('groups');
     }
 
     public function getOwnerEmail($ownerid)
@@ -34,7 +34,7 @@ class Cellblock7 extends CI_model
 
     /**
      * array(
-     * 'owner_id'
+     * 'user_id'
      * 'group_id'
      * ).
      */
@@ -46,7 +46,7 @@ class Cellblock7 extends CI_model
         if ($array['group_id'] != null) {
             if ($groupsTable->row('public') == '1') {
                 return true;
-            } elseif ($groupsTable->row('owner_id') == $array['owner_id']) {
+            } elseif ($groupsTable->row('user_id') == $array['user_id']) {
                 return true;
             }
 
