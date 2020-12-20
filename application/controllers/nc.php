@@ -27,6 +27,8 @@ class Nc extends CI_Controller
         $this->load->model('icmpmodel');
         $this->load->model('cellblock7');
         $this->load->model('techbits_model');
+        $this->load->model('group');
+        $this->load->model('group_association');
 
         $user = $this->icmpmodel->getUserID();
         $logged_in_user = [
@@ -41,15 +43,19 @@ class Nc extends CI_Controller
                     'description' => 'Edit which nodes belong to this group.',
                     'keywords' => 'icmp,groups,share',
                 ];
-                $this->db->where('id', $group_id);
-                $group_details = $this->db->get('grouped_reports');
+                $group_details = $this->group_association->read([
+                    'group_id' => $group_id,
+                    'user_id' => $this->session->userdata('user_id'),
+                ]);
                 if ($group_details->num_rows() < 1) {
                     die('fredrick, is that you?');
                 }
 
                 $data_for_view['group_details'] = $group_details;
-                $ip_ids_messy_after_explode = explode(',', $group_details->row('ping_ip_ids'));
-                $data_for_view['cleaned_ip_ids'] = $this->arrayahoylib->removeWhiteAndEmpty($ip_ids_messy_after_explode);
+                $data_for_view['cleaned_ip_ids'] = $this->group_association->return_array_pingIpIds_from_group_id([
+                    'group_id' => $group_id,
+                    'user_id' => $this->session->userdata('user_id'),
+                ]);
 
                 $data_for_view['monitors'] = $this->icmpmodel->getIPs($logged_in_user);
 
