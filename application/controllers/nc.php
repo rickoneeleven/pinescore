@@ -36,6 +36,10 @@ class Nc extends CI_Controller
             'order_alpha' => 1,
             'group_creation' => 1,
         ];
+        $user_and_group = [
+            'user_id' => $this->session->userdata('user_id'),
+            'group_id' => $group_id,
+        ];
         switch ($option) {
             case 'modify':
                 $data_meta = [
@@ -43,19 +47,16 @@ class Nc extends CI_Controller
                     'description' => 'Edit which nodes belong to this group.',
                     'keywords' => 'icmp,groups,share',
                 ];
-                $group_details = $this->group_association->read([
-                    'group_id' => $group_id,
-                    'user_id' => $this->session->userdata('user_id'),
-                ]);
-                if ($group_details->num_rows() < 1) {
+                $group_associationsTable = $this->group_association->read($user_and_group);
+                if ($group_associationsTable->num_rows() < 1) {
                     die('fredrick, is that you?');
                 }
+                $groupsTable = $this->group->readSpecificGroup($user_and_group);
 
-                $data_for_view['group_details'] = $group_details;
-                $data_for_view['cleaned_ip_ids'] = $this->group_association->return_array_pingIpIds_from_group_id([
-                    'group_id' => $group_id,
-                    'user_id' => $this->session->userdata('user_id'),
-                ]);
+                $data_for_view['group_associationTable'] = $group_associationsTable;
+                $data_for_view['groupsTable'] = $groupsTable;
+                $data_for_view['cleaned_ip_ids'] = $this->group_association->
+                return_array_pingIpIds_from_group_id($user_and_group);
 
                 $data_for_view['monitors'] = $this->icmpmodel->getIPs($logged_in_user);
 
@@ -162,6 +163,8 @@ class Nc extends CI_Controller
         $this->load->model('icmpmodel');
         $this->load->model('securitychecks');
         $this->load->library('form_validation');
+        $this->load->model('group');
+        $this->load->model('group_association');
 
         $logged_in_user = [
             'owner' => $this->icmpmodel->getUserID(),
@@ -185,19 +188,35 @@ class Nc extends CI_Controller
         if ($this->form_validation->run() == false) {
             $this->createOrModifyGroup('modify', $this->input->post('group_id'));
         } else {
-            $this->db->where('id', $this->input->post('group_id'));
-            $group_to_be_updated = $this->db->get('grouped_reports');
-            $this->securitychecks->ownerCheckRedirect($group_to_be_updated->row('user_id'));
+            $group_to_be_updated = $this->group->readSpecificGroup([
+                'group_id' => $this->input->post('group_id'),
+                'user_id' => $this->session->userdata('user_id'),
+                ]);
+            if ($group_to_be_updated->num_rows() < 1) {
+                die('who whom it may concern');
+            }
 
             $update_monitor_group = [
                 'name' => $this->input->post('groupname'),
-                'datetime' => date('Y-m-d H:i:s'),
-                'ping_ip_ids' => $ids_for_updated_group,
+                //'datetime' => date('Y-m-d H:i:s'),
+                //'ping_ip_ids' => $ids_for_updated_group,
                 'public' => $this->input->post('public'),
             ];
             $this->db->where('id', $this->input->post('group_id'));
-            $this->db->update('grouped_reports', $update_monitor_group);
-            //vdebug($ids_for_updated_group);
+            $this->db->update('groups', $update_monitor_group);
+
+            $ping_ip_ids_to_add_to_group_as_array = array_filter(array_map('trim', (explode(',', $ids_for_updated_group))));
+            $this->group_association->delete_all_associations_based_on_group_id([
+                    'user_id' => $this->session->userdata('user_id'),
+                    'group_id' => $this->input->post('group_id'),
+                ]);
+            foreach ($ping_ip_ids_to_add_to_group_as_array as $ping_ip_id) {
+                $this->group_association->create([
+                    'ping_ip_id' => $ping_ip_id,
+                    'user_id' => $this->session->userdata('user_id'),
+                    'group_id' => $this->input->post('group_id'),
+                ]);
+            }
             redirect(base_url('nc/viewGroup/'.$this->input->post('group_id')));
         }
     }
@@ -269,7 +288,7 @@ class Nc extends CI_Controller
         ];
 
         $this->db->where('id', $group_id);
-        $data['group_details'] = $this->db->get('groups');
+        $data['groupsTable'] = $this->db->get('groups');
         $data['ips'] = $this->cellblock7->icmpTableData($group_id);
         $data['myReports'] = $this->cellblock7->getMyReports($this->session->userdata('user_id'));
         $data['group_id'] = $group_id;
