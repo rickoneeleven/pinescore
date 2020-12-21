@@ -27,14 +27,14 @@ class IcmpModel extends CI_model
             $query = $this->ownerSet($filter);
         } elseif (isset($filter['group_id'])) {
             $filter_grp_id = $filter['group_id'];
-            $this->db->where('id', $filter_grp_id);
-            $grouped_report_row = $this->db->get('groups');
+            $this->db->where('group_id', $filter_grp_id);
+            $grouped_report_row = $this->db->get('group_associations');
             if ($grouped_report_row->num_rows() < 1) {
                 die('error code: if you need a cab just let Davey boy know');
             }
             $ping_ids_array = $this->group_association->return_array_pingIpIds_from_group_id(
                 [
-                    'group_id' => $grouped_report_row->row('id'),
+                    'group_id' => $filter_grp_id,
                     'user_id' => $this->session->userdata('user_id'),
                 ]);
             $ping_ids_in_grp = implode(', ', $ping_ids_array);
