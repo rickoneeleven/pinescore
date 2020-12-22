@@ -25,7 +25,7 @@ $link_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         <tr>
             <td width="200"><strong>IP / Hostname</strong></td>
             <td width="160"><strong>Time</strong></td>
-            <td width="300"><strong>Ping result</strong></td>
+            <td width="600"><strong>Ping result</strong></td>
             <td width="150px"><strong>Day of Week</strong></td>
         </tr>';
         
