@@ -13,6 +13,7 @@ class IcmpModel extends CI_model
     public function getIPs($filter = null)
     {
         $this->load->model('group_association');
+        $this->load->model('group');
 
         $order_by = "(CASE WHEN last_email_status='Offline' THEN last_online_toggle END) DESC, count DESC, last_email_status, lta_difference_algo, pinescore, note";
         if (isset($filter['order_alpha'])) {
@@ -35,8 +36,11 @@ class IcmpModel extends CI_model
             $ping_ids_array = $this->group_association->return_array_pingIpIds_from_group_id(
                 [
                     'group_id' => $filter_grp_id,
-                    'user_id' => $this->session->userdata('user_id'),
                 ]);
+            $securty_check = $this->group->readGroupByID([
+                'group_id' => $filter_grp_id,
+            ]);
+
             $ping_ids_in_grp = implode(', ', $ping_ids_array);
             if ($this->session->userdata('hideOffline') == 1) {
                 $query_request = "last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND id IN ($ping_ids_in_grp) 

@@ -39,6 +39,13 @@ class Group extends CI_model
         return $this->db->get('groups');
     }
 
+    public function readGroupByID($array)
+    {
+        $this->db->where('id', $array['group_id']);
+
+        return $this->db->get('groups');
+    }
+
     //'group_id'
     //'name'
     //'user_id'
