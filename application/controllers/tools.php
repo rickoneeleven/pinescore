@@ -179,6 +179,8 @@ class Tools extends CI_Controller
         $this->load->model('cellblock7');
         $this->load->model('securitychecks');
         $this->load->model('average30days_model');
+        $this->load->model('group');
+        $this->group->deleteEmptyGroups();
 
         $data_meta = [
             'title' => 'pinescore.com | internet monitoring',
@@ -332,6 +334,8 @@ class Tools extends CI_Controller
         $this->load->model('sqlqu');
         $this->load->model('securitychecks');
         $this->load->library('form_validation');
+        $this->load->model('group');
+        $this->load->model('group_association');
 
         if ($_POST['action'] == 'Edit') {
             $data['edit'] = 1;
@@ -407,6 +411,12 @@ class Tools extends CI_Controller
             $this->db->where('id', $this->input->post('id'));
             $this->db->where('owner', $this->session->userdata('user_id'));
             $this->db->delete('ping_ip_table');
+
+            $removeFromGroups = ([
+                'user_id' => $this->session->userdata('user_id'),
+                'ping_ip_id' => $this->input->post('id'),
+            ]);
+            $this->group_association->delete_all_associations_based_on_ping_ip_id($removeFromGroups);
 
             $this->db->where('ping_ip_id', $this->input->post('id'));
             $this->db->delete('alerts');

@@ -69,4 +69,20 @@ class Group extends CI_model
         $this->db->where('id', $array['group_id']);
         $this->db->delete('groups');
     }
+
+    public function deleteEmptyGroups()
+    {
+        $this->load->model('group_association');
+
+        $all_groups = $this->db->get('groups');
+        foreach ($all_groups->result() as $row) {
+            $associations = $this->group_association->read([
+                'group_id' => $row->id,
+                ]);
+            if ($associations->num_rows() < 1) {
+                $this->db->where('id', $row->id);
+                $this->db->delete('groups');
+            }
+        }
+    }
 }
