@@ -66,7 +66,7 @@ class Group extends CI_model
     public function delete($array)
     {
         $this->db->where('user_id', $array['user_id']);
-        $this->db->where('group_id', $array['group_id']);
+        $this->db->where('id', $array['group_id']);
         $this->db->delete('groups');
     }
 }
