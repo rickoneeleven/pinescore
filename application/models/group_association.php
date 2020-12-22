@@ -21,11 +21,9 @@ class Group_Association extends CI_model
     }
 
     //'group_id'
-    //'user_id'
     //RETURN all rows
     public function read($array)
     {
-        $this->db->where('user_id', $array['user_id']);
         $this->db->where('group_id', $array['group_id']);
 
         return $this->db->get('group_associations');
