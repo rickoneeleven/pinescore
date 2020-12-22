@@ -229,9 +229,14 @@ class Nc extends CI_Controller
          */
         $this->load->model('icmpmodel');
         $this->load->model('securitychecks');
+        $this->load->model('group');
+        $this->load->model('group_association');
 
-        $this->db->where('id', $id);
-        $group_to_be_deleted = $this->db->get('grouped_reports');
+        $group_to_be_deleted = $this->group->readGroupByID(['group_id' => $id]);
+        $group_data = [
+            'group_id' => $id,
+            'user_id' => $group_to_be_deleted->row('user_id'),
+        ];
 
         $this->securitychecks->ownerCheckRedirect($group_to_be_deleted->row('user_id'));
 
@@ -252,8 +257,8 @@ class Nc extends CI_Controller
             $this->load->view('userConfirmation_view', $confirmation_view);
             $this->load->view('footer_view');
         } else {
-            $this->db->where('id', $id);
-            $this->db->delete('grouped_reports');
+            $this->group->delete($group_data);
+            $this->group_association->delete_all_associations_based_on_group_id($group_data);
             redirect(base_url());
         }
     }
