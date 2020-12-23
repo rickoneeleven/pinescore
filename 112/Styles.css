@@ -144,6 +144,10 @@ tr.pink td {
 	background-color: rgba(218, 29, 171, 0.288);
 }
 
+tr.darkerpink td {
+	background-color: rgba(69, 43, 173, 0.288);
+}
+
 tr.transition td {
 	background-color: #b266ff;
 }
