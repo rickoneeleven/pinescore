@@ -53,6 +53,7 @@ if ($owner_matches_table) { //only show action button column header if logged in
 }
 echo '</tr>';
 foreach ($ips as $ip => $latest) {
+    $showcount = false;
     $difference_percent = 0;
     $ms = $latest['ms'].'ms';
     $now = new DateTime();
@@ -95,8 +96,14 @@ foreach ($ips as $ip => $latest) {
                 $tr = '<tr class="orange">';
             } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
                 $tr = '<tr class="green">';
-            } elseif ($latest['score'] < 50) {
+            } elseif ($latest['score'] < 50 && $latest['score'] > -1) {
+                ++$count;
+                $showcount = 1;
                 $tr = '<tr class="pink">';
+            } elseif ($latest['score'] < 0) {
+                ++$count;
+                $showcount = 1;
+                $tr = '<tr class="darkerpink">';
             } else {
                 $tr = '<tr class="hover">';
             }
@@ -148,8 +155,11 @@ foreach ($ips as $ip => $latest) {
 
     $report = 'tools/report/'.$latest['id'];
     echo $tr;
-    ++$count;
-    echo "<td>$count</td>";
+    if ($showcount === 1) {
+        echo "<td>$count</td>";
+    } else {
+        echo '<td></td>';
+    }
     if (!isset($edit)) { //only want the report hyperlink to be active if we're not editing, otherwise it clicks through
         echo '<td> '.anchor($report, $latest['note']).'</td>';
     } else {
@@ -264,6 +274,9 @@ Key:
     </tr>
     <tr class="pink">
     <td>pinescore is below 50, node appears to be suffering intermittent drops. Worth investigating.</td>
+    </tr>
+    <tr class="darkerpink">
+    <td>pinescore is below 0, node is dropping many packets, indicative of a problem.</td>
     </tr>
     <tr>
         <td>pinescore (the score of the node), <strong>bold</strong> and <font color="red"><strong>Red</strong></font>: 
