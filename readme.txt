@@ -40,8 +40,8 @@ Maximum PHP script run time: 3600
 this all speaks to the fact the ping engine needs to be rewritten. 
 --------------------------------------------------
 crontabs
-#creates score stats for offset
-*/5 * * * * lynx --dump http://pinescore.com/api_ping/ > /dev/null 2>&1
+#creates score stats for offset and baseline, only needs to run once daily
+0 0 * * * lynx --dump http://pinescore.com/api_ping/ > /dev/null 2>&1
 
 #daily clean up tasks and general db maintenance
 26 04 * * * lynx --dump https://pinescore.com/api_nightly/onceAday > /dev/null 2>&1
