@@ -26,9 +26,9 @@ $link_space = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
         <p><table>
         <tr>
             <td width="200"><strong>IP / Hostname</strong></td>
+            <td width="100px"><strong>Day of Week</strong></td>
             <td width="160"><strong>Time</strong></td>
             <td width="600"><strong>Ping result</strong></td>
-            <td width="150px"><strong>Day of Week</strong></td>
         </tr>';
 
         foreach ($report->result() as $row) {
@@ -50,9 +50,9 @@ $link_space = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             }
             echo $tr;
             echo '<td>'.$row->ip.'</td>';
+            echo '<td>'.date('l', strtotime($row->datetime)).'</td>';
             echo '<td>'.$row->datetime.'</td>';
             echo '<td>'.$row->email_sent.'</td>';
-            echo '<td>'.date('l', strtotime($row->datetime)).'</td>';
             echo '</tr>';
         }
         echo '</table></p>';
