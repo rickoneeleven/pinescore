@@ -24,12 +24,12 @@ class Cellblock7 extends CI_model
 
     public function addNodeToGroup($group_id, $ping_ip_id)
     {
-        $groupedReportsRow = $this->db->get_where('grouped_reports', ['id' => $group_id]);
-        $update_data = [
-            'ping_ip_ids' => $groupedReportsRow->row('ping_ip_ids')."$ping_ip_id,",
-        ];
-        $this->db->where('id', $group_id);
-        $this->db->update('grouped_reports', $update_data);
+        $this->load->model('group_association');
+        $this->group_association->create([
+            'group_id' => $group_id,
+            'ping_ip_id' => $ping_ip_id,
+            'user_id' => $this->session->userdata('user_id'),
+            ]);
     }
 
     /**
