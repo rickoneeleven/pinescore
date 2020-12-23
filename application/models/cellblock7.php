@@ -90,12 +90,4 @@ class Cellblock7 extends CI_model
 
         return $data2;
     }
-
-    public function getGroupName($id)
-    {
-        $this->db->where('id', $id);
-        $grouped_reportsTable = $this->db->get('grouped_reports');
-
-        return $grouped_reportsTable->row('name');
-    }
 }

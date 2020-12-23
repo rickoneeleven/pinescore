@@ -285,6 +285,7 @@ class Tools extends CI_Controller
         $this->load->model('cellblock7');
         $this->load->model('securitychecks');
         $this->load->model('average30days_model');
+        $this->load->model('group');
         $data_meta = ['title' => 'ICMP Monitor (Table pop out)',
                            'description' => 'auto refresh webpage that displays your live ICMP monitors',
                            'keywords' => 'ip,monitoring,report,online',
@@ -317,7 +318,8 @@ class Tools extends CI_Controller
             $data['ips'] = $this->cellblock7->icmpTableData();
         } else {
             $data['ips'] = $this->cellblock7->icmpTableData($filter_group);
-            $button['group_name'] = $this->cellblock7->getGroupName($filter_group);
+            $grouprow = $this->group->readGroupByID(['group_id' => $filter_group]);
+            $button['group_name'] = $grouprow->row('name');
         }
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
