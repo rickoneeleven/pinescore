@@ -15,6 +15,7 @@ class Group_Association extends CI_model
             'group_id' => $array['group_id'],
             'ping_ip_id' => $array['ping_ip_id'],
             'user_id' => $array['user_id'],
+            
         ];
 
         $this->db->insert('group_associations', $insert);
