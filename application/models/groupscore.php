@@ -50,35 +50,33 @@ class GroupScore extends CI_model
 
     public function calulateLongTermGroupScore()
     {
+        $this->LTduplicateCheck();
         $groupsTable = $this->db->get('groups');
         foreach ($groupsTable->result() as $row) {
             $this->db->where('group_id', $row->id);
             $yesterday = "datetime < (NOW() - INTERVAL 1 DAY)";
             $this->db->where($yesterday);
             $group_shortterm_scoresTable = $this->db->get('group_shortterm_scores');
-            foreach($group_shortterm_scoresTable->result() as $row) {
-                if(!isset($groupData[$row->group_id])) 
-                {
-                    $groupData[$row->group_id] = [];
-                    $groupData[$row->group_id]['scores'] = [];
-                }
-                array_push($groupData[$row->group_id]['scores'],$row->score);
-                    vdebug($row);
+            foreach($group_shortterm_scoresTable->result() as $gssrow) {
+                $array_of_scores[] = $gssrow->score;
             }
+            $number_of_scores = array_count_values($array_of_scores);
+            arsort($number_of_scores);
+            $middle_number = key($number_of_scores);
+            
+            $this->db->insert('group_longterm_scores', [
+                'group_id' => $row->id,
+                'score'    => $middle_number,
+                'datetime' => date('Y-m-d H:i:s')
+            ]);
+            unset($array_of_scores);
         }
-        vdebug($groupData);
-        $counted = array_count_values($array);
-        arsort($counted);
-        return(key($counted));
-            //get all group scores for the day
-            //use pinescore algo to pick out the one most occuring for the day
-            //insert into the longterm table against groupid
     }
     
-    public function algoForLongTermGroupScore($group_id) {
-
-        $group_associationsTable = $this->group_association->read([
-            'group_id' => $group_id,
-        ]);
+    private function LTduplicateCheck() {
+        $today = "datetime > (CURDATE())";
+        $this->db->where($today);
+        $group_longterm_scoresTable = $this->db->get('group_longterm_scores');
+        if($group_longterm_scoresTable->num_rows() > 0) die('RIP father - already successfully added data for today');
     }
 }
