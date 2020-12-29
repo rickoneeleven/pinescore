@@ -8,10 +8,12 @@
                 $this->load->model('icmpmodel');
                 $this->load->model('cellblock7');
                 $this->load->model('email_dev_or_no');
-                $this->load->model("cron_protect");
+                $this->load->model("cron_protect");            
+                $this->load->model('groupscore');
+                
                 $this->cron_protect->AllowedIPs();        
 
-                $old =  "datetime < (NOW() - INTERVAL 48 HOUR)";
+                $old = "datetime < (NOW() - INTERVAL 48 HOUR)";
                 $old_3year = "logged < (NOW() - INTERVAL 3 YEAR)";
                 $old_1week = "datetime < (NOW() - INTERVAL 1 WEEK)";
                 $stop_monitoring = "last_online_toggle < (NOW() - INTERVAL 6 MONTH)";
@@ -75,6 +77,8 @@
                 $this->db->where("datetime < (NOW() - INTERVAL 7 DAY)");
                 $this->db->delete('ping_result_table');
                 echo $this->db->last_query()."<p>";
+                
+                $this->groupscore->CalulateShortTermGroupScore();
             }
 
             public function flushPingResultTable() {
