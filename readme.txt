@@ -46,7 +46,10 @@ crontabs
 #daily clean up tasks and general db maintenance
 26 04 * * * lynx --dump https://pinescore.com/api_nightly/onceAday > /dev/null 2>&1
 
-#Cleans up tables
+#colate shortterm group scores into long term and flush shortterm rows. runs a few times to make sure it runs, duplicate protection built in
+23,33,44 01 * * * lynx --dump http://pinescore.com/api_ping/longTermGroupScores > /dev/null 2>&1
+
+#Cleans up tables and logs shortterm group scores
 24 * * * * lynx --dump https://pinescore.com/api_nightly/ > /dev/null 2>&1
 */5 * * * * lynx --dump https://pinescore.com/api_nightly/flushPingResultTable > /dev/null 2>&1
 

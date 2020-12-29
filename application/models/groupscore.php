@@ -77,6 +77,14 @@ class GroupScore extends CI_model
         $today = "datetime > (CURDATE())";
         $this->db->where($today);
         $group_longterm_scoresTable = $this->db->get('group_longterm_scores');
-        if($group_longterm_scoresTable->num_rows() > 0) die('RIP father - already successfully added data for today');
+        if($group_longterm_scoresTable->num_rows() > 0) {
+            $yesterday = "datetime < (NOW() - INTERVAL 1 DAY)";
+            $this->db->where($yesterday);
+            $this->db->delete('group_shortterm_scores');//remove shortterm scores from yesterday as we've 
+            //already added to long term table
+            die('RIP father - already successfully added data for today');
+        }
+        
+        
     }
 }

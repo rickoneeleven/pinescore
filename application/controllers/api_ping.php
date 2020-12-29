@@ -12,4 +12,12 @@ class api_ping extends CI_Controller {
         $this->lemon->tallyScore(); //sets the number of failures for each client so when the baseline command below runs its gets the correct offset
         $this->lemon->scoreBaseline(); //update baseline in those last 5 secs of the minute, can also add some other tasks here
     }
+    
+    public function longTermGroupScores() {
+        $this->load->model("cron_protect");
+        $this->load->model('groupscore');
+
+        $this->cron_protect->AllowedIPs();
+        $this->groupscore->CalulateLongTermGroupScore();
+    }
 }
