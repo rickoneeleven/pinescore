@@ -26,6 +26,7 @@ startTimer(10);  // 60 seconds
 
 </script>
 <?php
+$spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 $group_id = $this->uri->slash_segment(4);
 $group_id = rtrim($group_id, "/");
 echo "</br>";
@@ -36,7 +37,7 @@ while($week_day_number > 0) {
     $smiles = $smiles.":) ";
     $week_day_number--;
 }
-echo "<strong>Happy ".date('l')." ".$smiles."</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
 if($action == 'refresh') {
     echo '<span id="countdown" style="font-weight: bold;">10</span>&nbsp;
     <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
@@ -45,5 +46,8 @@ if($action == 'refresh') {
 } else {
     echo '<a href="'.base_url().'tools/popOut/">Resume Auto Refresh</a>';
 }
-//echo " " . $this->benchmark->memory_usage();
+
+if($group_id != "")  {
+    echo "$spaces Group Score: $groupscore";
+}
 ?>

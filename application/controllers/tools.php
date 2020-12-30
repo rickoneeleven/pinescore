@@ -19,18 +19,18 @@ class Tools extends CI_Controller
     public function test()
     {
         $data = [
-            'name' => 'newsletter',
-            'id' => 'newsletter',
-            'value' => 'accept',
+            'name'    => 'newsletter',
+            'id'      => 'newsletter',
+            'value'   => 'accept',
             'checked' => true,
-            'style' => 'margin:10px',
+            'style'   => 'margin:10px',
         ];
         $data2 = [
-            'name' => 'newsletter',
-            'id' => 'newsletter',
-            'value' => 'accept',
+            'name'    => 'newsletter',
+            'id'      => 'newsletter',
+            'value'   => 'accept',
             'checked' => false,
-            'style' => 'margin:10px',
+            'style'   => 'margin:10px',
         ];
 
         echo form_radio($data);
@@ -45,9 +45,9 @@ class Tools extends CI_Controller
         $this->load->model('techbits_model');
         $this->load->library('form_validation');
 
-        $data_meta = ['title' => 'Blacklist and automatic Telnet email test with full debug output',
+        $data_meta = ['title'            => 'Blacklist and automatic Telnet email test with full debug output',
                            'description' => 'Just type in an email address and we will automatically look up all associated mx records and send a test email to each, providing the full output from the communication from us to the server allowing you to spot any potential issues. You can also run a quick blacklist lookup on any extenral IP.',
-                           'keywords' => 'telnet,DNS,PTR,email,troubleshoot,port 25',
+                           'keywords'    => 'telnet,DNS,PTR,email,troubleshoot,port 25',
         ];
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -74,8 +74,8 @@ class Tools extends CI_Controller
         //echo $this->input->post('to');
         if ($this->form_validation->run() == false) {
             $data = ['captcha_requested' => 'yes',
-                          'message' => '',
-                          'cap_img' => $this->techbits_model->captcha111(),
+                          'message'      => '',
+                          'cap_img'      => $this->techbits_model->captcha111(),
             ];
             $data['start'] = 0;
             $this->telnet($data);
@@ -104,9 +104,9 @@ class Tools extends CI_Controller
         $this->load->model('techbits_model');
         $this->load->library('form_validation');
 
-        $data_meta = ['title' => 'DNS All in One (MX, PTR, A, NS, TXT and WHOIS)',
+        $data_meta = ['title'            => 'DNS All in One (MX, PTR, A, NS, TXT and WHOIS)',
                            'description' => 'Run one DNS query and get results for all MX, PTR, A, NS, TXT and WHOIS records. Simple. Easy.',
-                           'keywords' => 'all,in,one,dns,whois',
+                           'keywords'    => 'all,in,one,dns,whois',
         ];
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -160,9 +160,9 @@ class Tools extends CI_Controller
 
     public function speedTest()
     {
-        $data_meta = ['title' => 'Flash Based Speed Test',
+        $data_meta = ['title'            => 'Flash Based Speed Test',
                            'description' => 'Basic speed test with no extra spam, flash player required.',
-                           'keywords' => 'speedtest,flash',
+                           'keywords'    => 'speedtest,flash',
         ];
 
         $this->load->view('header_view', $data_meta);
@@ -183,9 +183,9 @@ class Tools extends CI_Controller
         $this->group->deleteEmptyGroups();
 
         $data_meta = [
-            'title' => 'pinescore.com | internet monitoring',
+            'title'       => 'pinescore.com | internet monitoring',
             'description' => 'Rate your connection with our unique algorithm. pinescore [90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]',
-            'keywords' => 'ip,ping,monitoring,report,online,offline,alert',
+            'keywords'    => 'ip,ping,monitoring,report,online,offline,alert',
         ];
 
         $data['ips'] = $this->cellblock7->icmpTableData();
@@ -235,15 +235,15 @@ class Tools extends CI_Controller
             }
 
             $ping_ip_table_data = [
-                'ip' => $this->input->post('ip'),
-                'last_ran' => '2000-08-08 09:30:10',
-                'note' => $this->input->post('note'),
-                'public' => 0,
-                'owner' => $this->session->userdata('user_id'),
+                'ip'                 => $this->input->post('ip'),
+                'last_ran'           => '2000-08-08 09:30:10',
+                'note'               => $this->input->post('note'),
+                'public'             => 0,
+                'owner'              => $this->session->userdata('user_id'),
                 'last_online_toggle' => date('Y-m-d H:i:s'),
-                'count' => 0,
-                'last_email_status' => 'New',
-                'count_direction' => '-',
+                'count'              => 0,
+                'last_email_status'  => 'New',
+                'count_direction'    => '-',
             ];
 
             $this->db->insert('ping_ip_table', $ping_ip_table_data);
@@ -251,7 +251,7 @@ class Tools extends CI_Controller
 
             $insertEmailAlert_data = [
                 'ping_ip_id' => $last_insert_id,
-                'alert' => $this->input->post('email'),
+                'alert'      => $this->input->post('email'),
             ];
             $this->sqlqu->insertEmailAlert($insertEmailAlert_data);
 
@@ -269,9 +269,9 @@ class Tools extends CI_Controller
     {
         $data = ['yesterday' => $para1];
 
-        $data_meta = ['title' => 'Visitor Tracking',
+        $data_meta = ['title'            => 'Visitor Tracking',
                            'description' => 'View recent activity on our website',
-                           'keywords' => 'page,tracker,pinescore',
+                           'keywords'    => 'page,tracker,pinescore',
         ];
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -286,14 +286,15 @@ class Tools extends CI_Controller
         $this->load->model('securitychecks');
         $this->load->model('average30days_model');
         $this->load->model('group');
-        $data_meta = ['title' => 'ICMP Monitor (Table pop out)',
+        $this->load->model('groupscore');
+        $data_meta = ['title'            => 'ICMP Monitor (Table pop out)',
                            'description' => 'auto refresh webpage that displays your live ICMP monitors',
-                           'keywords' => 'ip,monitoring,report,online',
+                           'keywords'    => 'ip,monitoring,report,online',
         ];
 
         $array = [
-            'user_id' => $this->session->userdata('user_id'),
-            'group_id' => $filter_group,
+            'user_id'       => $this->session->userdata('user_id'),
+            'group_id'      => $filter_group,
             'error_message' => 'This group is private, please <a href="'.base_url().'">Login</a> to view, or
             request the group owner makes it public. ptfoh',
         ];
@@ -318,6 +319,7 @@ class Tools extends CI_Controller
             $data['ips'] = $this->cellblock7->icmpTableData();
         } else {
             $data['ips'] = $this->cellblock7->icmpTableData($filter_group);
+            $button['groupscore'] = $this->groupscore->getTodayGroupScore($filter_group);
             $grouprow = $this->group->readGroupByID(['group_id' => $filter_group]);
             $button['group_name'] = $grouprow->row('name');
         }
@@ -372,8 +374,8 @@ class Tools extends CI_Controller
                 }
             }
             $update_ping_ip_table = [
-                'note' => $this->input->post('note'),
-                'ip' => $this->input->post('ip'),
+                'note'   => $this->input->post('note'),
+                'ip'     => $this->input->post('ip'),
                 'public' => $this->input->post('ea'),
             ];
             $this->db->where('owner', $this->session->userdata('user_id'));
@@ -382,7 +384,7 @@ class Tools extends CI_Controller
 
             $insertEmailAlert = [
                 'ping_ip_id' => $this->input->post('id'),
-                'alert' => $this->input->post('alert'),
+                'alert'      => $this->input->post('alert'),
             ];
             $this->sqlqu->insertEmailAlert($insertEmailAlert);
 
@@ -415,7 +417,7 @@ class Tools extends CI_Controller
             $this->db->delete('ping_ip_table');
 
             $removeFromGroups = ([
-                'user_id' => $this->session->userdata('user_id'),
+                'user_id'    => $this->session->userdata('user_id'),
                 'ping_ip_id' => $this->input->post('id'),
             ]);
             $this->group_association->delete_all_associations_based_on_ping_ip_id($removeFromGroups);
@@ -430,13 +432,13 @@ class Tools extends CI_Controller
     {
         $this->load->library('table');
         $this->load->model('icmpmodel');
-        $report_request = ['ip_id' => $ip_id,
+        $report_request = ['ip_id'      => $ip_id,
                                 'owner' => $this->icmpmodel->getUserID(), ];
         $result = $this->icmpmodel->report($report_request, $change);
 
-        $data_meta = ['title' => 'Activity Report',
+        $data_meta = ['title'            => 'Activity Report',
                            'description' => "Dropped requests over the last <strong><u>week</u></strong>. You'll only receive an email when a node has been down for a minute, not for each dropped request.",
-                           'keywords' => 'icmp,report,activity',
+                           'keywords'    => 'icmp,report,activity',
             //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
             //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
         ];
@@ -453,9 +455,9 @@ class Tools extends CI_Controller
         $this->load->model('lemon');
         $control['results'] = $this->lemon->controlResults();
 
-        $data_meta = ['title' => 'Control Results',
+        $data_meta = ['title'            => 'Control Results',
                            'description' => 'See when our server has failed the stability test. When we are not happy that the server is performing at maximum capacity it will not mark any nodes as failed.',
-                           'keywords' => 'control,check,report',
+                           'keywords'    => 'control,check,report',
             //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
             //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
         ];
@@ -471,9 +473,9 @@ class Tools extends CI_Controller
         $this->db->order_by('datetime', 'ASC');
         $michaeljordan['alerts'] = $this->db->get('history_email_alerts');
 
-        $data_meta = ['title' => 'Email Alert History',
+        $data_meta = ['title'            => 'Email Alert History',
                            'description' => 'Take a trip down memory lane and see what alerts have been sent out over the last couple of days.',
-                           'keywords' => 'memory,lane',
+                           'keywords'    => 'memory,lane',
             //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
             //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
         ];
