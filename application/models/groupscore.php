@@ -54,7 +54,7 @@ class GroupScore extends CI_model
         $groupsTable = $this->db->get('groups');
         foreach ($groupsTable->result() as $row) {
             $this->db->where('group_id', $row->id);
-            $yesterday = "datetime < (NOW() - INTERVAL 1 DAY)";
+            $yesterday = "datetime < (CURDATE())"; //The date is returned as "YYYY-MM-DD" without time
             $this->db->where($yesterday);
             $group_shortterm_scoresTable = $this->db->get('group_shortterm_scores');
             if($group_shortterm_scoresTable->num_rows() < 1) die('no data to process');
@@ -76,7 +76,7 @@ class GroupScore extends CI_model
     }
     
     private function LTduplicateCheck() {
-        $today = "datetime > (CURDATE())";
+        $today = "datetime > (CURDATE())"; //The date is returned as "YYYY-MM-DD" without time
         $this->db->where($today);
         $group_longterm_scoresTable = $this->db->get('group_longterm_scores');
         if($group_longterm_scoresTable->num_rows() > 0) {
