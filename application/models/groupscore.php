@@ -85,8 +85,15 @@ class GroupScore extends CI_model
             $this->db->delete('group_shortterm_scores');//remove shortterm scores from yesterday as we've 
             //already added to long term table
             die('RIP father - already successfully added data for today');
-        }
-        
-        
+        }        
     }
+    
+    public function getTodayGroupScore($group_id) {
+        $this->db->where('group_id', $group_id);
+        $this->db->order_by('id', 'desc');
+        $this->db->limit(1);
+        $group_shortterm_scoresTable = $this->db->get('group_shortterm_scores');
+        return $group_shortterm_scoresTable->row('score');
+    }
+    
 }
