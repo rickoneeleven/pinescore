@@ -112,36 +112,36 @@ foreach ($ips as $ip => $latest) {
 
     if (isset($edit) && $latest['id'] == $this->input->post('id_edit')) { //because in foreach loop and we onloy want to edit one record
         $data = ['name' => 'note',
-            'id' => 'note',
-            'value' => $latest['note'],
+            'id'        => 'note',
+            'value'     => $latest['note'],
         ];
         $latest['note'] = form_input($data);
 
         $data = ['name' => 'ip',
-            'id' => 'ip',
-            'value' => $ip,
+            'id'        => 'ip',
+            'value'     => $ip,
         ];
         $ip = form_input($data);
 
         $data = ['name' => 'alert',
-            'id' => 'alert',
-            'value' => $latest['alert'],
+            'id'        => 'alert',
+            'value'     => $latest['alert'],
         ];
         $latest['alert'] = form_input($data);
 
         $data = [
-            'name' => 'ea',
-            'id' => 'ea',
-            'value' => 1,
+            'name'    => 'ea',
+            'id'      => 'ea',
+            'value'   => 1,
             'checked' => $ea_enabled,
-            'style' => 'margin:5px',
+            'style'   => 'margin:5px',
         ];
         $data2 = [
-            'name' => 'ea',
-            'id' => 'ea',
-            'value' => 0,
+            'name'    => 'ea',
+            'id'      => 'ea',
+            'value'   => 0,
             'checked' => $ea_disabled,
-            'style' => 'margin:5px',
+            'style'   => 'margin:5px',
         ];
 
         $latest['public'] = 'Yes:'.form_radio($data);
@@ -287,6 +287,10 @@ Key:
             if [><font color="red"><strong>0</strong></font>]: node is moving towards an offline state<br>
             if [><font color="green"><strong>0</strong></font>]: node is moving towards an online state<br>
         </td>
+    </tr>
+    <tr>
+        <td>Group Score: percent of nodes with a score higher than 50. If 90 or above you'll see a smily face too. 
+        You'll only see a group score if you're in the live view of one of your groups.</td>
     </tr>
 </table>
 <p>[ ] The brackets at the end of the <strong>Status</strong> show how many times the ping has returned a different result from the current status.
