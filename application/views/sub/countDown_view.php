@@ -38,14 +38,6 @@ while($week_day_number > 0) {
     $week_day_number--;
 }
 echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
-if($action == 'refresh') {
-    echo '<span id="countdown" style="font-weight: bold;">10</span>&nbsp;
-    <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
-} elseif($group_id != "")  {
-    echo '<a href="'.base_url().'tools/popOut/sapiens/'.$group_id.'">Resume Auto Refresh</a>';
-} else {
-    echo '<a href="'.base_url().'tools/popOut/">Resume Auto Refresh</a>';
-}
 
 if($group_id != "")  {
     if($groupscore > 89) {
@@ -53,6 +45,16 @@ if($group_id != "")  {
     } else {
         $groupicon = "&#128566";
     }
-    echo "$spaces Group Score: $groupscore <span style='font-size:25px;'>$groupicon</span>";
+    echo "<strong>$group_name $spaces Group Score: $groupscore</strong>$spaces $spaces"; 
+    //echo "<span style='font-size:25px;'>$groupicon</span>$spaces $spaces";
+}
+
+if($action == 'refresh') {
+    echo '<span id="countdown" style="font-weight: bold;">10</span>&nbsp;
+    <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
+} elseif($group_id != "")  {
+    echo '<a href="'.base_url().'tools/popOut/sapiens/'.$group_id.'">Resume Auto Refresh</a>';
+} else {
+    echo '<a href="'.base_url().'tools/popOut/">Resume Auto Refresh</a>';
 }
 ?>
