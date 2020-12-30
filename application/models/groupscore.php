@@ -57,6 +57,8 @@ class GroupScore extends CI_model
             $yesterday = "datetime < (NOW() - INTERVAL 1 DAY)";
             $this->db->where($yesterday);
             $group_shortterm_scoresTable = $this->db->get('group_shortterm_scores');
+            if($group_shortterm_scoresTable->num_rows() < 1) die('no data to process');
+            
             foreach($group_shortterm_scoresTable->result() as $gssrow) {
                 $array_of_scores[] = $gssrow->score;
             }
