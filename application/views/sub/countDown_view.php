@@ -48,6 +48,11 @@ if($action == 'refresh') {
 }
 
 if($group_id != "")  {
-    echo "$spaces Group Score: $groupscore";
+    if($groupscore > 89) {
+        $groupicon = "&#128512;";
+    } else {
+        $groupicon = "&#128566";
+    }
+    echo "$spaces Group Score: $groupscore <span style='font-size:25px;'>$groupicon</span>";
 }
 ?>
