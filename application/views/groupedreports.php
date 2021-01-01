@@ -25,8 +25,8 @@ if (validation_errors() != false) {
 echo '<a href="javascript:history.back()"><strong>Back without changes</strong></a>';
 
 $groupname_form_attributes = [
-    'name' => 'groupname',
-    'value' => $group_name,
+    'name'      => 'groupname',
+    'value'     => $group_name,
     'maxlength' => '16',
 ];
 echo '<p><table>
@@ -34,16 +34,28 @@ echo '<p><table>
         <td>Group Name: </td>
         <td>'.form_input($groupname_form_attributes).'</td>
         <td>'.form_submit('Submit', 'Process').'</td>
-    </tr>
+    </tr>';
+    
+if (isset($groupsTable)) {
+echo "<tr><td>Update all group email addresses to: (will replace existing)</td>";
+    $data = array("name" => "email_addresses",
+        "id"             => "email_addresses",
+        'style'          => 'height:12px',
+    );
+    echo "<td>".form_input($data)."</td>";
+    echo "<td>comma seperated</td>";
+}
+    
+    echo '
     <tr>
         <td>Make group <a href="'.base_url().'nc/externalAccess">Public</a>?</td>
         <td>'.form_checkbox('public', 1, $public).'</td>
     </tr>
     <tr>
-        <td colspan="3">&nbsp;</td>
+        <td colspan="2">&nbsp;</td>
     </tr>
     <tr>
-        <td colspan="3">Select the items below to include in this Group</td>
+        <td colspan="2">Select the items below to include in this Group</td>
     </tr>
         ';
 

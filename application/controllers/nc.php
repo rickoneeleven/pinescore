@@ -9,7 +9,7 @@ class Nc extends CI_Controller
     public function externalAccess()
     {
         $data_meta = [
-            'title' => 'Public',
+            'title'       => 'Public',
             'description' => 'When a node is configured for public access, anyone with the URL to the 
                 report can see recent activity. Good for sharing with people when troubleshooting.',
             'keywords' => 'share,report,public',
@@ -32,20 +32,20 @@ class Nc extends CI_Controller
 
         $user = $this->icmpmodel->getUserID();
         $logged_in_user = [
-            'owner' => $user,
-            'order_alpha' => 1,
+            'owner'          => $user,
+            'order_alpha'    => 1,
             'group_creation' => 1,
         ];
         $user_and_group = [
-            'user_id' => $this->session->userdata('user_id'),
+            'user_id'  => $this->session->userdata('user_id'),
             'group_id' => $group_id,
         ];
         switch ($option) {
             case 'modify':
                 $data_meta = [
-                    'title' => 'Modify Group',
+                    'title'       => 'Modify Group',
                     'description' => 'Edit which nodes belong to this group.',
-                    'keywords' => 'icmp,groups,share',
+                    'keywords'    => 'icmp,groups,share',
                 ];
                 $group_associationsTable = $this->group_association->read($user_and_group);
                 if ($group_associationsTable->num_rows() < 1) {
@@ -65,9 +65,9 @@ class Nc extends CI_Controller
 
             case 'create':
                 $data_meta = [
-                    'title' => 'Create new Group',
+                    'title'       => 'Create new Group',
                     'description' => 'Create a new Group. Groups can be used to easily view and share a list of your active monitors with others.',
-                    'keywords' => 'icmp,groups,share',
+                    'keywords'    => 'icmp,groups,share',
                 ];
                 $data_for_view['monitors'] = $this->icmpmodel->getIPs($logged_in_user);
                 $view = 'groupedreports';
@@ -75,10 +75,10 @@ class Nc extends CI_Controller
 
             case 'help_public':
                 $data_meta = [
-                    'title' => 'Public Access Help',
+                    'title'       => 'Public Access Help',
                     'description' => 'If you enable public access, anyone who you send the report link to will be able to see the online/offline status of all your nodes, regardless if they are logged into the site.',
                     'breadcrumbs' => '<a href="javascript:history.back();">[Go Back]</a>',
-                    'keywords' => 'help,groups,share',
+                    'keywords'    => 'help,groups,share',
                 ];
                 $data_for_view = '';
                 $view = 'userConfirmation_view';
@@ -135,16 +135,16 @@ class Nc extends CI_Controller
             $this->securitychecks->ownerCheckRedirect($logged_in_user['owner']);
 
             $new_group = [
-                'name' => $this->input->post('groupname'),
+                'name'    => $this->input->post('groupname'),
                 'user_id' => $logged_in_user['owner'],
-                'public' => $this->input->post('public'),
+                'public'  => $this->input->post('public'),
             ];
             $insert_id = $this->group->create($new_group);
 
             foreach ($ids_for_new_group as $ping_ip_id) {
                 $new_associations = [
-                    'group_id' => $insert_id,
-                    'user_id' => $logged_in_user['owner'],
+                    'group_id'   => $insert_id,
+                    'user_id'    => $logged_in_user['owner'],
                     'ping_ip_id' => $ping_ip_id,
                 ];
                 $this->group_association->create($new_associations);
@@ -165,6 +165,7 @@ class Nc extends CI_Controller
         $this->load->library('form_validation');
         $this->load->model('group');
         $this->load->model('group_association');
+        $this->load->model('sqlqu');
 
         $logged_in_user = [
             'owner' => $this->icmpmodel->getUserID(),
@@ -172,6 +173,7 @@ class Nc extends CI_Controller
 
         $this->form_validation->set_rules('groupname', 'Group Name', 'required|max_length[16]|xss_clean');
         $this->form_validation->set_rules('public_access', 'Public Access', 'xss_clean');
+        $this->form_validation->set_rules('email_addresses', 'Email Addresses', 'xss_clean|valid_emails');
 
         $data_for_view['possible_ids'] = $this->icmpmodel->getIPs($logged_in_user);
         foreach ($data_for_view['possible_ids']->result() as $row) {
@@ -190,7 +192,7 @@ class Nc extends CI_Controller
         } else {
             $group_to_be_updated = $this->group->readSpecificGroup([
                 'group_id' => $this->input->post('group_id'),
-                'user_id' => $this->session->userdata('user_id'),
+                'user_id'  => $this->session->userdata('user_id'),
                 ]);
             if ($group_to_be_updated->num_rows() < 1) {
                 die('who whom it may concern');
@@ -207,15 +209,23 @@ class Nc extends CI_Controller
 
             $ping_ip_ids_to_add_to_group_as_array = array_filter(array_map('trim', (explode(',', $ids_for_updated_group))));
             $this->group_association->delete_all_associations_based_on_group_id([
-                    'user_id' => $this->session->userdata('user_id'),
+                    'user_id'  => $this->session->userdata('user_id'),
                     'group_id' => $this->input->post('group_id'),
                 ]);
             foreach ($ping_ip_ids_to_add_to_group_as_array as $ping_ip_id) {
                 $this->group_association->create([
                     'ping_ip_id' => $ping_ip_id,
-                    'user_id' => $this->session->userdata('user_id'),
-                    'group_id' => $this->input->post('group_id'),
+                    'user_id'    => $this->session->userdata('user_id'),
+                    'group_id'   => $this->input->post('group_id'),
                 ]);
+                
+                if($this->input->post('email_addresses') != "") {
+                    $insertEmailAlert = [
+                        'ping_ip_id' => $ping_ip_id,
+                        'alert'      => $this->input->post('email_addresses'),
+                    ];
+                    $this->sqlqu->insertEmailAlert($insertEmailAlert);
+                }
             }
             redirect(base_url('nc/viewGroup/'.$this->input->post('group_id')));
         }
@@ -235,16 +245,16 @@ class Nc extends CI_Controller
         $group_to_be_deleted = $this->group->readGroupByID(['group_id' => $id]);
         $group_data = [
             'group_id' => $id,
-            'user_id' => $group_to_be_deleted->row('user_id'),
+            'user_id'  => $group_to_be_deleted->row('user_id'),
         ];
 
         $this->securitychecks->ownerCheckRedirect($group_to_be_deleted->row('user_id'));
 
         if ($confirm == 'no') {
             $data_meta = [
-                'title' => 'Think Twice',
+                'title'       => 'Think Twice',
                 'description' => "You're about to walk a path that allows no return.",
-                'keywords' => 'confirm,delete',
+                'keywords'    => 'confirm,delete',
                // 'refresh_content' => "2",
             ];
             $confirmation_view['breadcrumbs'] = 'Are you sure you want to delete the group known as <strong>'.$group_to_be_deleted->row('name').'?</strong>
@@ -273,8 +283,8 @@ class Nc extends CI_Controller
         $this->load->model(['icmpmodel', 'securitychecks', 'cellblock7']);
         $this->load->model('average30days_model');
         $array = [
-            'user_id' => $this->session->userdata('user_id'),
-            'group_id' => $group_id,
+            'user_id'       => $this->session->userdata('user_id'),
+            'group_id'      => $group_id,
             'error_message' => 'This group is private, please <a href="'.base_url().'">Login</a> to view, or
                 request the group owner makes it public.',
         ];
@@ -286,9 +296,9 @@ class Nc extends CI_Controller
         unset($array);
 
         $data_meta = [
-            'title' => 'Groups',
+            'title'       => 'Groups',
             'description' => 'Create groups and select which nodes to include.',
-            'keywords' => 'custom,reports',
+            'keywords'    => 'custom,reports',
            // 'refresh_content' => "2",
         ];
 
@@ -320,17 +330,17 @@ class Nc extends CI_Controller
         $this->load->model('sqlqu');
         $pingiptableSQLrequest = [
             'request_type' => 'ip_by_id',
-            'id' => $id,
+            'id'           => $id,
             ];
         $ping_ip_TableTable = $this->sqlqu->getPingIpTable($pingiptableSQLrequest);
         $historicSQLrequest = [
             'request_type' => 'single_ip',
-            'ip' => $ping_ip_TableTable->row('ip'),
+            'ip'           => $ping_ip_TableTable->row('ip'),
         ];
         $view['historic_pinescoreTable'] = $this->sqlqu->getHistoricpinescore($historicSQLrequest);
         $data_meta = ['title' => '3 Year Log [ '.$ping_ip_TableTable->row('ip').' ]',
-            'description' => 'We save some limited data for a period of 3 years.',
-            'keywords' => 'long, term, behaviour, pinescore',
+            'description'     => 'We save some limited data for a period of 3 years.',
+            'keywords'        => 'long, term, behaviour, pinescore',
         ];
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -341,9 +351,9 @@ class Nc extends CI_Controller
     public function whatIspinescore()
     {
         $data_meta = [
-            'title' => 'pinescore defined',
+            'title'       => 'pinescore defined',
             'description' => 'pinescore is our unique method for rating the stability of a node. A score of 90-100 is top rated, 50-89 is good, 0-49 is suboptimal with potential issue, anything less than 0 usual indicates a problem with the node, or very high load over a sustained period of time.',
-            'keywords' => 'what,is,pinescore',
+            'keywords'    => 'what,is,pinescore',
         ];
 
         $this->load->view('header_view', $data_meta);
@@ -354,9 +364,9 @@ class Nc extends CI_Controller
     public function whatIsLongTermAverage()
     {
         $data_meta = [
-            'title' => 'Long Term Average | hello',
+            'title'       => 'Long Term Average | hello',
             'description' => 'We take a months worth of response times and average them out. We can then use this number to compare your current response times against the longer term average to help identify any performance improvements or drops.',
-            'keywords' => 'pinescore,longtermaverage',
+            'keywords'    => 'pinescore,longtermaverage',
         ];
 
         $this->load->view('header_view', $data_meta);
@@ -367,9 +377,9 @@ class Nc extends CI_Controller
     public function whyHidden()
     {
         $data_meta = [
-            'title' => 'What does this mean?',
+            'title'       => 'What does this mean?',
             'description' => "In your option, you've chosen to hide nodes that are offline for over 72 hours. So, if you choose to add this node to the group, be aware it won't actually be displayed within the group, as this node is hidden as per your option.",
-            'keywords' => 'what,does,this,mean',
+            'keywords'    => 'what,does,this,mean',
         ];
         $confirmation_view['breadcrumbs'] = '<a href="'.base_url().'user_options/options">Change your options here</a>';
 
