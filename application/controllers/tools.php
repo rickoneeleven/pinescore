@@ -388,10 +388,6 @@ class Tools extends CI_Controller
             ];
             $this->sqlqu->insertEmailAlert($insertEmailAlert);
 
-            $data2 = ['single_ip' => $this->input->post('ip')]; //new array as we don't want to send 'owner' details to object as it does an isset for something else
-            $single_ip = $this->icmpmodel->getIPs($data2); //so the return is in the correct format for the $this->checkICMP but with filter on just this IP
-
-            $this->actionicmp->checkICMP($single_ip);
             redirect(base_url().$this->session->userdata('breadcrumbs')); //reloads the page as to refresh the form on successful submission
         }
 

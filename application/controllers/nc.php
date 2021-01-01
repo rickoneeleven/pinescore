@@ -172,7 +172,8 @@ class Nc extends CI_Controller
         ];
 
         $this->form_validation->set_rules('groupname', 'Group Name', 'required|max_length[16]|xss_clean');
-        $this->form_validation->set_rules('public_access', 'Public Access', 'xss_clean');
+        $this->form_validation->set_rules('public_access', 'Public Access', 'xss_clean|boolean');
+        $this->form_validation->set_rules('clear_email_addresses', 'Clear Email Addresses', 'xss_clean|boolean');
         $this->form_validation->set_rules('email_addresses', 'Email Addresses', 'xss_clean|valid_emails');
 
         $data_for_view['possible_ids'] = $this->icmpmodel->getIPs($logged_in_user);
@@ -225,6 +226,14 @@ class Nc extends CI_Controller
                         'alert'      => $this->input->post('email_addresses'),
                     ];
                     $this->sqlqu->insertEmailAlert($insertEmailAlert);
+                }
+                
+                if($this->input->post('clear_email_addresses') == 1) {
+                    $deleteEmailAlert = [
+                        'ping_ip_id' => $ping_ip_id,
+                        'alert'      => $this->input->post('email_addresses'),
+                    ];
+                    $this->sqlqu->insertEmailAlert($deleteEmailAlert);
                 }
             }
             redirect(base_url('nc/viewGroup/'.$this->input->post('group_id')));
