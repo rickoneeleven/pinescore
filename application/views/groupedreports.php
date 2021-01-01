@@ -44,7 +44,12 @@ echo "<tr><td>Update all group email addresses to: (will replace existing)</td>"
     );
     echo "<td>".form_input($data)."</td>";
     echo "<td>comma seperated</td>";
+    
+    echo "<tr><td>Tick to clear all alert email addresses for nodes in this group</td>";
+    echo "<td>".form_checkbox('clear_email_addresses', 1)."</td>";
 }
+
+echo "<tr><td>&nbsp;</td><td></td></tr>";
     
     echo '
     <tr>
