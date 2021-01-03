@@ -295,6 +295,7 @@ class Nc extends CI_Controller
         $this->load->model('techbits_model');
         $this->load->model(['icmpmodel', 'securitychecks', 'cellblock7']);
         $this->load->model('average30days_model');
+        $this->load->model('groupscore');
         $array = [
             'user_id'       => $this->session->userdata('user_id'),
             'group_id'      => $group_id,
@@ -320,6 +321,7 @@ class Nc extends CI_Controller
         $data['ips'] = $this->cellblock7->icmpTableData($group_id);
         $data['myReports'] = $this->cellblock7->getMyReports($this->session->userdata('user_id'));
         $data['group_id'] = $group_id;
+        $data['groupscore'] = $this->groupscore->getTodayGroupScore($group_id);
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('group');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
 
