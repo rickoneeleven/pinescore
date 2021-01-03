@@ -128,6 +128,10 @@ class Nc extends CI_Controller
                     $ids_for_new_group[] = $form_label_id;
             }
         }
+        
+        if(empty($ids_for_new_group)) {
+            die('u no create empty group');
+        }
 
         if ($this->form_validation->run() == false) {
             $this->createOrModifyGroup('create');
