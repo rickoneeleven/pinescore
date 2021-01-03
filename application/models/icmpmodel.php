@@ -99,7 +99,7 @@ class IcmpModel extends CI_model
         $this->db->order_by('datetime', 'desc');
         if ($change == 1) {
             $query['report'] = $this->db->get_where('ping_result_table', ['ip' => $ip,
-                                 'change' => $change, ]);
+                                 'change'                                      => $change, ]);
         } else {
             $query['report'] = $this->db->get_where('ping_result_table', ['ip' => $ip]);
         }
@@ -113,12 +113,12 @@ class IcmpModel extends CI_model
         $query = $this->db->get_where('ping_ip_table', ['ip' => $ip]);
         foreach ($query->result() as $row) {
             $data[$row->owner] = [
-                'last_email_status' => $row->last_email_status,
-                'note' => $row->note,
-                'alert' => $this->get_emailalerts->returnAlertsFromIDasArray($row->id),
-                'count' => $row->count,
-                'owner' => $row->owner,
-                'ip' => $row->ip,
+                'last_email_status'   => $row->last_email_status,
+                'note'                => $row->note,
+                'alert'               => $this->get_emailalerts->returnAlertsFromIDasArray($row->id),
+                'count'               => $row->count,
+                'owner'               => $row->owner,
+                'ip'                  => $row->ip,
                 'average_longterm_ms' => $row->average_longterm_ms,
             ];
         }
@@ -187,14 +187,6 @@ class IcmpModel extends CI_model
             }
             echo 'email sent to: '.$alert['email'];
             echo $this->email->print_debugger();
-            unset($import); //good practice
-            $import = [
-                'owner' => $data['owner'],
-                'note' => $data['note'],
-                'datetime' => $data['time'],
-                'status' => $data['current'],
-            ];
-            $this->db->insert('history_email_alerts', $import);
         }
     }
 
@@ -210,7 +202,7 @@ class IcmpModel extends CI_model
     public function ipExists($ip, $owner)
     {
         $query = $this->db->get_where('ping_ip_table', ['ip' => $ip,
-                    'owner' => $owner, ]
+                    'owner'                                  => $owner, ]
                       );
 
         return $query;

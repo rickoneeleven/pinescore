@@ -463,21 +463,4 @@ class Tools extends CI_Controller
         $this->load->view('footer_view');
     }
 
-    public function emailAlertHistory()
-    {
-        $this->load->library('table');
-        $this->db->order_by('datetime', 'ASC');
-        $michaeljordan['alerts'] = $this->db->get('history_email_alerts');
-
-        $data_meta = ['title'            => 'Email Alert History',
-                           'description' => 'Take a trip down memory lane and see what alerts have been sent out over the last couple of days.',
-                           'keywords'    => 'memory,lane',
-            //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
-            //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
-        ];
-        $this->load->view('header_view', $data_meta);
-        $this->load->view('navTop_view', $data_meta);
-        $this->load->view('reports/email_history_view', $michaeljordan);
-        $this->load->view('footer_view');
-    }
 }
