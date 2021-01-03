@@ -186,23 +186,6 @@ CREATE TABLE `historic_pinescore` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `history_email_alerts`
---
-
-DROP TABLE IF EXISTS `history_email_alerts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `history_email_alerts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `owner` int(11) NOT NULL,
-  `note` text NOT NULL,
-  `datetime` datetime NOT NULL,
-  `status` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `migrations`
 --
 
