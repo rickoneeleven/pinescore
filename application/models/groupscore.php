@@ -96,4 +96,11 @@ class GroupScore extends CI_model
         return $group_shortterm_scoresTable->row('score');
     }
     
+    public function deleteGroupScores($group_id) {
+        $this->db->where('group_id', $group_id);
+        $this->db->delete('group_shortterm_scores');
+        $this->db->where('group_id', $group_id);
+        $this->db->delete('group_longterm_scores');       
+    }
+    
 }
