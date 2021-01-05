@@ -58,10 +58,6 @@
                 $this->db->delete('stats_total');
                 echo $this->db->last_query()."<p>";
 
-                $this->db->where($old);
-                $this->db->delete('perfmon');
-                echo $this->db->last_query()."<p>";
-
                 $this->db->where($old_3year);
                 $this->db->delete('historic_pinescore');
                 echo $this->db->last_query()."<p>";
