@@ -254,6 +254,7 @@ class Nc extends CI_Controller
         $this->load->model('securitychecks');
         $this->load->model('group');
         $this->load->model('group_association');
+        $this->load->model('groupscore');
 
         $group_to_be_deleted = $this->group->readGroupByID(['group_id' => $id]);
         $group_data = [
@@ -282,6 +283,7 @@ class Nc extends CI_Controller
         } else {
             $this->group->delete($group_data);
             $this->group_association->delete_all_associations_based_on_group_id($group_data);
+            $this->groupscore->deleteGroupScores($id);
             redirect(base_url());
         }
     }
