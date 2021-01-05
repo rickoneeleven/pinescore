@@ -1,21 +1,20 @@
 <?php
 $count = 0;
+$spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 echo '<div id="icmp_table">';
 echo '<br><table class="nowrap">
     <tr class="darker">
     <td></td>
-    <td>Currently being monitored:</td>
-    <td><a class="powerful" href="'.current_url().'">Refresh</a></td>';
+    <td>Currently being monitored: '."$spaces".'<a class="powerful" href="'.base_url().'tools/pingAdd/">[Home]</a></td>
+    <td><a class="powerful" href="'.current_url().'">[Refresh]</a></td>';
 if ($this->uri->slash_segment(2) == 'popOut/') {
     if ($this->uri->slash_segment(3) == 'sapiens/' || $this->uri->slash_segment(3) == 'stop/' && $this->uri->slash_segment(4) != '/') {
-        echo '<td><a class="powerful" href="'.base_url().'nc/viewGroup/'.$this->uri->slash_segment(4).'">Back to Group</a> </td>';
-    } else {
-        echo '<td><a class="powerful" href="'.base_url().'tools/pingAdd/">Back to Tools</a> </td>';
+        echo '<td><a class="powerful" href="'.base_url().'nc/viewGroup/'.$this->uri->slash_segment(4).'">[Back to Group]</a> </td>';
     }
 } elseif (isset($group_id)) {
-    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/sapiens/'.$group_id.'" style="color: red;">Live Data</a> </td>';
+    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/sapiens/'.$group_id.'" style="color: red;">[Live Data]</a> </td>';
 } else {
-    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/" style="color: red;">Live Data</a> </td>';
+    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/" style="color: red;">[Live Data]</a> </td>';
 }
 echo '
     <td></td>
