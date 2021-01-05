@@ -57,10 +57,6 @@
                 $this->db->where($old); //the command that updates timestamp in stats_total runs at the end of every minute
                 $this->db->delete('stats_total');
                 echo $this->db->last_query()."<p>";
-                
-                $this->db->where($old);
-                $this->db->delete('control');
-                echo $this->db->last_query()."<p>";
 
                 $this->db->where($old);
                 $this->db->delete('perfmon');
