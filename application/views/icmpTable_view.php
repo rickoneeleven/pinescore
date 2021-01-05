@@ -93,6 +93,8 @@ foreach ($ips as $ip => $latest) {
             } elseif ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days > 1) {
                 $tr = '<tr class="overonedayred">';
             } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] < -100) {
+                ++$count;
+                $showcount = 1;
                 $tr = '<tr class="orange">';
             } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
                 $tr = '<tr class="green">';
