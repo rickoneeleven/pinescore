@@ -80,6 +80,11 @@ foreach ($ips as $ip => $latest) {
         $ea_disabled = true;
     }
 
+    if($latest['score'] < 50) {
+        ++$count;
+        $showcount = 1; 
+    }
+    
     if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
         $tr = '<tr class="orange">';
     } else {
@@ -93,18 +98,12 @@ foreach ($ips as $ip => $latest) {
             } elseif ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days > 1) {
                 $tr = '<tr class="overonedayred">';
             } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] < -100) {
-                ++$count;
-                $showcount = 1;
                 $tr = '<tr class="orange">';
             } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
                 $tr = '<tr class="green">';
             } elseif ($latest['score'] < 50 && $latest['score'] > -1) {
-                ++$count;
-                $showcount = 1;
                 $tr = '<tr class="pink">';
             } elseif ($latest['score'] < 0) {
-                ++$count;
-                $showcount = 1;
                 $tr = '<tr class="darkerpink">';
             } else {
                 $tr = '<tr class="hover">';
