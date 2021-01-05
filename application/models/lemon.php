@@ -4,9 +4,9 @@ class Lemon extends CI_model {
 
     public function score($ip) {
         $data_db = array(
-            'ip' => $ip,
+            'ip'       => $ip,
             'datetime' => date('Y-m-d H:i:s'),
-            'score' => -1
+            'score'    => -1
         );
         $this->db->insert('stats', $data_db);
     }
@@ -19,7 +19,7 @@ class Lemon extends CI_model {
             $score = $this->db->get_where('stats', array('ip' => $row->ip));
             $count = $score->num_rows();
             $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
-                'score' => $count,
+                'score'    => $count,
                 'datetime' => date('Y-m-d H:i:s')
             );
             $this->db->where('ip', $row->ip);
@@ -37,13 +37,13 @@ class Lemon extends CI_model {
     public function scoreBaseline() {
         $this->db->order_by('score', 'asc');
         $query = $this->db->get('stats_total'); //limit, offset
-        $offset = round($query->num_rows() /100*25); //25% best score offset
+        $offset = round($query->num_rows() / 100 * 25); //25% best score offset
 
         $this->db->order_by('score', 'asc'); //you have to set this again as it resets after db query
         $query = $this->db->get('stats_total', 1, $offset); //limit, offset
         foreach ($query->result() as $row) {
             $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
-                'score' => $row->score,
+                'score'    => $row->score,
                 'datetime' => date('Y-m-d H:i:s')
             );
             $this->db->where('ip', "baseline"); //where we store the baseline for all compares
@@ -57,51 +57,11 @@ class Lemon extends CI_model {
         foreach ($baseline->result() as $row) {
             $baseline = $row->score;
         }
-        $baseline = 100+$baseline; //how many failures are counted as acceptable because my server may have caused a few bad returns
+        $baseline = 100 + $baseline; //how many failures are counted as acceptable because my server may have caused a few bad returns
         $mine = $this->db->get_where('stats', array('ip' => $ip));
         $return = $baseline - $mine->num_rows();
-        if($return >100) {$return =100;} //baseline may be 5 failures, this client has had 4, giving it a score of 101
+        if($return > 100) {$return = 100;} //baseline may be 5 failures, this client has had 4, giving it a score of 101
         return $return;
-    }
-
-    /**
-     * changed control to hit opendns servers, as they are further away, higher ms. was finding when linode were
-     * having routing issues, they'd cause all the nodes to fail, and as google control was still returning
-     * results as it was so close, confirmed the other circuits had gone offline. when in fact, they were online,
-     * it was just linode having issues hitting further out nodes
-     */
-    public function icmpControl() {
-        $this->load->model('techbits_model');
-        $this->load->model('email_dev_or_no');
-        $opendns = $this->techbits_model->pingv2('opendns.com',1);
-
-        if($opendns > 1) {
-            echo "<p>control passed</p>";
-        } else {
-            $usatoday = $this->techbits_model->pingv2('usatoday.com', 2);
-            if($usatoday > 1) {
-                 echo "<p>control passed</p>";
-            } else {
-                $data = array('datetime' => date('Y-m-d H:i:s'),
-                    'status' => "Failed");
-                $this->db->insert('control', $data);
-                $this->email->from(from_email, 'Watch Dog');
-                $this->email->to('workforward@pinescore.com');
-                $this->email->subject('Control Failed');
-                $this->email->message('You are receiving this email because your server was just about to fail a client but failed the control check.');
-
-                $email_dev_array = array(
-                    'from_class__method'            => 'lemon__icmpControl'
-                );
-                if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
-                die("<p>control failed</p>");
-            }
-        }
-    }
-
-    public function controlResults() {
-        $this->db->Order_By('datetime', 'DESC');
-        return $this->db->get('control');
     }
 
     //calculates the pinescore for all monitored IPs and updates database with score. This used to be done on the
