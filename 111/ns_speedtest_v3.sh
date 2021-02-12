@@ -16,7 +16,7 @@ touch speedtest.log
 tail speedtest.log -f -n0 &
 
 i="1"
-sleepseconds="1"
+sleepseconds="2"
 if [ -z "$2" ] #parameter not passed after interface
 then
 	echo "+++++++++++++++++   To run every hour, for 24 hours, pass 'cron' after interface. i.e. ./ns_speedtest_v3.sh eth1 cron"
@@ -37,6 +37,12 @@ do
 	    killall -q -s 9 curl
 	    killall -q -s 9 tail
 	    rm ${temp_file}
+	    rm ns_speedtest_v3.s*
+	    rm iPad_Pro_HFR* > /dev/null 2>&1
+	    rm ns_1GB.zip* > /dev/null 2>&1
+	    rm 1GB.zip* > /dev/null 2>&1
+	    killall -q -s 9 ns_speedtest_v3.sh
+
 	}
 
 
@@ -85,7 +91,7 @@ do
 			    s2=`$interface`;
 			    d=$(($s2-$s1));
 			    d2=$(($d*8));
-			    echo "        " $(($d / 1048576))" MB/s ("$(($d2 / 1048576))"Mb/s)   | " $(date);
+			    echo "        " $1 $(($d / 1048576))" MB/s ("$(($d2 / 1048576))"Mb/s)   | " $(date);
 			    wgetrunning="$(pgrep $killprocess)"
 			#echo "${wgetrunning}"
 			done
@@ -105,34 +111,6 @@ do
         wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null
 
 	sleep 2
-#	echo
-#	echo
-#	echo Aggregated download test from pinescore.com
-#	write_output download >> speedtest.log &
-#	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null
-#
-#	sleep 2
-#	echo
-#	echo
-#	echo Aggregated download test from apple cdn
-#	write_output download >> speedtest.log &
-#	wget http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw -o /dev/null
-#
-#	sleep 2
-#	echo
-#	echo
-#	echo Aggregated download test from speedtest.virtuetechnologies.co.uk
-#        write_output download >> speedtest.log &
-#        wget http://speedtest.virtuetechnologies.co.uk/ns_1GB.zip -o /dev/null
-#
-#	sleep 2
-#	echo
-#	echo
-#	echo Aggregated download test from thinkbroadband
-#        write_output download >> speedtest.log &
-#        wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null
-#	sleep 2
-
 	echo
 	echo
 
@@ -147,7 +125,9 @@ do
 
 	#sleep solves a race condition on debian causing scipt to hang a third of the time otherwise. think it's because
 	#the commands finish the background tasks have yet not complete
-	sleep 2
+#	sleep 2
+	echo "sleeping for $sleepseconds second(s), $((i-1)) iterations left"
+	sleep $sleepseconds
 	i=$((i-1))
 #	echo
 #	echo
@@ -174,4 +154,4 @@ echo " +++++++++++++++++   example one liner: wget https://pinescore.com/111/ns_
 rm ns_speedtest_v3.s*
 rm iPad_Pro_HFR* > /dev/null 2>&1
 rm ns_1GB.zip* > /dev/null 2>&1
-rm 1GB.zip* > /dev/null 2>&l
+rm 1GB.zip* > /dev/null 2>&1
