@@ -8,8 +8,8 @@ if (!defined('BASEPATH')) {
     {
         public function index()
         {
-            echo 'test';
-            phpinfo();
+            $this->load->model('groupscore');
+            echo $this->groupscore->getTodayGroupScore('1');
         }
 
         //wip1 work on editing a group
