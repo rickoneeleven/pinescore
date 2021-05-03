@@ -191,11 +191,11 @@ foreach ($ips as $ip => $latest) {
     echo '<a name="'.$latest['id'].'"></td> <!--<a name tag so the href link when editing a field auto jumps down when pressing the edit and confirm button, rather than manually having the scroll-->
         <td> ';
     if ($latest['last_email_status'] == 'Offline') {
-        echo ' '.$wentoffline.'&nbsp;';
+        echo ' '.$wentoffline;
     } else {
         echo $ms;
     }
-    echo '</td>
+    echo anchor(base_url().'traceroute/routesthathavebeentraced/'.$ip, " (tr) ".'&nbsp;').'</td>
         <td> '.anchor(base_url().'nc/storyTimeNode/'.$latest['id'], $latest['average_longterm_ms'].'ms').'</td>
         <td> '.$latest['lastcheck'].'</td>
         <td>'.$ip.'</td>';
