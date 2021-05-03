@@ -66,6 +66,10 @@
                 $this->db->delete('ping_result_table');
                 echo $this->db->last_query()."<p>";
                 
+                $this->db->where("created_at < (NOW() - INTERVAL 90 DAY)");
+                $this->db->delete('traceroutes');
+                echo $this->db->last_query()."<p>";
+                
                 $this->groupscore->CalulateShortTermGroupScore();
             }
 
