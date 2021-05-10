@@ -70,3 +70,8 @@ crontabs
 
 #engine.pinescore.com
 * * * * * cd /home/pinescore/domains/engine.pinescore.com/public_html && php artisan schedule:run >> /dev/null 2>&1
+
+#other notes
+when exporting DB structure, remove the failed_jobs table if it's in export, as that gets created as part migration
+in the engine project, and if it already exists, for some reason something fails, even though migrations should
+drop tables first...
