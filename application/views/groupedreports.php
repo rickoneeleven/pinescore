@@ -90,6 +90,7 @@ foreach ($monitors->result() as $row) {
 }
 
 echo '</table></p>';
+echo '<p>'.form_submit('Submit', 'Process').'</p>';
 echo form_close();
 ?>
 </div>
