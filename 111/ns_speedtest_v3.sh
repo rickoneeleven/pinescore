@@ -126,27 +126,9 @@ do
 
 	#sleep solves a race condition on debian causing scipt to hang a third of the time otherwise. think it's because
 	#the commands finish the background tasks have yet not complete
-#	sleep 2
 	echo "sleeping for $sleepseconds second(s), $((i-1)) iterations left"
 	sleep $sleepseconds
 	i=$((i-1))
-#	echo
-#	echo
-#	echo
-#	echo "+++++++++++++++++   none aggreagated pinescore:"
-#	wget -q --show-progress -O /dev/null https://pinescore.com/111/ns_1GB.zip &
-#	sleep 10
-#	killall -q -s 9 wget
-#	echo
-#	echo
-#	echo
-#	echo "+++++++++++++++++   none aggregated apple cdn:"
-#	wget -q --show-progress -O /dev/null http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw &
-#	sleep 10
-#	killall -q -s 9 wget
-#	echo
-#	echo "sleeping for $sleepseconds second(s), $((i-1)) iterations left"
-#	sleep $sleepseconds
 done
 killall -q -s 9 tail
 echo
