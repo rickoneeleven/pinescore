@@ -41,6 +41,7 @@ do
 	    rm iPad_Pro_HFR* > /dev/null 2>&1
 	    rm ns_1GB.zip* > /dev/null 2>&1
 	    rm 1GB.zip* > /dev/null 2>&1
+	    rm VTL-ST_1GB.zip > /dev/null 2>&1
 	    killall -q -s 9 ns_speedtest_v3.sh
 
 	}
@@ -69,7 +70,7 @@ do
 
 	write_output() {
 		#don't lower this below 16, as it takes 15 seconds for curl to fail on a upload test and output error message
-		secs=8
+		secs=16
 		endTime=$(( $(date +%s) + secs )) # Calculate end time.
 
 		if [ "$1" = "upload" ]
@@ -97,6 +98,7 @@ do
 			done
 			sleep 1
 			killall -q -s 9 $killprocess
+			sleep 1
 	}
 
 	testserver=$2
@@ -110,7 +112,7 @@ do
 	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null &
 	wget https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS -o /dev/null &
         wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null &
-	wget http://20.105.185.242/ns_1GB.zip -o /dev/null
+	wget http://20.105.185.242/VTL-ST_1GB.zip -o /dev/null
 
 	sleep 2
 	echo
@@ -119,15 +121,21 @@ do
 	echo Aggregated upload test to pinescore.com
 	write_output upload >> speedtest.log &
 	sleep 1
+	curl -T ns_1GB.zip -k sftp://pinescore.com:11/home/pinescore/public_html/111/ftp_speedtest/ns_sftp_1GB.zip --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null &
 	curl -T ns_1GB.zip ftp://pinescore.com --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null
 
-	rm ns_1GB.zi*
+	rm iPad_Pro_HFR* > /dev/null 2>&1
+	rm ns_1GB.zip* > /dev/null 2>&1
+	rm 1GB.zip* > /dev/null 2>&1
+	rm VTL-ST_1GB.zip > /dev/null 2>&1
+
+	
 	#dev/null output because if we CTL-C, it removes the file once as part of the trap, then tries again here and throws error
 	rm ${temp_file} 2> /dev/null
 
 	#sleep solves a race condition on debian causing scipt to hang a third of the time otherwise. think it's because
 	#the commands finish the background tasks have yet not complete
-	echo "sleeping for $sleepseconds second(s), $((i-1)) iterations left"
+	#echo "sleeping for $sleepseconds second(s), $((i-1)) iterations left"
 	sleep $sleepseconds
 	i=$((i-1))
 done
@@ -139,3 +147,4 @@ rm ns_speedtest_v3.s*
 rm iPad_Pro_HFR* > /dev/null 2>&1
 rm ns_1GB.zip* > /dev/null 2>&1
 rm 1GB.zip* > /dev/null 2>&1
+rm VTL-ST_1GB.zip > /dev/null 2>&1
