@@ -109,7 +109,8 @@ do
 	wget http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw -o /dev/null &
 	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null &
 	wget https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS -o /dev/null &
-        wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null
+        wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null &
+	wget http://20.105.185.242/ns_1GB.zip -o /dev/null
 
 	sleep 2
 	echo
