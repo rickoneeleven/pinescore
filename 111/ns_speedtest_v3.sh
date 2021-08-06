@@ -108,11 +108,11 @@ do
 	echo
 	echo 4x simultaneous downloads from thinkbroadband, pinescore, AWS and apple cdn, measuring the total aggregated throuput of the external interface
         write_output download >> speedtest.log &
-	wget http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw -o /dev/null &
-	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null &
-	wget https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS -o /dev/null &
-        wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null &
-	wget http://20.105.185.242/VTL-ST_1GB.zip -o /dev/null
+	wget http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw -o /dev/null -O ->> ns_1GB.zip &
+	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null -O ->> ns_1GB.zip &
+	wget https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS -o /dev/null -O ->> ns_1GB.zip &
+        wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null -O ->> ns_1GB.zip &
+	wget http://20.105.185.242/VTL-ST_1GB.zip -o /dev/null -O ->> ns_1GB.zip
 
 	sleep 2
 	echo
@@ -121,7 +121,7 @@ do
 	echo Aggregated upload test to pinescore.com
 	write_output upload >> speedtest.log &
 	sleep 1
-	curl -T ns_1GB.zip -k sftp://pinescore.com:11/home/pinescore/public_html/111/ftp_speedtest/ns_sftp_1GB.zip --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null &
+	#curl -T ns_1GB.zip -k sftp://pinescore.com:11/home/pinescore/public_html/111/ftp_speedtest/ns_sftp_1GB.zip --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null &
 	curl -T ns_1GB.zip ftp://pinescore.com --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null
 
 	rm iPad_Pro_HFR* > /dev/null 2>&1
