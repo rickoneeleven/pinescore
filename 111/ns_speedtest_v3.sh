@@ -112,7 +112,8 @@ do
 	wget https://pinescore.com/111/ns_1GB.zip -o /dev/null -O ->> ns_1GB.zip &
 	wget https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS -o /dev/null -O ->> ns_1GB.zip &
         wget http://ipv4.download.thinkbroadband.com/1GB.zip -o /dev/null -O ->> ns_1GB.zip &
-	wget http://20.105.185.242/VTL-ST_1GB.zip -o /dev/null -O ->> ns_1GB.zip
+	wget http://84.21.152.158/ns_1GB.zipCloudLinux -o /dev/null -O ->> ns_1GB.zip &
+	wget http://virtueazure.pinescore.com/VTL-ST_1GB.zip -o /dev/null -O ->> ns_1GB.zip
 
 	sleep 2
 	echo
@@ -122,6 +123,7 @@ do
 	write_output upload >> speedtest.log &
 	sleep 1
 	#curl -T ns_1GB.zip -k sftp://pinescore.com:11/home/pinescore/public_html/111/ftp_speedtest/ns_sftp_1GB.zip --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null &
+	curl -T ns_1GB.zip ftp://virtueazure.pinescore.com --user ftp_speedtest:ftp_speedtest 2>/dev/null &
 	curl -T ns_1GB.zip ftp://pinescore.com --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>/dev/null
 
 	rm iPad_Pro_HFR* > /dev/null 2>&1
