@@ -24,7 +24,7 @@
     <p>
         <?php
             if(isset($captcha_requested)) {
-                echo form_label("<tr><td>Verify Image: </td> <td>", "verify");
+                echo form_label("<tr><td>one hundred and eleven as number: </td> <td>", "verify");
                 $data = array("name" => "verify",
                       "id" => "verify",
                       "value" => ""
