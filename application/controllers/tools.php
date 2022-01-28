@@ -286,6 +286,7 @@ class Tools extends CI_Controller
         $this->load->model('securitychecks');
         $this->load->model('average30days_model');
         $this->load->model('group');
+        $this->load->model('group_monthly_scores');
         $this->load->model('groupscore');
         $data_meta = ['title'            => 'ICMP Monitor (Table pop out)',
                            'description' => 'auto refresh webpage that displays your live ICMP monitors',
@@ -325,6 +326,7 @@ class Tools extends CI_Controller
         }
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
+        //$data['group_monthly_scores'] = $this->group_monthly_scores->get($filter_group);
 
         $this->load->view('sub/countDown_view', $button);
         $this->load->view('icmpTable_view', $data);
