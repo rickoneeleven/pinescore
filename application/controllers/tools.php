@@ -321,12 +321,12 @@ class Tools extends CI_Controller
         } else {
             $data['ips'] = $this->cellblock7->icmpTableData($filter_group);
             $button['groupscore'] = $this->groupscore->getTodayGroupScore($filter_group);
+            $button['group_monthly_scores'] = $this->group_monthly_scores->get($filter_group);
             $grouprow = $this->group->readGroupByID(['group_id' => $filter_group]);
             $button['group_name'] = $grouprow->row('name');
         }
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
-        //$data['group_monthly_scores'] = $this->group_monthly_scores->get($filter_group);
 
         $this->load->view('sub/countDown_view', $button);
         $this->load->view('icmpTable_view', $data);
