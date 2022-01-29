@@ -7,5 +7,8 @@ class   Group_monthly_scores extends CI_model {
         $this->db->where("group_id", $group_id);
         $this->db->limit(12);
         $all = $this->db->get("group_monthly_scores");
+        //vdebug($all);
+        //die();
+        return $all;
     }
 } 

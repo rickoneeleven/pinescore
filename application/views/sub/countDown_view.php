@@ -39,16 +39,6 @@ while($week_day_number > 0) {
 }
 echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
 
-if($group_id != "")  {
-    if($groupscore > 89) {
-        $groupicon = "&#128512;";
-    } else {
-        $groupicon = "&#128566";
-    }
-    echo "<strong>$group_name $spaces Group Score: $groupscore</strong>$spaces $spaces"; 
-    //echo "<span style='font-size:25px;'>$groupicon</span>$spaces $spaces";
-}
-
 if($action == 'refresh') {
     echo '<span id="countdown" style="font-weight: bold;">10</span>&nbsp;
     <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
@@ -56,5 +46,21 @@ if($action == 'refresh') {
     echo '<a href="'.base_url().'tools/popOut/sapiens/'.$group_id.'">Resume Auto Refresh</a>';
 } else {
     echo '<a href="'.base_url().'tools/popOut/">Resume Auto Refresh</a>';
+}
+echo "</br>";
+if($group_id != "")  {
+    if($groupscore > 89) {
+        $groupicon = "&#128512;";
+    } else {
+        $groupicon = "&#128566";
+    }
+    echo "<strong>$group_name | Group Scores: "; 
+    //echo "<span style='font-size:25px;'>$groupicon</span>$spaces $spaces";
+    foreach ($group_monthly_scores->result() as $row)
+    {
+        $newDate = date('M', strtotime($row->created_at));
+        echo $newDate."(".$row->score."), ";
+    }
+    echo "Today($groupscore)</strong>$spaces $spaces";
 }
 ?>
