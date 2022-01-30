@@ -298,6 +298,7 @@ class Nc extends CI_Controller
         $this->load->model(['icmpmodel', 'securitychecks', 'cellblock7']);
         $this->load->model('average30days_model');
         $this->load->model('groupscore');
+        $this->load->model('group_monthly_scores');
         $array = [
             'user_id'       => $this->session->userdata('user_id'),
             'group_id'      => $group_id,
@@ -326,6 +327,8 @@ class Nc extends CI_Controller
         $data['groupscore'] = $this->groupscore->getTodayGroupScore($group_id);
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('group');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
+        $data['group_name'] = $data['groupsTable']->row('name');
+        $data['group_monthly_scores'] = $this->group_monthly_scores->get($group_id);
 
         $user_ip = $this->techbits_model->userIP();
         $data['user_ip'] = $user_ip;
@@ -338,6 +341,7 @@ class Nc extends CI_Controller
             $this->load->view('viewgroupmenu', $data);
         }
         $this->load->view('groupheader', $data);
+        $this->load->view('group_scores_view', $data);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
     }
