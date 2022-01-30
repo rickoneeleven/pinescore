@@ -26,6 +26,7 @@ startTimer(10);  // 60 seconds
 
 </script>
 <?php
+if(!isset($group_id)) $group_id = "";
 $spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 echo "</br>";
 echo "</br>";
