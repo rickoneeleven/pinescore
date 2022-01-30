@@ -322,6 +322,7 @@ class Tools extends CI_Controller
             $data['ips'] = $this->cellblock7->icmpTableData($filter_group);
             $button['groupscore'] = $this->groupscore->getTodayGroupScore($filter_group);
             $button['group_monthly_scores'] = $this->group_monthly_scores->get($filter_group);
+            $button['group_id'] = $filter_group;
             $grouprow = $this->group->readGroupByID(['group_id' => $filter_group]);
             $button['group_name'] = $grouprow->row('name');
         }
@@ -329,6 +330,7 @@ class Tools extends CI_Controller
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
 
         $this->load->view('sub/countDown_view', $button);
+        $this->load->view('group_scores_view', $button);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
     }
