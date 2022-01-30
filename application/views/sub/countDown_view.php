@@ -27,8 +27,6 @@ startTimer(10);  // 60 seconds
 </script>
 <?php
 $spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-$group_id = $this->uri->slash_segment(4);
-$group_id = rtrim($group_id, "/");
 echo "</br>";
 echo "</br>";
 $week_day_number = date('N');
@@ -46,21 +44,5 @@ if($action == 'refresh') {
     echo '<a href="'.base_url().'tools/popOut/sapiens/'.$group_id.'">Resume Auto Refresh</a>';
 } else {
     echo '<a href="'.base_url().'tools/popOut/">Resume Auto Refresh</a>';
-}
-echo "</br>";
-if($group_id != "")  {
-    if($groupscore > 89) {
-        $groupicon = "&#128512;";
-    } else {
-        $groupicon = "&#128566";
-    }
-    echo "<strong>$group_name | Group Scores: "; 
-    //echo "<span style='font-size:25px;'>$groupicon</span>$spaces $spaces";
-    foreach ($group_monthly_scores->result() as $row)
-    {
-        $newDate = date('M', strtotime($row->created_at));
-        echo $newDate."(".$row->score."), ";
-    }
-    echo "Today($groupscore)</strong>$spaces $spaces";
 }
 ?>
