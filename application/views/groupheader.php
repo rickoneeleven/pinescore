@@ -7,7 +7,7 @@ $public = '(Private)';
 if ($groupsTable->row('public')) {
     $public = '(Public)';
 }
-echo '<h3>Group Name: '.$groupsTable->row('name')." $public $spaces
-Group Score: $groupscore</h3>";
+echo "<h3> Visibility: $public $spaces</h3>";
 ?>
 </div>
+</br></br>
