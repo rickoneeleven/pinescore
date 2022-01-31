@@ -12,9 +12,9 @@ if ($this->uri->slash_segment(2) == 'popOut/') {
         echo '<td><a class="powerful" href="'.base_url().'nc/viewGroup/'.$this->uri->slash_segment(4).'">[Back to Group]</a> </td>';
     }
 } elseif (isset($group_id)) {
-    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/sapiens/'.$group_id.'" style="color: red;">[Live Data]</a> </td>';
+    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/sapiens/'.$group_id.'" style="color: red;">[Auto Refresh]</a> </td>';
 } else {
-    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/" style="color: red;">[Live Data]</a> </td>';
+    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/" style="color: red;">[Auto Refresh]</a> </td>';
 }
 echo '
     <td></td>
