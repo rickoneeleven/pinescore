@@ -10,7 +10,7 @@ if(isset($group_id))  {
     //echo "<span style='font-size:25px;'>$groupicon</span>$spaces $spaces";
     foreach ($group_monthly_scores->result() as $row)
     {
-        $newDate = date('M', strtotime($row->created_at));
+        $newDate = date('M', strtotime('-1 day', strtotime($row->created_at)));
         echo $newDate."(".$row->score."), ";
     }
     echo "Today($groupscore)";
