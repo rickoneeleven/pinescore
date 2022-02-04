@@ -19,7 +19,7 @@ if ($this->uri->slash_segment(2) == 'popOut/') {
 echo '
     <td></td>
     <td></td>
-    <td></td>
+    <td><a class="powerful" href="'.base_url().'111/pinscordle.html">[pinescordle]</td>
     <td></td>';
     if ($owner_matches_table) { //last td for darker formatting, only see this column if you're owner
         echo '<td></td>';
