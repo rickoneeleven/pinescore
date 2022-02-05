@@ -41,6 +41,11 @@ echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
 if($action == 'refresh') {
     echo '<span id="countdown" style="font-weight: bold;">10</span>&nbsp;
     <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
+    echo "
+        <script>
+            setTimeout(function(){alert(\"ohh noes, the refrsh, it's broken\")},20000);
+        </script>
+        ";
 } elseif($group_id != "")  {
     echo '<a href="'.base_url().'tools/popOut/sapiens/'.$group_id.'">Resume Auto Refresh</a>';
 } else {
