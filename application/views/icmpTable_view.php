@@ -52,7 +52,6 @@ if ($owner_matches_table) { //only show action button column header if logged in
 }
 echo '</tr>';
 foreach ($ips as $ip => $latest) {
-    $showcount = false;
     $difference_percent = 0;
     $ms = $latest['ms'].'ms';
     $now = new DateTime();
@@ -78,11 +77,7 @@ foreach ($ips as $ip => $latest) {
         $ea_enabled = false;
         $ea_disabled = true;
     }
-
-    if($latest['score'] < 50) {
-        ++$count;
-        $showcount = 1; 
-    }
+    ++$count;
     
     if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
         $tr = '<tr class="orange">';
@@ -155,11 +150,8 @@ foreach ($ips as $ip => $latest) {
 
     $report = 'tools/report/'.$latest['id'];
     echo $tr;
-    if ($showcount === 1) {
-        echo "<td>$count</td>";
-    } else {
-        echo '<td></td>';
-    }
+    echo "<td>$count</td>";
+
     if (!isset($edit)) { //only want the report hyperlink to be active if we're not editing, otherwise it clicks through
         echo '<td> '.anchor($report, $latest['note']).'</td>';
     } else {
