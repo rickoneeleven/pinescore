@@ -187,9 +187,10 @@ foreach ($ips as $ip => $latest) {
     } else {
         echo $ms;
     }
-    echo anchor(base_url().'traceroute/routesthathavebeentraced/'.$ip, " (tr) ".'&nbsp;').'</td>
-        <td> '.anchor(base_url().'nc/storyTimeNode/'.$latest['id'], $latest['average_longterm_ms'].'ms').'</td>
-        <td> '.$latest['lastcheck'].'</td>
+    echo '</td>
+        <td> '.anchor(base_url().'nc/storyTimeNode/'.$latest['id'], $latest['average_longterm_ms'].'ms').
+        '</td>
+        <td> '.$latest['lastcheck'].anchor(base_url().'traceroute/routesthathavebeentraced/'.$ip, " (tr) ".'&nbsp;').'</td>
         <td>'.$ip.'</td>';
     if ($owner_matches_table) { //only show action buttons if logged in
         echo '
