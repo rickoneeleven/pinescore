@@ -7,6 +7,7 @@ echo '<br><table class="nowrap">
     <td></td>
     <td>Currently being monitored: '."$spaces".'<a class="powerful" href="'.base_url().'tools/pingAdd/">[Home]</a></td>
     <td><a class="powerful" href="'.current_url().'">[Refresh]</a></td>';
+    echo "<td></td>";
 if ($this->uri->slash_segment(2) == 'popOut/') {
     if ($this->uri->slash_segment(3) == 'sapiens/' || $this->uri->slash_segment(3) == 'stop/' && $this->uri->slash_segment(4) != '/') {
         echo '<td><a class="powerful" href="'.base_url().'nc/viewGroup/'.$this->uri->slash_segment(4).'">[Back to Group]</a> </td>';
@@ -39,6 +40,7 @@ echo '
         href="'.base_url().'nc/whatIspinescore">?</a> </td>
     <td width="70px" ><strong>Recent ms/Last online</strong></td>
     <td width="85px" ><strong>LTA</strong> <a class="underlined" title="Longer Term Average. Response time averaged from over a months worth of data" href="'.base_url().'nc/whatIsLongTermAverage">?</a> </td>
+    <td width="145px" ><strong>Trace</strong></td>
     <td width="145px" ><strong>Last Checked</strong></td>
     <td width="180px" ><strong>IP</strong></td>';
     if ($owner_matches_table) { //only show alert column header if logged in
@@ -190,7 +192,8 @@ foreach ($ips as $ip => $latest) {
     echo '</td>
         <td> '.anchor(base_url().'nc/storyTimeNode/'.$latest['id'], $latest['average_longterm_ms'].'ms').
         '</td>
-        <td> '.$latest['lastcheck'].anchor(base_url().'traceroute/routesthathavebeentraced/'.$ip, " (tr) ".'&nbsp;').'</td>
+        <td>'.anchor(base_url().'traceroute/routesthathavebeentraced/'.$ip, " (tr) ".'&nbsp;').'</td>
+        <td> '.$latest['lastcheck'].'&nbsp;</td>
         <td>'.$ip.'</td>';
     if ($owner_matches_table) { //only show action buttons if logged in
         echo '
