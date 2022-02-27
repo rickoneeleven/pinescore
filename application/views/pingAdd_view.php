@@ -10,16 +10,6 @@ if(($this->session->userdata('user_email')!="")) {//is user logged in check [tru
     echo "<table>";
     echo "<tr class=\"darker\"><td colspan=\"2\">New hostname or IP to be monitored:"; if(empty($ips)) {echo "<span class=\"b\"> <font color=\"red\">Start Here</font> </span>";} echo "</td></tr>";
 
-    echo form_label("<tr><td>Name of Node*: </td> <td>", "note");
-    $data = array("name" => "note",
-        "id" => "note",
-        "value" => set_value('note'),
-        'style'       => 'height:12px',
-    );
-    echo form_input($data);
-    echo " (Friendly Destination Name)";
-    echo "</td></tr>";
-
     echo form_label("<tr><td>IP or Hostname*: </td> <td>", "ip");
     $data = array("name" => "ip",
         "id" => "ip",
@@ -28,6 +18,16 @@ if(($this->session->userdata('user_email')!="")) {//is user logged in check [tru
     );
     echo form_input($data);
     echo " Your IP: <font color=\"red\">".$user_ip."</font>";
+    echo "</td></tr>";
+    
+    echo form_label("<tr><td>Name of Node*: </td> <td>", "note");
+    $data = array("name" => "note",
+        "id" => "note",
+        "value" => set_value('note'),
+        'style'       => 'height:12px',
+    );
+    echo form_input($data);
+    echo " (Friendly Destination Name)";
     echo "</td></tr>";
 
     echo form_label("<tr><td>Email to alert: </td> <td>", "email");
