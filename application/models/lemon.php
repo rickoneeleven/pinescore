@@ -85,9 +85,8 @@ class Lemon extends CI_model {
             $this->db->update('ping_ip_table', $update_data);
             unset($update_data);
 
-            $hour_and_minute = date("Hi");
-            if($hour_and_minute == "0030" || $hour_and_minute == "0630" || $hour_and_minute == "1230" ||
-            $hour_and_minute == "1830") {
+            $hour_and_minute = date("i"); //every hour, as trigger every time minute=00
+            if($hour_and_minute == "00") {
                 $log_for_history = array(
                     'logged'        => date('Y-m-d H:i:s'),
                     'ms'            => $row->last_ms,
