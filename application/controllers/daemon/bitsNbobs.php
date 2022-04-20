@@ -31,7 +31,9 @@ class BitsNbobs extends CI_Controller {
                     ." difference: $difference";
                 $difference_ms = $row->average_longterm_ms - $ms_now;
                 if($difference <="-25" || $difference >="25") {
+                //if($difference <="-1" || $difference >="1") {
                     if($difference_ms <="-5" || $difference_ms >="5") {
+                    //if($difference_ms <="-1" || $difference_ms >="1") {
                         $data_for_alertDifference[$row->ip]['difference'] = $difference;
                         $data_for_alertDifference[$row->ip]['difference_new'] = $difference;
                         $data_for_alertDifference[$row->ip]['ip'] = $row->ip;
