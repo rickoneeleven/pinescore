@@ -64,7 +64,7 @@ crontabs
 * * * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
 
 #daily average ms update and alert
-31 08 * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updateDailyAverageMs > /dev/null 2>&1
+31 08 * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/checkChangeOfCurrentMsAgainstLTA > /dev/null 2>&1
 
 #monthly average ms update (updates every 4 hours)
 35 00,06,12,18 * * * lynx --dump https://pinescore.com/daemon/average30days > /dev/null 2>&1
