@@ -216,8 +216,8 @@ CREATE TABLE `user` (
   `id` int(50) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `lastlogin` datetime NOT NULL,
-  `hideOffline` tinyint(4) NOT NULL,
+  `lastlogin` datetime DEFAULT NULL,
+  `hideOffline` tinyint(4) DEFAULT NULL,
   `default_EA` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
