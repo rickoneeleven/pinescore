@@ -52,13 +52,8 @@ crontabs
 
 #Cleans up tables and logs shortterm group scores
 24 * * * * lynx --dump https://pinescore.com/api_nightly/ > /dev/null 2>&1
+#^^ table updated in above daemon is created as part of the laravel migrations in the engine project
 */5 * * * * lynx --dump https://pinescore.com/api_nightly/flushPingResultTable > /dev/null 2>&1
-
-#delete files from pinescore.com/111 older than 30 days
-10 09 * * * find /home/pinescore/public_html/111/* -mtime +30 -type f -delete
-
-#more touching of files we want to remain
-11 11 11 * * touch /home/pinescore/public_html/111/ns_*
 
 #calculate the "pinescore" and update database for each IP
 * * * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
@@ -68,6 +63,13 @@ crontabs
 
 #monthly average ms update (updates every 4 hours)
 35 00,06,12,18 * * * lynx --dump https://pinescore.com/daemon/average30days > /dev/null 2>&1
+
+#crons below this line are not essential for the pinescore project to work
+#delete files from pinescore.com/111 older than 30 days
+10 09 * * * find /home/pinescore/public_html/111/* -mtime +30 -type f -delete
+
+#more touching of files we want to remain
+11 11 11 * * touch /home/pinescore/public_html/111/ns_*
 
 #other notes
 when exporting DB structure, remove the failed_jobs table if it's in export, as that gets created as part migration
