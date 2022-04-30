@@ -12,8 +12,8 @@ cp ./application/config/config.php.example ./application/config/config.php
 cp ./application/config/database.php.example ./application/config/database.php
 
 vim ./application/config/config.php
-$dev_domain_tld = ".test";
-
+$dev_domain_tld = ".test"; //if this is youe development server, make sure tld matches domain. If production system, you can ignore this.
+define('from_email', 'dave@pinescore.com'); //general emails are sent from this address
 $config['encryption_key'] = 'breasts';
 :wq
 
