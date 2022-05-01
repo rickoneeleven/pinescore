@@ -1,6 +1,7 @@
 <?php
 $count = 0;
 $spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+$this->session->set_userdata('breadcrumbs', uri_string());
 echo '<div id="icmp_table">';
 echo '<br><table class="nowrap">
     <tr class="darker">
@@ -219,8 +220,6 @@ foreach ($ips as $ip => $latest) {
         }
 
         if (!isset($edit) && !isset($delete)) {
-            $breadcrumbs = uri_string();
-            $this->session->set_userdata('breadcrumbs', $breadcrumbs);
             if (!isset($group_id)) { //$group_id comes from array passed to this view
                 if ($this->uri->segment(3) === 'sapiens') {
                     $group_id = $this->uri->segment(4);
