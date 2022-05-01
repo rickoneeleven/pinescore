@@ -210,6 +210,7 @@ class Tools extends CI_Controller
 
     public function pingAdd_formProcess()
     {
+        $this->session->set_userdata('breadcrumbs', uri_string());
         $this->load->model('icmpmodel');
         $this->load->model('actionicmp');
         $this->load->model('techbits_model');
