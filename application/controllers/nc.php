@@ -358,6 +358,7 @@ class Nc extends CI_Controller
             'request_type' => 'single_ip',
             'ip'           => $ping_ip_TableTable->row('ip'),
         ];
+        if($ping_ip_TableTable->num_rows() === 0) die("one onion per bargy");
         $view['historic_pinescoreTable'] = $this->sqlqu->getHistoricpinescore($historicSQLrequest);
         $data_meta = ['title' => '3 Year Log [ '.$ping_ip_TableTable->row('ip').' ]',
             'description'     => 'We save some limited data for a period of 3 years.',
