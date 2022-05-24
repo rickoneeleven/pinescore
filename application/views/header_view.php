@@ -32,7 +32,10 @@
             echo form_open("auth/user/login");
 			if(($this->session->userdata('user_email')!="")) { //is user lgged in check [true] else
 				//$this->welcome();
-				echo 'Welcome, '. $this->session->userdata('user_email'). " ".anchor('auth/user2/logout', 'Logout'). " | ".anchor('user_options/options', 'Options');
+				echo 'Welcome, '. $this->session->userdata('user_email'). " ".anchor('auth/user2/logout', 'Logout'). " | ".anchor('user_options/options', 'Options').
+				" | <a href=\"https://trello.com/b/Br0ttuuu/step-programming\">Roadmap</a> 
+				| <a href=\"https://www.reddit.com/r/pinescore/\">Forum</a>"
+				;
 			} else {
 				echo '
 					<label for="email">Email:</label>
