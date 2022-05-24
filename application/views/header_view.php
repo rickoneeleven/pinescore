@@ -40,7 +40,10 @@
 					<label for="password">Password:</label>
 					<input type="password" id="pass" name="pass" value="" />
 					<input type="submit" class="" value="Sign in" /> '.
-					anchor('auth/user/register', 'Register')." | ".anchor('auth/user/forgot', 'Forgot');
+					anchor('auth/user/register', 'Register')." | ".anchor('auth/user/forgot', 'Forgot').
+					" | <a href=\"https://trello.com/b/Br0ttuuu/step-programming\">Roadmap</a> 
+					| <a href=\"https://www.reddit.com/r/pinescore/\">Forum</a>"
+					;
 			} 
     echo " | ".anchor('inmyday/oldtools', 'Tools');
     echo form_close();
