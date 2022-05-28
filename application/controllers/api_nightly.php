@@ -74,8 +74,8 @@
             }
 
             public function flushPingResultTable() {
-                $old_10mins = 'datetime < (NOW() - INTERVAL 10 MINUTE)';
-                $this->db->where($old_10mins);
+                $old_4hours = 'datetime < (NOW() - INTERVAL 4 HOUR)';
+                $this->db->where($old_4hours);
                 $this->db->where('change', "0");
                 $this->db->delete('ping_result_table');
                 echo $this->db->last_query()."<p>";
