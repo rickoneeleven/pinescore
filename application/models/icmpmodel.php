@@ -84,8 +84,12 @@ class IcmpModel extends CI_model
 
         $query['pi'] = $this->db->query("SELECT * FROM ping_ip_table WHERE id = $ip_id AND owner = $owner"); //make sure your user ID has acceess to report for this IP
 
-        if ($query['pi']->num_rows() < 1) { //never returned any rows so user does not have access or is not logged in
+        if ($query['pi']->num_rows() < 1) { //never returned any rows so user does not have access, need to check if it's public
             $query['pi'] = $this->db->query("SELECT * FROM ping_ip_table WHERE id = $ip_id");
+            if($query['pi']->num_rows() < 1) {
+                echo 'Node has probably been deleted from the syste, sad face';
+                die();
+            }
             $public_check = $query['pi']->row();
             if ($public_check->public != 1) { //if the report is not set as public and you don't have access
                 echo 'Please '.anchor('', 'login').' to see this report. It has not been configured for public access.';
