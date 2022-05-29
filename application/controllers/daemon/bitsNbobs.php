@@ -104,16 +104,54 @@ class BitsNbobs extends CI_Controller {
         $mode = FALSE;
         foreach($ping_result_tableTable->result() as $row) {
             array_push($average_array, $row->ms);
-            $average_array = array_filter($average_array);
-
-            $values = array_count_values($average_array);
-            if($values) {
-                $mode = array_search(max($values), $values);
-            }
-            //$average = array_sum($average_array)/count($average_array);
-            //$average = round($average,0);
         }
-        //return $average;
-        return $mode;
+        $average_array = array_filter($average_array); //filter out zeros (failed pings)
+        $median = $this->getMedian($average_array);
+        return $median;
+    }
+    
+    /**
+ * A PHP function that will calculate the median value
+ * of an array
+ * 
+ * @param array $arr The array that you want to get the median value of.
+ * @return boolean|float|int
+ * @throws Exception If it's not an array
+ */
+    private function getMedian($arr) {
+        //Make sure it's an array.
+        if(!is_array($arr)){
+            throw new Exception('$arr must be an array!');
+        }
+        //If it's an empty array, return FALSE.
+        if(empty($arr)){
+            return false;
+        }
+        //sort the array
+        asort($arr);
+        
+        //reset keys to match new order
+        $arr = array_values($arr);
+        
+        //Count how many elements are in the array.
+        $num = count($arr);
+        //Determine the middle value of the array.
+        $middleVal = floor(($num - 1) / 2);
+        //If the size of the array is an odd number,
+        //then the middle value is the median.
+        if($num % 2) { 
+            return $arr[$middleVal];
+        } 
+        //If the size of the array is an even number, then we
+        //have to get the two middle values and get their
+        //average
+        else {
+            //The $middleVal var will be the low
+            //end of the middle
+            $lowMid = $arr[$middleVal];
+            $highMid = $arr[$middleVal + 1];
+            //Return the average of the low and high.
+            return (($lowMid + $highMid) / 2);
+        }
     }
 }
