@@ -114,21 +114,6 @@ CREATE TABLE `historic_pinescore` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `other`
---
-
-DROP TABLE IF EXISTS `other`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `other` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `description` tinytext NOT NULL,
-  `value` varchar(500) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `ping_ip_table`
 --
 
