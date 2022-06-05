@@ -90,19 +90,9 @@ class   Average30days_model extends CI_model {
     }
 
     public function getPercentAndMsForDiff() {
-        $returnArray = array();
-
-        $this->db->where('id', 1);
-        $otherTable_percent_quicker = $this->db->get('other');
-        $returnArray['percent_diff_quicker'] = $otherTable_percent_quicker->row('value');
-
-        $this->db->where('id', 9);
-        $otherTable_percent_slower = $this->db->get('other');
-        $returnArray['percent_diff_slower'] = $otherTable_percent_slower->row('value');
-
-        $this->db->where('id', 2);
-        $otherTable_ms = $this->db->get('other');
-        $returnArray['ms_diff'] = $otherTable_ms->row('value');
+        $returnArray['percent_diff_quicker'] = "10";
+        $returnArray['percent_diff_slower'] = "-500";
+        $returnArray['ms_diff'] = "3";
     
         return $returnArray;
     }
