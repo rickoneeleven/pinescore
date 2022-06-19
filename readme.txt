@@ -1,6 +1,8 @@
 Worlds number one ICMP monitoring solution
 CodeIgniter 2.2.0 Project
-req's: MySQL 5.7 (doesn't work on 8 because of the sql_mode we have to set below)
+req's: 
+- MySQL 5.7 (doesn't work on 8 because of the sql_mode we have to set below) / 10.5.15-MariaDB works, other Maria versions may work too
+- php 5.6
 
 --------------------------------------------------
 Database
