@@ -74,6 +74,9 @@ crontabs
 #more touching of files we want to remain
 11 11 11 * * touch /home/pinescore/public_html/111/ns_*
 
+after sorting crontabs, test by running this command:
+lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore
+
 #other notes
 when exporting DB structure, remove the failed_jobs table if it's in export, as that gets created as part migration
 in the engine project, and if it already exists, for some reason something fails, even though migrations should
