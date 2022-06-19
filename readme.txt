@@ -29,6 +29,9 @@ vim ./application/config/database.php
 	'database' => 'pinescore',
 :wq
 
+vim vim application/models/cron_protect.php
+	add servers local IP here, not 127.0.0.1, the real local IP
+
 sudo vim /etc/mysql/my.cnf
 paste the below at the bottom
 [mysqld]
