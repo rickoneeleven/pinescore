@@ -84,3 +84,5 @@ lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore
 when exporting DB structure, remove the failed_jobs table if it's in export, as that gets created as part migration
 in the engine project, and if it already exists, for some reason something fails, even though migrations should
 drop tables first...
+
+test video
