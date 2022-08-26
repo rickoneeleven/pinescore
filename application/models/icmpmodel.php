@@ -111,25 +111,6 @@ class IcmpModel extends CI_model
         return $query;
     }
 
-    public function lastResult($ip)
-    {
-        $this->load->model('get_emailalerts');
-        $query = $this->db->get_where('ping_ip_table', ['ip' => $ip]);
-        foreach ($query->result() as $row) {
-            $data[$row->owner] = [
-                'last_email_status'   => $row->last_email_status,
-                'note'                => $row->note,
-                'alert'               => $this->get_emailalerts->returnAlertsFromIDasArray($row->id),
-                'count'               => $row->count,
-                'owner'               => $row->owner,
-                'ip'                  => $row->ip,
-                'average_longterm_ms' => $row->average_longterm_ms,
-            ];
-        }
-
-        return $data;
-    }
-
     /**
      * we remove any pings that are 0, as these are dropped icmps and i don't want them screwing with average. if they are
      * all 0, we then define 0 and return, rather than trying to work out average of zero.
