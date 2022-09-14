@@ -54,30 +54,27 @@ class BitsNbobs extends CI_Controller {
         $this->load->model('html_email');
         $this->load->model('email_dev_or_no');
         $this->load->model('get_emailalerts');
-        //vdebug($IPAndAverage);
 
         $this->db->where('ip', $IPAndAverage['ip']);
         $ping_ip_tableTable = $this->db->get('ping_ip_table');
         foreach($ping_ip_tableTable->result() as $row) {
+            //next need to update the lastLTAalertDate after email is sent
+            $recentAlert = $this->get_emailalerts->recentAlert($row->id);
             $email_addresses_set_for_alerts = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
-            if($email_addresses_set_for_alerts) {
+            if($email_addresses_set_for_alerts && !$recentAlert) {
                 $this->email->from(from_email, 'pinescore');
-                $state = "DECREASED";
+                $state = "BETTER";
                 $ms_cleaned = number_format(abs($IPAndAverage['difference_ms']),0);
-                if($IPAndAverage['difference'] > "1") $state = "INCREASED";
+                if($IPAndAverage['difference'] > "1") $state = "WORSE";
                 $this->email->to($email_addresses_set_for_alerts); 	    
-                    $this->email->subject($row->note." round time (ping ms) has $state by [$ms_cleaned]ms");
+                    $this->email->subject("$state: ".$row->note);
                 $this->email->set_mailtype("html");
-                $array['body'] = "You have chosen to receive alerts for: ".$row->note."
-                    <br><br>In addition to receiving alerts when the node's online status change, we alert you when the response time changes by a certain percent. This allows you to review any work you may have complete recently to affect this change. Typically the lower the ms, the better.
-                    <br>
-                    <br>
-                    We check this value once daily.<br><br>
+                $array['body'] = $row->note."
+                    <br><br>
                     Long Term Average ms: ".$row->average_longterm_ms."<br>
                     Current average ms: ".$IPAndAverage['ms_now']."<br><br> 
-                    To get a sense of how things have been historically and how they have developed, you'd benefit from checking our 3 Year Log <a href=\"".base_url()."nc/storyTimeNode/".$row->id."\">here</a>
-                    <br>
-                    <br>Good luck commander.";
+                    3 Year Log <a href=\"".base_url()."nc/storyTimeNode/".$row->id."\">here</a>
+                    <br>";
                 $this->email->message($this->html_email->htmlFormatted($array));
                 $email_dev_array = array(
                     'from_class__method'            => 'bitsNbobs__alertDifference'
@@ -85,6 +82,7 @@ class BitsNbobs extends CI_Controller {
                 if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();
                 echo "<br>EMAIL SENT";
                 echo "<br>alert set for: ".$row->ip." | ".$email_addresses_set_for_alerts;
+                
             } else {
                 echo "<br>no alert for: $row->ip";
             }
