@@ -16,7 +16,7 @@
                 $old = "datetime < (NOW() - INTERVAL 48 HOUR)";
                 $old_3year = "logged < (NOW() - INTERVAL 3 YEAR)";
                 $old_1week = "datetime < (NOW() - INTERVAL 1 WEEK)";
-                $stop_monitoring = "last_online_toggle < (NOW() - INTERVAL 6 MONTH)";
+                $stop_monitoring = "last_online_toggle < (NOW() - INTERVAL 1 MONTH)";
                 
                 $this->db->where($stop_monitoring);
                 $expired = $this->db->get('ping_ip_table');
@@ -25,7 +25,7 @@
                     if($this->session->userdata('hideOffline') == 1)
                         $message = "Note: You have 'Hide Offline Nodes > 72 Hours' ticked in your options.\r\n\r\n";
                     $message = $message.'You are receiving this email because "'.$row->note.'" ('.$row->ip.')'.
-                        " has not been online in the last 6 months. We automatically delete inactive nodes to keep our system optimum.\r\n\r\nYou can setup the alert again if you like at ".base_url()."\r\n\r\nThanks\nRyan";
+                        " has not been online in the last month. We automatically delete inactive nodes to keep our system optimum.\r\n\r\nYou can setup the alert again if you like at ".base_url()."\r\n\r\nThanks\nRyan";
                     $owner_email = $this->cellblock7->getOwnerEmail($row->owner);
                     $this->email->from(from_email, 'pinescore');
                     $this->email->to($owner_email); 	    
