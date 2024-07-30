@@ -43,7 +43,7 @@ if($action == 'refresh') {
     <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
     echo "
         <script>
-            setTimeout(function(){alert(\"ohh noes, the refrsh, it's broken\")},20000);
+            setTimeout(function(){alert(\"Please manually refresh the page, to resume Auto Refresh\")},20000);
         </script>
         ";
 } elseif($group_id != "")  {
