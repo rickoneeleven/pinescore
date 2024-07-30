@@ -1,7 +1,7 @@
 <?php
 echo "</br>";
-if(!is_string($groupscore)) $groupscore = '<span style="color: red;">.. new group created, group score is still being calulated, please allow 24 hours</span>';
 if(isset($group_id))  {
+    if(!is_string($groupscore)) $groupscore = '<span style="color: red;">.. new group created, group score is still being calulated, please allow 24 hours</span>';
     echo "<strong>$group_name</strong> | Group Scores: Today($groupscore), "; 
     foreach ($group_monthly_scores->result() as $row)
     {
