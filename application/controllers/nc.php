@@ -344,6 +344,7 @@ class Nc extends CI_Controller
         $this->load->view('group_scores_view', $data);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
+        $this->session->set_userdata('breadcrumbs', uri_string());
     }
 
     public function storyTimeNode($id)
