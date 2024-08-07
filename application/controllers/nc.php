@@ -333,7 +333,6 @@ class Nc extends CI_Controller
         $user_ip = $this->techbits_model->userIP();
         $data['user_ip'] = $user_ip;
 
-        // $data['refresh'] = ""; deleteme 29.06.15
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
         $this->load->view('pingAdd_view', $data);
@@ -344,7 +343,9 @@ class Nc extends CI_Controller
         $this->load->view('group_scores_view', $data);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
-        $this->session->set_userdata('breadcrumbs', uri_string());
+        if (strpos(uri_string(), 'icmpEdit') === false) {
+            $this->session->set_userdata('breadcrumbs', uri_string());
+        }
     }
 
     public function storyTimeNode($id)
