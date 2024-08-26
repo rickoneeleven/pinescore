@@ -81,28 +81,37 @@ foreach ($ips as $ip => $latest) {
     }
     ++$count;
     
-    if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
-        $tr = '<tr class="orange">';
+    // Check if lastcheck is older than 5 minutes
+    $lastcheck_time = new DateTime($latest['lastcheck']);
+    $time_difference = $now->diff($lastcheck_time);
+    $minutes_difference = $time_difference->days * 24 * 60 + $time_difference->h * 60 + $time_difference->i;
+    
+    if ($minutes_difference > 5) {
+        $tr = '<tr style="background-color: black; color: white;">'; // Set row to black if older than 5 minutes
     } else {
-        if ($latest['count'] > 1) {
-            $tr = '<tr class="transition">';
+        if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
+            $tr = '<tr class="orange">';
         } else {
-            if ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days === 0) {
-                $tr = '<tr class="red">';
-            } elseif ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days === 1) {
-                $tr = '<tr class="onedayred">';
-            } elseif ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days > 1) {
-                $tr = '<tr class="overonedayred">';
-            } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] < -100) {
-                $tr = '<tr class="orange">';
-            } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
-                $tr = '<tr class="green">';
-            } elseif ($latest['score'] < 50 && $latest['score'] > -1) {
-                $tr = '<tr class="pink">';
-            } elseif ($latest['score'] < 0) {
-                $tr = '<tr class="darkerpink">';
+            if ($latest['count'] > 1) {
+                $tr = '<tr class="transition">';
             } else {
-                $tr = '<tr class="hover">';
+                if ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days === 0) {
+                    $tr = '<tr class="red">';
+                } elseif ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days === 1) {
+                    $tr = '<tr class="onedayred">';
+                } elseif ($latest['last_email_status'] == 'Offline' && $now->diff($last_online_toggle)->days > 1) {
+                    $tr = '<tr class="overonedayred">';
+                } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] < -100) {
+                    $tr = '<tr class="orange">';
+                } elseif ($latest['lta_difference_algo'] != 0 && $latest['lta_difference_algo'] >= -100 && $latest['lta_difference_algo'] < 0) {
+                    $tr = '<tr class="green">';
+                } elseif ($latest['score'] < 50 && $latest['score'] > -1) {
+                    $tr = '<tr class="pink">';
+                } elseif ($latest['score'] < 0) {
+                    $tr = '<tr class="darkerpink">';
+                } else {
+                    $tr = '<tr class="hover">';
+                }
             }
         }
     }
