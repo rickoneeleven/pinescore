@@ -87,7 +87,7 @@ foreach ($ips as $ip => $latest) {
     $minutes_difference = $time_difference->days * 24 * 60 + $time_difference->h * 60 + $time_difference->i;
     
     if ($minutes_difference > 5) {
-        $tr = '<tr style="background-color: black; color: white;">'; // Set row to black if older than 5 minutes
+        $tr = '<tr style="background-color: yellow; color: black;">'; // Set row to black if older than 5 minutes
     } else {
         if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
             $tr = '<tr class="orange">';
