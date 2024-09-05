@@ -87,4 +87,4 @@ lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore
 			failed_jobs
 			traceroutes
 			group_monthly_scores			
-				had issues if you don't even though migrations should drop tables first
+				had issues if you don't even though migrations should drop tables first.111
