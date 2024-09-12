@@ -224,6 +224,24 @@ CREATE TABLE `verify_email` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ci_sessions`
+--
+
+DROP TABLE IF EXISTS `ci_sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ci_sessions` (
+  `session_id` VARCHAR(40) NOT NULL DEFAULT '0',
+  `ip_address` VARCHAR(45) NOT NULL DEFAULT '0',
+  `user_agent` VARCHAR(120) NOT NULL,
+  `last_activity` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `user_data` TEXT NOT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `last_activity_idx` (`last_activity`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
