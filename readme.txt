@@ -88,3 +88,6 @@ lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore
 			traceroutes
 			group_monthly_scores			
 				had issues if you don't even though migrations should drop tables first.111
+				
+Known Buggies:
+- If you're getting an error in ref to header size when trying to update/add new nodes. Make sure $config['sess_use_database'] is set to true in application/config/config.php. You'll need to create a new table in DB for session sates, see database_structure.sql
