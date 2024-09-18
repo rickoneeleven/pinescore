@@ -230,7 +230,7 @@ class Tools extends CI_Controller
                 redirect(base_url().$this->session->userdata('breadcrumbs'));
             }
             $count_check = $this->icmpmodel->monitorCount($this->session->userdata('user_id'));
-            if ($count_check->num_rows() > 299) {
+            if ($count_check->num_rows() > 999) {
                 $this->session->set_flashdata('message', '300 Monitors reached, please edit/delete you existing monitors or upgrade your account.<br><br>');
                 redirect(current_url()); //reloads the page and uses the session message to pass error (how does for repop?)
             }
