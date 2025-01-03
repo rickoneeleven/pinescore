@@ -25,15 +25,13 @@ class BitsNbobs extends CI_Controller {
         $ping_ip_tableTable =  $this->db->get('ping_ip_table'); 
         foreach($ping_ip_tableTable->result() as $row) {
             $ms_now = $this->getRecentAverage($row->ip);
-            if($ms_now) { //if returns zero, it means the node is offline, we don't need an alert or division by zero errors
+            if($ms_now && $row->last_email_status == "Online") { //if $ms_now is anything but zero, and node is online, proceed. We check ms_now is not zero to prevent division by zero errors
                 $difference = round((1 - $row->average_longterm_ms/$ms_now)*100,0);
                 echo "<br>IP: ".$row->ip."  LTA:".$row->average_longterm_ms." now:".$ms_now
                     ." difference: $difference";
                 $difference_ms = $row->average_longterm_ms - $ms_now;
                 if($difference <="-25" || $difference >="25") {
-                //if($difference <="-1" || $difference >="1") {
                     if($difference_ms <="-5" || $difference_ms >="5") {
-                    //if($difference_ms <="-1" || $difference_ms >="1") {
                         $data_for_alertDifference[$row->ip]['difference'] = $difference;
                         $data_for_alertDifference[$row->ip]['difference_new'] = $difference;
                         $data_for_alertDifference[$row->ip]['ip'] = $row->ip;
