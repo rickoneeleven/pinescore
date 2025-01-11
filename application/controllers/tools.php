@@ -280,7 +280,7 @@ class Tools extends CI_Controller
         $this->load->view('footer_view');
     }
 
-    public function popOut($refresh = null, $filter_group = null)
+    public function popOut($refresh = null, $filter_group = null) 
     {
         $this->load->model('icmpmodel');
         $this->load->model('cellblock7');
@@ -289,24 +289,38 @@ class Tools extends CI_Controller
         $this->load->model('group');
         $this->load->model('group_monthly_scores');
         $this->load->model('groupscore');
-        $data_meta = ['title'            => 'ICMP Monitor (Table pop out)',
-                           'description' => 'auto refresh webpage that displays your live ICMP monitors',
-                           'keywords'    => 'ip,monitoring,report,online',
+    
+        // Fetch health metrics correctly
+        $this->db->where('metric', 'jobs_per_minute');
+        $jobs_query = $this->db->get('health_dashboard');
+        $jobs_per_minute = $jobs_query->row()->result;
+    
+        $this->db->where('metric', 'failed_jobs_past_day');
+        $failed_query = $this->db->get('health_dashboard');
+        $failed_jobs = $failed_query->row()->result;
+    
+        $this->db->where('metric', 'engine_status');
+        $engine_query = $this->db->get('health_dashboard');
+        $engine_status = $engine_query->row()->result;
+        
+        $data_meta = [
+            'title' => 'ICMP Monitor (Table pop out)',
+            'description' => 'auto refresh webpage that displays your live ICMP monitors',
+            'keywords' => 'ip,monitoring,report,online',
         ];
-
+    
         $array = [
-            'user_id'       => $this->session->userdata('user_id'),
-            'group_id'      => $filter_group,
-            'error_message' => 'This group is private, please <a href="'.base_url().'">Login</a> to view, or
-            request the group owner makes it public. ptfoh',
+            'user_id' => $this->session->userdata('user_id'),
+            'group_id' => $filter_group,
+            'error_message' => 'This group is private, please <a href="'.base_url().'">Login</a> to view, or request the group owner makes it public. ptfoh',
         ];
+        
         if (!$this->cellblock7->groupPublicCheck($array)) {
             $this->load->view('error_view', $array);
-
             return false;
         }
         unset($array);
-
+    
         if ($refresh == 'stop') {
             $data_meta['refresh_content'] = '';
             $button = ['action' => 'stop'];
@@ -314,9 +328,14 @@ class Tools extends CI_Controller
             $data_meta['refresh_content'] = 10;
             $button = ['action' => 'refresh'];
         }
-
+    
+        // Add health metrics to button array
+        $button['jobs_per_minute'] = $jobs_per_minute;
+        $button['failed_jobs_past_day'] = $failed_jobs;
+        $button['engine_status'] = $engine_status;
+    
         $this->load->view('header_view', $data_meta);
-
+    
         if (!$filter_group) {
             $data['ips'] = $this->cellblock7->icmpTableData();
         } else {
@@ -327,9 +346,10 @@ class Tools extends CI_Controller
             $grouprow = $this->group->readGroupByID(['group_id' => $filter_group]);
             $button['group_name'] = $grouprow->row('name');
         }
+    
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
-
+    
         $this->load->view('sub/countDown_view', $button);
         $this->load->view('group_scores_view', $button);
         $this->load->view('icmpTable_view', $data);
