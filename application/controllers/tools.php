@@ -37,6 +37,76 @@ class Tools extends CI_Controller
         echo form_radio($data2);
     }
 
+    /**
+     * Export node data to CSV
+     * 
+     * @param int|null $group_id The group ID to filter by, or null for all nodes
+     * @return void Outputs CSV file directly
+     */
+    public function export_csv($group_id = null)
+    {
+        try {
+            $this->load->model('cellblock7');
+            $this->load->model('icmpmodel');
+            $this->load->model('securitychecks');
+            
+            // Verify user has access if this is a private group
+            if ($group_id) {
+                $array = [
+                    'user_id'       => $this->session->userdata('user_id'),
+                    'group_id'      => $group_id,
+                    'error_message' => 'Access denied: This group is private'
+                ];
+                
+                if (!$this->cellblock7->groupPublicCheck($array)) {
+                    echo $array['error_message'];
+                    return;
+                }
+            }
+            
+            // Get the same data used for the current view
+            if ($group_id) {
+                $ips = $this->cellblock7->icmpTableData($group_id);
+            } else {
+                $user = $this->icmpmodel->getUserID();
+                $data3 = ['owner' => $user];
+                $ips = $this->cellblock7->icmpTableData(); 
+            }
+            
+            // Prepare the CSV content with headers
+            $csv_content = "Note,Status,IP\n";
+            
+            // Add each row of data
+            foreach ($ips as $ip => $latest) {
+                // Properly escape any commas in the note field
+                $note = str_replace('"', '""', $latest['note']);
+                if (strpos($note, ',') !== false) {
+                    $note = '"' . $note . '"';
+                }
+                
+                $csv_content .= $note . ',' . 
+                                $latest['last_email_status'] . ',' . 
+                                $ip . "\n";
+            }
+            
+            // Set headers for CSV download
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="pinescore_export_' . date('Y-m-d') . '.csv"');
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            
+            // Output the CSV
+            echo $csv_content;
+            exit;
+            
+        } catch (Exception $e) {
+            log_message('error', 'CSV Export Error: ' . $e->getMessage());
+            // Return a user-friendly error
+            header('Content-Type: text/plain');
+            echo "An error occurred while generating CSV. Please try again.";
+        }
+    }
+
     public function telnet($data = null)
     {
         if ($data == null) {
@@ -487,5 +557,4 @@ class Tools extends CI_Controller
         $this->load->view('reports/control_view', $control);
         $this->load->view('footer_view');
     }
-
 }
