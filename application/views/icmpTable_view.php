@@ -28,7 +28,7 @@ echo '
 echo '
     <td></td>';
 if ($owner_matches_table) { //last td for darker formatting, only see this column if you're owner
-    echo '<td></td>';
+    echo '<td><a class="powerful" href="'.base_url().'tools/export_csv/'.(isset($group_id) ? $group_id : '').'" target="_blank">[CSV]</a></td>';
 }
 echo '
     </tr>
