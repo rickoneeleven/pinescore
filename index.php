@@ -38,7 +38,7 @@ if (defined('ENVIRONMENT'))
 	
 		case 'testing':
 		case 'production':
-			error_reporting(0);
+			error_reporting(E_ALL);
 		break;
 
 		default:
@@ -57,6 +57,7 @@ if (defined('ENVIRONMENT'))
  *
  */
 	$system_path = 'system';
+	ini_set('display_errors', 1);
 
 /*
  *---------------------------------------------------------------
