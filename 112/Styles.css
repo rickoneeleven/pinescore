@@ -1,11 +1,11 @@
 ::selection{ background-color: #E13300; color: white; }
 ::moz-selection{ background-color: #E13300; color: white; }
 ::webkit-selection{ background-color: #E13300; color: white; }
- 
+
 .ryan {
 		display:inline-block;
 }
-  
+
 html, body,#wrap {
 	margin:0;
 	padding:0;
@@ -121,11 +121,11 @@ tr.darker td {
 }
 
 tr.red td {
-	background-color: #FF5733;
+	background-color: #FF5733; /* Consider slightly less intense red? Maybe #f38e78? */
 }
 
 tr.onedayred td {
-	background-color: #FF6666;
+	background-color: #FF6666; /* Slightly less intense red? */
 }
 
 tr.overonedayred td {
@@ -133,23 +133,23 @@ tr.overonedayred td {
 }
 
 tr.orange td {
-	background-color: #cdaf95;
+	background-color: #cdaf95; /* Consider #FFA500 or #FFC107 for better contrast/meaning */
 }
 
 tr.green td {
-	background-color: #98FB98;
+	background-color: #98FB98; /* Good */
 }
 
 tr.pink td {
-	background-color: rgba(218, 29, 171, 0.288);
+	background-color: rgba(218, 29, 171, 0.288); /* Maybe #FFC0CB light pink? */
 }
 
 tr.darkerpink td {
-	background-color: rgba(69, 43, 173, 0.288);
+	background-color: rgba(69, 43, 173, 0.288); /* This doesn't look pink. Maybe a darker #FF69B4? */
 }
 
 tr.transition td {
-	background-color: #b266ff;
+	background-color: #b266ff; /* Maybe #FFFFE0 light yellow? */
 }
 
 tr.hover:hover{
@@ -174,6 +174,11 @@ font-weight: normal;
 text-decoration: none;
 }
 
+a:hover {
+    text-decoration: underline; /* Added basic hover for links */
+}
+
+
 code {
 font-family: Consolas, Monaco, Courier New, Courier, monospace;
 font-size: 12px;
@@ -189,8 +194,9 @@ padding: 12px 10px 12px 10px;
 margin: 10px;
 border: 1px solid #D0D0D0;
 -webkit-box-shadow: 0 0 8px #D0D0D0;
+box-shadow: 0 0 8px #D0D0D0; /* Added standard box-shadow */
 }
-  
+
 /************************************************/
 .signup_wrap{
 height:35px;
@@ -219,6 +225,7 @@ margin:5px auto;
 border:1px solid #DFDFDF;
 background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#cbd4e5));
 background: -moz-linear-gradient(top,  #fff,  #cbd4e5);
+background: linear-gradient(to bottom,  #fff,  #cbd4e5); /* Added standard gradient */
 filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#cbd4e5');
 }
 .form_title,
@@ -240,7 +247,7 @@ margin: 0;
 padding: 5px 0 8px 0;
 padding-left: 155px; /*width of left column containing the label elements*/
 border-top: 1px dashed gray;
-height: 1%;
+height: 1%; /* Old IE fix? */
 }
 .reg_form label{
 font-weight: bold;
@@ -248,26 +255,84 @@ float: left;
 margin-left: -155px; /*width of left column*/
 width: 150px; /*width of labels. Should be smaller than left column (155px) to create some right margin*/
 }
-input[type=submit]{
+
+input[type=submit]{ /* Base style for submit buttons */
 color:#333333;
 border:1px solid #96A6C5;
 font-size:11px;
-padding: 0px 10px; height: 18px; vertical-align: middle;
+padding: 0px 10px;
+height: 18px;
+vertical-align: middle;
+cursor: pointer; /* Added cursor */
 }
-.greenButton{
-width:auto;
-margin:10px 0 0 2px;
-padding:3px 4px 3px 4px;
-color:white;
-background-color:#589d39;
-outline:none;
-border:1px solid #006600;
-font-weight:bold;
+input[type=submit]:hover { /* Added basic hover */
+    border-color: #7b8aaa;
 }
-.greenButton:active{
-background-color:#006600;
-padding:4px 3px 2px 5px;
+
+/* --- Modified .greenButton --- */
+.greenButton, a.greenButton { /* Target both input and anchor tags */
+    display: inline-block; /* Important for anchor tags */
+    width: auto;
+    margin: 10px 0 0 2px;
+    padding: 3px 10px; /* Adjusted padding slightly for better look */
+    color: white;
+    background-color: #589d39;
+    outline: none;
+    border: 1px solid #006600;
+    font-weight: bold;
+    font-size: 11px; /* Match input[type=submit] */
+    text-decoration: none; /* Remove underline for links */
+    vertical-align: middle;
+    cursor: pointer;
+    border-radius: 3px; /* Add slight rounding */
 }
+
+.greenButton:hover, a.greenButton:hover { /* Added hover state */
+    background-color: #4a842f;
+    border-color: #004d00;
+    color: white; /* Ensure text remains white */
+    text-decoration: none;
+}
+
+.greenButton:active, a.greenButton:active {
+    background-color: #006600;
+    padding: 4px 9px 2px 11px; /* Adjust padding slightly on active */
+    color: white;
+}
+
+/* --- New .redButton --- */
+.redButton, a.redButton { /* Target both input and anchor tags */
+    display: inline-block; /* Important for anchor tags */
+    width: auto;
+    margin: 10px 0 0 2px;
+    padding: 3px 10px; /* Match green button padding */
+    color: white;
+    background-color: #d9534f; /* Bootstrap's btn-danger red */
+    outline: none;
+    border: 1px solid #d43f3a;
+    font-weight: bold;
+    font-size: 11px;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.redButton:hover, a.redButton:hover {
+    background-color: #c9302c; /* Darker red on hover */
+    border-color: #ac2925;
+    color: white;
+    text-decoration: none;
+}
+
+.redButton:active, a.redButton:active {
+    background-color: #ac2925;
+    border-color: #761c19;
+    padding: 4px 9px 2px 11px; /* Adjust padding slightly on active */
+    color: white;
+}
+
+
 .error{
 color:#F00;
 }
@@ -275,16 +340,16 @@ color:#F00;
 color:#fff;
 padding-top:20px;
 text-align:center;
-background: #454546; 
-height: 20px;
+background: #454546;
+height: 20px; /* This might be too small depending on content */
 clear:both;
 }
 /************************* nav menu */
 
 ul {
     display: inline-block;
-    *display: inline;
-    zoom: 1;
+    display: inline; /* IE7 hack */
+    zoom: 1; /* IE7 hack */
     list-style-type: none;
 	padding:0;
 	vertical-align: top;
@@ -293,7 +358,7 @@ ul {
 
 #wrapper {
      width: 100%;
-     
+
 }
 #leftcolumn, #rightcolumn {
     border: 1px solid white;
@@ -354,6 +419,8 @@ ul {
   animation-duration: 2000ms;
   animation-name: tgle;
   animation-iteration-count: infinite;
+  /* Consider adding vendor prefixes if needed for older browsers */
+  /* -webkit-animation... etc. */
 }
 
 @keyframes tgle {
@@ -375,8 +442,24 @@ ul {
     opacity: 0;
   }
 }
+/* Consider adding -webkit-keyframes */
+/* @-webkit-keyframes tgle { ... } */
+
 /** blinking shit end */
 
 .underlined {
     text-decoration: underline;
+}
+
+/* Minor cleanup suggestion: Add standard box-shadow */
+.reg_form {
+    /* ... existing styles ... */
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Minor cleanup suggestion: Ensure table cells align vertically */
+table td {
+    /* border:1px dotted #999966; */ /* Already defined */
+    vertical-align: middle; /* Add vertical alignment */
 }
