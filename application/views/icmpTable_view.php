@@ -1,8 +1,9 @@
 <?php
 $count = 0;
 $spaces = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-echo '<div id="icmp_table">';
+echo '<div id="icmp_table" data-group-id="'.(isset($group_id) ? $group_id : '').'">';
 echo '<br><table class="nowrap">
+    <thead>
     <tr class="darker">
     <td></td>
     <td>Currently being monitored: '."$spaces".'<a class="powerful" href="'.base_url().'tools/pingAdd/">[Home]</a></td>
@@ -13,9 +14,9 @@ if ($this->uri->slash_segment(2) == 'popOut/') {
         echo '<td><a class="powerful" href="'.base_url().'nc/viewGroup/'.$this->uri->slash_segment(4).'">[Back to Group]</a> </td>';
     }
 } elseif (isset($group_id)) {
-    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/sapiens/'.$group_id.'" style="color: red;">[Auto Refresh]</a> </td>';
+    echo '<td><a id="autoRefreshToggle" class="powerful" href="'.base_url().'tools/popOut/sapiens/'.$group_id.'" style="color: red;">[Auto Refresh]</a> </td>';
 } else {
-    echo '<td><a class="powerful" href="'.base_url().'tools/popOut/" style="color: red;">[Auto Refresh]</a> </td>';
+    echo '<td><a id="autoRefreshToggle" class="powerful" href="'.base_url().'tools/popOut/" style="color: red;">[Auto Refresh]</a> </td>';
 }
 echo '
     <td></td>
@@ -52,7 +53,9 @@ echo '
 if ($owner_matches_table) { //only show action button column header if logged in
     echo '<td width="155px" ><strong>Actions</strong></td>';
 }
-echo '</tr>';
+echo '</tr>
+    </thead>
+    <tbody id="icmpTableBody">';
 foreach ($ips as $ip => $latest) {
     $difference_percent = 0;
     $ms = $latest['ms'].'ms';
@@ -249,7 +252,8 @@ foreach ($ips as $ip => $latest) {
     }
     echo '</tr>';
 }
-echo '</table>';
+echo '</tbody>
+</table>';
 ?>
 <br>
 Key:

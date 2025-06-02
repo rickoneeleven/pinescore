@@ -107,6 +107,62 @@ class Tools extends CI_Controller
         }
     }
 
+    public function getIcmpDataJson($group_id = null)
+    {
+        $this->load->model('cellblock7');
+        $this->load->model('icmpmodel');
+        $this->load->model('securitychecks');
+        $this->load->model('average30days_model');
+        $this->load->model('group');
+        $this->load->model('group_monthly_scores');
+        $this->load->model('groupscore');
+        
+        header('Content-Type: application/json');
+        
+        if ($group_id) {
+            $array = [
+                'user_id' => $this->session->userdata('user_id'),
+                'group_id' => $group_id,
+                'error_message' => 'Access denied: This group is private'
+            ];
+            
+            if (!$this->cellblock7->groupPublicCheck($array)) {
+                echo json_encode(['error' => $array['error_message']]);
+                return;
+            }
+        }
+        
+        $response = [];
+        
+        if ($group_id) {
+            $response['ips'] = $this->cellblock7->icmpTableData($group_id);
+            $response['groupscore'] = $this->groupscore->getTodayGroupScore($group_id);
+            $response['group_monthly_scores'] = $this->group_monthly_scores->get($group_id);
+            $grouprow = $this->group->readGroupByID(['group_id' => $group_id]);
+            $response['group_name'] = $grouprow->row('name');
+            $response['group_id'] = $group_id;
+        } else {
+            $response['ips'] = $this->cellblock7->icmpTableData();
+        }
+        
+        $response['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
+        $response['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
+        
+        $this->db->where('metric', 'jobs_per_minute');
+        $jobs_query = $this->db->get('health_dashboard');
+        $response['jobs_per_minute'] = $jobs_query->row()->result;
+        
+        $this->db->where('metric', 'failed_jobs_past_day');
+        $failed_query = $this->db->get('health_dashboard');
+        $response['failed_jobs_past_day'] = $failed_query->row()->result;
+        
+        $this->db->where('metric', 'engine_status');
+        $engine_query = $this->db->get('health_dashboard');
+        $response['engine_status'] = $engine_query->row()->result;
+        
+        echo json_encode($response);
+    }
+
     public function telnet($data = null)
     {
         if ($data == null) {
@@ -268,6 +324,10 @@ class Tools extends CI_Controller
         $data['user_ip'] = $user_ip;
 
         $data['refresh'] = '';
+        
+        // Enable AJAX auto-refresh for pingAdd page
+        $data_meta['refresh_content'] = 10; // 10 seconds
+        $data_meta['owner_matches_table'] = $data['owner_matches_table'];
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
@@ -403,6 +463,14 @@ class Tools extends CI_Controller
         $button['jobs_per_minute'] = $jobs_per_minute;
         $button['failed_jobs_past_day'] = $failed_jobs;
         $button['engine_status'] = $engine_status;
+        
+        // Get owner_matches_table before loading header
+        $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
+        $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
+        
+        // Pass necessary data to header view
+        $data_meta['owner_matches_table'] = $data['owner_matches_table'];
+        $data_meta['group_id'] = $filter_group;
     
         $this->load->view('header_view', $data_meta);
     
@@ -416,9 +484,6 @@ class Tools extends CI_Controller
             $grouprow = $this->group->readGroupByID(['group_id' => $filter_group]);
             $button['group_name'] = $grouprow->row('name');
         }
-    
-        $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
-        $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
     
         $this->load->view('sub/countDown_view', $button);
         $this->load->view('group_scores_view', $button);
