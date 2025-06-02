@@ -10,7 +10,7 @@ class   Cron_protect extends CI_model {
         $allowedIPs[] = "81.174.163.10"; //vtl plusnet
         $allowedIPs[] = "84.21.150.125"; //vtl Inf
         $allowedIPs[] = "139.162.250.57"; //pinescore's "local IP" - this is where it's requests come from, not 127.
-        $allowedIPs[] = "192.168.1.205"; //daniel server where the development is now done
+        $allowedIPs[] = "192.168.1.206"; //daniel server where the development is now done
         $allowedIPs[] = "192.168.1.22"; //desktop pc livingroom
 
         if(in_array($this->input->ip_address(), $allowedIPs)) return TRUE;

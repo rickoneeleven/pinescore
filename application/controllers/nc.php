@@ -316,7 +316,7 @@ class Nc extends CI_Controller
             'title'       => 'Groups',
             'description' => 'Create groups and select which nodes to include.',
             'keywords'    => 'custom,reports',
-           // 'refresh_content' => "2",
+            'refresh_content' => 10, // Enable AJAX auto-refresh
         ];
 
         $this->db->where('id', $group_id);
@@ -332,6 +332,10 @@ class Nc extends CI_Controller
 
         $user_ip = $this->techbits_model->userIP();
         $data['user_ip'] = $user_ip;
+        
+        // Pass necessary data to header view for AJAX
+        $data_meta['owner_matches_table'] = $data['owner_matches_table'];
+        $data_meta['group_id'] = $group_id;
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
