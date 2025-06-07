@@ -647,6 +647,9 @@ const IcmpTableUpdater = (function() {
                 // Apply change animations to the new row
                 animateCellChanges(newRow, oldData, data, ip);
                 
+                // Always apply LTA-based styling for ms column (regardless of changes)
+                applyLtaStyling(newRow, data);
+                
                 // Store the new data for this IP for next comparison
                 previousDataByIp[ip] = {
                     note: data.note || '',
@@ -797,22 +800,14 @@ const IcmpTableUpdater = (function() {
             // Note: Red color for recent changes is already handled in createScoreCell function
         }
         
-        // Recent ms (cell 4) - bold/color based purely on LTA comparison
+        // Recent ms (cell 4) - only bold if value changed (color handled separately)
         if (cells[4] && newData.last_email_status === 'Online') {
-            // Only compare ms values when online (offline shows date instead)
+            const oldMsNum = parseInt(oldData.ms);
             const newMsNum = parseInt(newData.ms);
-            const ltaNum = parseInt(newData.average_longterm_ms);
             
-            // Only process if both values are numeric
-            if (!isNaN(newMsNum) && !isNaN(ltaNum)) {
-                if (newMsNum > ltaNum) {
-                    cells[4].style.fontWeight = 'bold';
-                    cells[4].style.color = 'red'; // Slower than LTA = red + bold
-                } else if (newMsNum < ltaNum) {
-                    cells[4].style.fontWeight = 'bold';
-                    cells[4].style.color = 'green'; // Faster than LTA = green + bold
-                }
-                // If equal to LTA, no styling (normal weight, default color)
+            // Only bold if the ms value actually changed
+            if (!isNaN(oldMsNum) && !isNaN(newMsNum) && oldMsNum !== newMsNum) {
+                cells[4].style.fontWeight = 'bold'; // Keep bold until next refresh
             }
         }
         
@@ -848,6 +843,26 @@ const IcmpTableUpdater = (function() {
                     cell.style.backgroundColor = originalBg;
                 }, 500);
                 break;
+        }
+    }
+    
+    function applyLtaStyling(row, data) {
+        if (!row || !data || data.last_email_status !== 'Online') return;
+        
+        const msCell = row.cells[4]; // Recent ms column
+        if (!msCell) return;
+        
+        const currentMs = parseInt(data.ms);
+        const ltaMs = parseInt(data.average_longterm_ms);
+        
+        // Apply color based on LTA comparison for all online nodes
+        if (!isNaN(currentMs) && !isNaN(ltaMs)) {
+            if (currentMs > ltaMs) {
+                msCell.style.color = 'red'; // Slower than LTA = red
+            } else if (currentMs < ltaMs) {
+                msCell.style.color = 'green'; // Faster than LTA = green
+            }
+            // If equal to LTA, keep default color
         }
     }
     
