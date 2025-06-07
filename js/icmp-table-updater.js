@@ -358,7 +358,19 @@ const IcmpTableUpdater = (function() {
         // Alert column (if owner)
         if (window.ownerMatchesTable) {
             const alertCell = document.createElement('td');
-            alertCell.textContent = data.alert || '';
+            const alertText = data.alert || '';
+            
+            // Apply same logic as PHP: count commas and show "X configured alerts" if multiple
+            if (alertText) {
+                const numEmailAlerts = (alertText.match(/,/g) || []).length + 1;
+                if (numEmailAlerts > 1) {
+                    alertCell.textContent = numEmailAlerts + ' configured alerts';
+                } else {
+                    alertCell.textContent = alertText;
+                }
+            } else {
+                alertCell.textContent = '';
+            }
             row.appendChild(alertCell);
         }
         
