@@ -15,6 +15,7 @@ const IcmpTableUpdater = (function() {
     const tableBodySelector = '#icmpTableBody';
     // Countdown removed - no longer needed with AJAX
     const autoRefreshToggleSelector = '#autoRefreshToggle';
+    const fullscreenToggleSelector = '#fullscreenToggle';
     
     function init(options = {}) {
         refreshRate = options.refreshRate || refreshRate;
@@ -32,6 +33,11 @@ const IcmpTableUpdater = (function() {
         if (toggleButton) {
             toggleButton.addEventListener('click', handleToggleClick);
         }
+        
+        const fullscreenButton = document.querySelector(fullscreenToggleSelector);
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', handleFullscreenToggle);
+        }
     }
     
     function handleToggleClick(e) {
@@ -39,11 +45,21 @@ const IcmpTableUpdater = (function() {
         
         if (updateInterval) {
             stopAutoRefresh();
-            exitFullScreen();
         } else {
             startAutoRefresh();
+        }
+    }
+    
+    function handleFullscreenToggle(e) {
+        e.preventDefault();
+        
+        if (fullScreenMode) {
+            exitFullScreen();
+        } else {
             enterFullScreen();
         }
+        
+        updateFullscreenButton(fullScreenMode);
     }
     
     function startAutoRefresh() {
@@ -70,10 +86,23 @@ const IcmpTableUpdater = (function() {
         if (!button) return;
         
         if (isActive) {
-            button.textContent = '[Exit Full Screen]';
+            button.textContent = '[Stop Auto Refresh]';
             button.style.color = 'green';
         } else {
             button.textContent = '[Auto Refresh]';
+            button.style.color = 'red';
+        }
+    }
+    
+    function updateFullscreenButton(isFullscreen) {
+        const button = document.querySelector(fullscreenToggleSelector);
+        if (!button) return;
+        
+        if (isFullscreen) {
+            button.textContent = '[Exit Full Screen]';
+            button.style.color = 'green';
+        } else {
+            button.textContent = '[Full Screen]';
             button.style.color = 'red';
         }
     }
@@ -94,7 +123,8 @@ const IcmpTableUpdater = (function() {
             '.full_width', // Group menu container
             '#pa_left', // Left panel of pingAdd
             '#pa_right', // Right panel with groups
-            '.screenshots' // Screenshot divs
+            '.screenshots', // Screenshot divs
+            '.signup_wrap' // Hide the entire header wrapper
         ];
         
         elementsToHide.forEach(selector => {
@@ -106,15 +136,61 @@ const IcmpTableUpdater = (function() {
             });
         });
         
+        // Hide the Happy day message container but preserve healthMetrics
+        const happyDayContainer = document.querySelector('div[style*="display: flex"]');
+        if (happyDayContainer && happyDayContainer.querySelector('strong')) {
+            const strongText = happyDayContainer.querySelector('strong').textContent;
+            if (strongText.includes('Happy')) {
+                // Move healthMetrics before hiding the container
+                const healthMetrics = document.getElementById('healthMetrics');
+                if (healthMetrics) {
+                    healthMetrics.style.position = 'fixed';
+                    healthMetrics.style.top = '5px';
+                    healthMetrics.style.right = '20px';
+                    healthMetrics.style.zIndex = '1000';
+                }
+                happyDayContainer.style.display = 'none';
+            }
+        }
+        
         // Add full screen styling
         const style = document.createElement('style');
         style.id = 'icmp-fullscreen-style';
         style.textContent = `
+            .icmp-fullscreen {
+                margin: 0;
+                padding: 0;
+            }
+            .icmp-fullscreen body {
+                margin: 0;
+                padding: 0;
+            }
+            .icmp-fullscreen #wrap {
+                margin: 0;
+                padding: 0;
+            }
             .icmp-fullscreen .content {
-                margin: 10px;
-                padding: 10px;
+                margin: 0;
+                padding: 0;
             }
             .icmp-fullscreen #icmp_table {
+                margin-top: 0;
+                padding-top: 5px;
+            }
+            /* Hide br tags in icmp_table */
+            .icmp-fullscreen #icmp_table > br {
+                display: none;
+            }
+            /* Hide any br tags at the start of content */
+            .icmp-fullscreen .content > br:first-child {
+                display: none;
+            }
+            /* Hide br tags after ping_add_container */
+            .icmp-fullscreen #ping_add_container ~ br {
+                display: none;
+            }
+            /* Ensure table is at the top */
+            .icmp-fullscreen #icmp_table table {
                 margin-top: 0;
             }
         `;
@@ -137,7 +213,8 @@ const IcmpTableUpdater = (function() {
             '.full_width',
             '#pa_left',
             '#pa_right',
-            '.screenshots'
+            '.screenshots',
+            '.signup_wrap'
         ];
         
         elementsToShow.forEach(selector => {
@@ -146,6 +223,19 @@ const IcmpTableUpdater = (function() {
                 el.style.display = '';
             });
         });
+        
+        // Restore Happy day container and healthMetrics
+        const happyDayContainer = document.querySelector('div[style*="display: flex"]');
+        if (happyDayContainer) {
+            happyDayContainer.style.display = '';
+        }
+        const healthMetrics = document.getElementById('healthMetrics');
+        if (healthMetrics) {
+            healthMetrics.style.position = '';
+            healthMetrics.style.top = '';
+            healthMetrics.style.right = '';
+            healthMetrics.style.zIndex = '';
+        }
         
         // Remove full screen styling
         const style = document.getElementById('icmp-fullscreen-style');
