@@ -557,8 +557,8 @@ const IcmpTableUpdater = (function() {
         const ipsArray = Object.entries(pendingData.ips);
         if (ipsArray.length === 0) return;
         
-        // Calculate timing: complete all nodes in 1 second
-        animationSpeed = Math.max(20, 1000 / ipsArray.length); // 1 second total, min 20ms per node
+        // Static timing based on 18-row speed: 1000ms / 18 rows = ~55ms per row
+        animationSpeed = 55; // Fixed speed regardless of table size
         currentAnimationIndex = 0;
         
         // Start the sequential update cycle
