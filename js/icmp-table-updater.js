@@ -11,6 +11,10 @@ const IcmpTableUpdater = (function() {
     let updateCount = 0;
     let isUpdating = false;
     let fullScreenMode = false;
+    let animationInterval = null;
+    let currentAnimationIndex = 0;
+    let animationSpeed = 0; // Will be calculated based on node count
+    let pendingData = null; // Store fetched data for sequential updates
     
     const tableBodySelector = '#icmpTableBody';
     // Countdown removed - no longer needed with AJAX
@@ -78,6 +82,7 @@ const IcmpTableUpdater = (function() {
             updateInterval = null;
         }
         
+        stopSequentialUpdate();
         updateToggleButton(false);
     }
     
@@ -287,9 +292,11 @@ const IcmpTableUpdater = (function() {
                     return;
                 }
                 
-                updateTable(data.ips);
+                // Store data for sequential updates
+                pendingData = data;
                 updateHealthMetrics(data);
                 updateGroupScores(data);
+                startSequentialUpdate();
                 updateCount++;
             })
             .catch(error => {
@@ -374,7 +381,7 @@ const IcmpTableUpdater = (function() {
         
         // Last Checked column
         const lastCheckCell = document.createElement('td');
-        lastCheckCell.textContent = data.lastcheck + ' ';
+        lastCheckCell.textContent = data.lastcheck + '  ';
         row.appendChild(lastCheckCell);
         
         // IP column
@@ -539,6 +546,183 @@ const IcmpTableUpdater = (function() {
         if (scoreContainer) {
             scoreContainer.textContent = data.groupscore;
         }
+    }
+    
+    function startSequentialUpdate() {
+        stopSequentialUpdate(); // Clear any existing animation
+        
+        if (!pendingData || !pendingData.ips) return;
+        
+        const ipsArray = Object.entries(pendingData.ips);
+        if (ipsArray.length === 0) return;
+        
+        // Calculate timing: complete all nodes in 1 second
+        animationSpeed = Math.max(20, 1000 / ipsArray.length); // 1 second total, min 20ms per node
+        currentAnimationIndex = 0;
+        
+        // Start the sequential update cycle
+        animationInterval = setInterval(updateNextNode, animationSpeed);
+    }
+    
+    function stopSequentialUpdate() {
+        if (animationInterval) {
+            clearInterval(animationInterval);
+            animationInterval = null;
+        }
+        currentAnimationIndex = 0;
+        
+        // Clear any existing row animations
+        const allRows = document.querySelectorAll('#icmpTableBody tr');
+        allRows.forEach(row => {
+            row.style.backgroundColor = '';
+            row.style.transition = '';
+            row.style.transform = '';
+            row.style.boxShadow = '';
+            row.style.border = '';
+        });
+    }
+    
+    function updateNextNode() {
+        if (!pendingData || !pendingData.ips) {
+            stopSequentialUpdate();
+            return;
+        }
+        
+        const ipsArray = Object.entries(pendingData.ips);
+        if (ipsArray.length === 0) {
+            stopSequentialUpdate();
+            return;
+        }
+        
+        // Update current node
+        if (currentAnimationIndex < ipsArray.length) {
+            const [ip, data] = ipsArray[currentAnimationIndex];
+            updateSingleRow(ip, data, currentAnimationIndex);
+        }
+        
+        currentAnimationIndex++;
+        
+        // Stop after we've gone through all nodes once
+        if (currentAnimationIndex >= ipsArray.length) {
+            stopSequentialUpdate();
+        }
+    }
+    
+    function updateSingleRow(ip, data, rowIndex) {
+        const rows = document.querySelectorAll('#icmpTableBody tr');
+        if (rowIndex >= rows.length) return;
+        
+        const row = rows[rowIndex];
+        
+        // Apply the animation effect first
+        applyRowAnimation(row, 'rainbow'); // Try: 'hover', 'pulse', 'glow', 'slide', 'rainbow'
+        
+        // Create new row data
+        const newRow = createTableRow(ip, data);
+        
+        // Set row number
+        const firstCell = newRow.querySelector('td:first-child');
+        if (firstCell) {
+            firstCell.textContent = rowIndex + 1;
+        }
+        
+        // Check for 5-minute timeout styling
+        const lastCheck = new Date(data.lastcheck);
+        const now = new Date();
+        const minutesDiff = (now - lastCheck) / (1000 * 60);
+        if (minutesDiff > 5) {
+            newRow.style.backgroundColor = 'yellow';
+            newRow.style.color = 'black';
+        }
+        
+        // Replace the row content after animation
+        setTimeout(() => {
+            if (row.parentNode) {
+                row.parentNode.replaceChild(newRow, row);
+            }
+        }, 300);
+    }
+    
+    function applyRowAnimation(row, animationType = 'hover') {
+        if (!row) return;
+        
+        // Store original styles
+        const originalBg = row.style.backgroundColor;
+        const originalTransition = row.style.transition;
+        const originalTransform = row.style.transform;
+        const originalBoxShadow = row.style.boxShadow;
+        
+        switch(animationType) {
+            case 'hover':
+                // Simulate hover effect
+                row.style.transition = 'background-color 0.2s ease-in-out';
+                row.style.backgroundColor = '#f0f0f0';
+                setTimeout(() => {
+                    row.style.backgroundColor = originalBg;
+                }, 400);
+                break;
+                
+            case 'pulse':
+                // Pulsing glow effect
+                row.style.transition = 'box-shadow 0.3s ease-in-out';
+                row.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.6)';
+                setTimeout(() => {
+                    row.style.boxShadow = originalBoxShadow;
+                }, 500);
+                break;
+                
+            case 'glow':
+                // Blue glow border effect
+                row.style.transition = 'border 0.2s ease-in-out, box-shadow 0.2s ease-in-out';
+                row.style.border = '2px solid #007bff';
+                row.style.boxShadow = '0 0 8px rgba(0, 123, 255, 0.4)';
+                setTimeout(() => {
+                    row.style.border = '';
+                    row.style.boxShadow = originalBoxShadow;
+                }, 400);
+                break;
+                
+            case 'slide':
+                // Slide animation
+                row.style.transition = 'transform 0.3s ease-in-out';
+                row.style.transform = 'translateX(10px)';
+                setTimeout(() => {
+                    row.style.transform = 'translateX(0)';
+                }, 150);
+                setTimeout(() => {
+                    row.style.transform = originalTransform;
+                }, 400);
+                break;
+                
+            case 'rainbow':
+                // Color cycle effect
+                const colors = ['#ffcccc', '#ccffcc', '#ccccff', '#ffffcc', '#ffccff'];
+                let colorIndex = 0;
+                row.style.transition = 'background-color 0.1s ease-in-out';
+                
+                const colorInterval = setInterval(() => {
+                    row.style.backgroundColor = colors[colorIndex % colors.length];
+                    colorIndex++;
+                    if (colorIndex >= colors.length * 2) {
+                        clearInterval(colorInterval);
+                        row.style.backgroundColor = originalBg;
+                    }
+                }, 60);
+                break;
+                
+            default:
+                // Default hover effect
+                row.style.transition = 'background-color 0.2s ease-in-out';
+                row.style.backgroundColor = '#f0f0f0';
+                setTimeout(() => {
+                    row.style.backgroundColor = originalBg;
+                }, 400);
+        }
+        
+        // Clean up transition after animation
+        setTimeout(() => {
+            row.style.transition = originalTransition;
+        }, 600);
     }
     
     // Countdown and reminder functionality removed - no longer needed with AJAX
