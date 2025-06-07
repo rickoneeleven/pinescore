@@ -15,6 +15,7 @@ const IcmpTableUpdater = (function() {
     let currentAnimationIndex = 0;
     let animationSpeed = 0; // Will be calculated based on node count
     let pendingData = null; // Store fetched data for sequential updates
+    let previousDataByIp = {}; // Store previous values by IP for accurate comparison
     
     const tableBodySelector = '#icmpTableBody';
     // Countdown removed - no longer needed with AJAX
@@ -381,7 +382,7 @@ const IcmpTableUpdater = (function() {
         
         // Last Checked column
         const lastCheckCell = document.createElement('td');
-        lastCheckCell.textContent = data.lastcheck + '  ';
+        lastCheckCell.innerHTML = data.lastcheck + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
         row.appendChild(lastCheckCell);
         
         // IP column
@@ -615,7 +616,10 @@ const IcmpTableUpdater = (function() {
         const row = rows[rowIndex];
         
         // Apply the animation effect first
-        applyRowAnimation(row, 'rainbow'); // Try: 'hover', 'pulse', 'glow', 'slide', 'rainbow'
+        applyRowAnimation(row, 'hover'); // Try: 'hover', 'pulse', 'glow', 'slide', 'rainbow'
+        
+        // Get the old values for THIS IP from our stored data
+        const oldData = previousDataByIp[ip] || {};
         
         // Create new row data
         const newRow = createTableRow(ip, data);
@@ -639,8 +643,22 @@ const IcmpTableUpdater = (function() {
         setTimeout(() => {
             if (row.parentNode) {
                 row.parentNode.replaceChild(newRow, row);
+                
+                // Apply change animations to the new row
+                animateCellChanges(newRow, oldData, data, ip);
+                
+                // Store the new data for this IP for next comparison
+                previousDataByIp[ip] = {
+                    note: data.note || '',
+                    status: data.last_email_status,
+                    count: data.count,
+                    pineScore: data.score,
+                    ms: data.ms,
+                    lta: data.average_longterm_ms,
+                    lastCheck: data.lastcheck
+                };
             }
-        }, 300);
+        }, 150); // Reduced from 300ms to minimize lag
     }
     
     function applyRowAnimation(row, animationType = 'hover') {
@@ -723,6 +741,114 @@ const IcmpTableUpdater = (function() {
         setTimeout(() => {
             row.style.transition = originalTransition;
         }, 600);
+    }
+    
+    function animateCellChanges(newRow, oldData, newData, ip) {
+        if (!newRow) return;
+        
+        const cells = newRow.cells;
+        
+        // Check if last checked time actually changed - if not, skip all bold logic
+        const lastCheckChanged = oldData.lastCheck !== newData.lastcheck;
+        if (!lastCheckChanged) {
+            return; // Skip all bold logic if data hasn't actually refreshed
+        }
+        
+        // Note (cell 1) - bold if changed
+        if (cells[1] && oldData.note !== (newData.note || '')) {
+            cells[1].style.fontWeight = 'bold'; // Keep bold until next refresh
+        }
+        
+        // Status (cell 2) - special handling for count number
+        if (cells[2]) {
+            // Check if status or count changed
+            if (oldData.status !== newData.last_email_status || oldData.count !== newData.count) {
+                // Extract the count from the innerHTML
+                const countMatch = cells[2].innerHTML.match(/\[([^\]]+)\]/);
+                if (countMatch && countMatch[1]) {
+                    const countHtml = countMatch[1];
+                    const strongMatch = countHtml.match(/<strong>(\d+)<\/strong>/);
+                    if (strongMatch) {
+                        // Flash the count number yellow
+                        const tempHtml = cells[2].innerHTML.replace(
+                            /<strong>(\d+)<\/strong>/,
+                            '<strong style="background-color: yellow; transition: background-color 0.3s;">$1</strong>'
+                        );
+                        cells[2].innerHTML = tempHtml;
+                        
+                        // Remove yellow after delay
+                        setTimeout(() => {
+                            cells[2].innerHTML = cells[2].innerHTML.replace(
+                                /style="[^"]*"/,
+                                ''
+                            );
+                        }, 500);
+                    }
+                }
+                
+                // Also keep the whole cell bold
+                cells[2].style.fontWeight = 'bold'; // Keep bold until next refresh
+            }
+        }
+        
+        // PineScore (cell 3) - bold if changed (red color handled by createScoreCell)
+        if (cells[3] && oldData.pineScore !== newData.score) {
+            cells[3].style.fontWeight = 'bold'; // Keep bold until next refresh
+            // Note: Red color for recent changes is already handled in createScoreCell function
+        }
+        
+        // Recent ms (cell 4) - bold/color based purely on LTA comparison
+        if (cells[4] && newData.last_email_status === 'Online') {
+            // Only compare ms values when online (offline shows date instead)
+            const newMsNum = parseInt(newData.ms);
+            const ltaNum = parseInt(newData.average_longterm_ms);
+            
+            // Only process if both values are numeric
+            if (!isNaN(newMsNum) && !isNaN(ltaNum)) {
+                if (newMsNum > ltaNum) {
+                    cells[4].style.fontWeight = 'bold';
+                    cells[4].style.color = 'red'; // Slower than LTA = red + bold
+                } else if (newMsNum < ltaNum) {
+                    cells[4].style.fontWeight = 'bold';
+                    cells[4].style.color = 'green'; // Faster than LTA = green + bold
+                }
+                // If equal to LTA, no styling (normal weight, default color)
+            }
+        }
+        
+        // LTA (cell 5) - bold if changed
+        if (cells[5] && oldData.lta !== newData.average_longterm_ms) {
+            cells[5].style.fontWeight = 'bold'; // Keep bold until next refresh
+        }
+        
+        // Last Checked (cell 7) - skip flashing since it always changes
+    }
+    
+    function flashCell(cell, effect = 'bold', duration = 400) {
+        if (!cell) return;
+        
+        const originalWeight = cell.style.fontWeight;
+        const originalBg = cell.style.backgroundColor;
+        
+        switch(effect) {
+            case 'bold':
+                cell.style.transition = 'font-weight 0.2s ease-in-out';
+                cell.style.fontWeight = 'bold';
+                
+                setTimeout(() => {
+                    cell.style.fontWeight = originalWeight;
+                }, duration);
+                break;
+                
+            case 'yellow':
+                cell.style.transition = 'background-color 0.3s ease-in-out';
+                cell.style.backgroundColor = 'yellow';
+                
+                setTimeout(() => {
+                    cell.style.backgroundColor = originalBg;
+                }, 500);
+                break;
+        }
     }
     
     // Countdown and reminder functionality removed - no longer needed with AJAX
