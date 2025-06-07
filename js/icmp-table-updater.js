@@ -107,6 +107,19 @@ const IcmpTableUpdater = (function() {
         }
     }
     
+    function updateToggleButtonForEditMode(inEditMode) {
+        const button = document.querySelector(autoRefreshToggleSelector);
+        if (!button || !updateInterval) return; // Only update if auto-refresh is active
+        
+        if (inEditMode) {
+            button.textContent = '[Paused - Edit Mode]';
+            button.style.color = 'orange';
+        } else {
+            button.textContent = '[Stop Auto Refresh]';
+            button.style.color = 'green';
+        }
+    }
+    
     function enterFullScreen() {
         fullScreenMode = true;
         document.body.classList.add('icmp-fullscreen');
@@ -244,8 +257,22 @@ const IcmpTableUpdater = (function() {
         }
     }
     
+    function isFormInEditMode() {
+        // Check if any table row contains input fields (indicates edit mode)
+        const editInputs = document.querySelectorAll('#icmpTableBody input[type="text"], #icmpTableBody input[type="radio"]');
+        return editInputs.length > 0;
+    }
+    
     function fetchAndUpdateTable() {
         if (isUpdating) return;
+        
+        // Don't update if any form is in edit mode (has input fields visible)
+        if (isFormInEditMode()) {
+            updateToggleButtonForEditMode(true);
+            return;
+        } else {
+            updateToggleButtonForEditMode(false);
+        }
         
         isUpdating = true;
         const url = currentGroupId 
