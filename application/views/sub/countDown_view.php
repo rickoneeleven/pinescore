@@ -16,14 +16,7 @@ echo "<div style='display: flex; justify-content: space-between; align-items: ce
 echo "<div>";
 echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
 
-if($action == 'refresh') {
-    echo '<span id="countdown" style="font-weight: bold;"></span>
-    <a href="'.base_url().'tools/popOut/stop/'.$group_id.'">Stop Auto Refresh</a>';
-} elseif($group_id != "")  {
-    echo '<a href="'.base_url().'tools/popOut/sapiens/'.$group_id.'">Resume Auto Refresh</a>';
-} else {
-    echo '<a href="'.base_url().'tools/popOut/">Resume Auto Refresh</a>';
-}
+// Auto-refresh links removed - handled by AJAX table updater
 echo "</div>";
 
 // Right side with monitoring stats
