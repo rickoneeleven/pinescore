@@ -644,11 +644,11 @@ const IcmpTableUpdater = (function() {
             if (row.parentNode) {
                 row.parentNode.replaceChild(newRow, row);
                 
-                // Apply change animations to the new row
-                animateCellChanges(newRow, oldData, data, ip);
-                
-                // Always apply LTA-based styling for ms column (regardless of changes)
+                // Always apply LTA-based styling first (regardless of data changes)
                 applyLtaStyling(newRow, data);
+                
+                // Then apply change animations to the new row
+                animateCellChanges(newRow, oldData, data, ip);
                 
                 // Store the new data for this IP for next comparison
                 previousDataByIp[ip] = {
