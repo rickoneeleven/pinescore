@@ -800,15 +800,13 @@ const IcmpTableUpdater = (function() {
             // Note: Red color for recent changes is already handled in createScoreCell function
         }
         
-        // Recent ms (cell 4) - only bold if value changed AND different from LTA
+        // Recent ms (cell 4) - bold if last checked changed AND ms differs from LTA
         if (cells[4] && newData.last_email_status === 'Online') {
-            const oldMsNum = parseInt(oldData.ms);
             const newMsNum = parseInt(newData.ms);
             const ltaNum = parseInt(newData.average_longterm_ms);
             
-            // Only bold if the ms value changed AND it's not equal to LTA
-            if (!isNaN(oldMsNum) && !isNaN(newMsNum) && !isNaN(ltaNum) && 
-                oldMsNum !== newMsNum && newMsNum !== ltaNum) {
+            // Bold if last checked changed AND ms is different from LTA
+            if (lastCheckChanged && !isNaN(newMsNum) && !isNaN(ltaNum) && newMsNum !== ltaNum) {
                 cells[4].style.fontWeight = 'bold'; // Keep bold until next refresh
             }
         }
