@@ -16,6 +16,7 @@ const IcmpTableUpdater = (function() {
     let animationSpeed = 0; // Will be calculated based on node count
     let pendingData = null; // Store fetched data for sequential updates
     let previousDataByIp = {}; // Store previous values by IP for accurate comparison
+    let animationStartTime = null; // Track when animation started
     
     const tableBodySelector = '#icmpTableBody';
     // Countdown removed - no longer needed with AJAX
@@ -560,6 +561,7 @@ const IcmpTableUpdater = (function() {
         // Static timing based on 18-row speed: 1000ms / 18 rows = ~55ms per row
         animationSpeed = 55; // Fixed speed regardless of table size
         currentAnimationIndex = 0;
+        animationStartTime = Date.now();
         
         // Start the sequential update cycle
         animationInterval = setInterval(updateNextNode, animationSpeed);
@@ -595,6 +597,15 @@ const IcmpTableUpdater = (function() {
             return;
         }
         
+        // Check if we're running out of time (8.5 seconds elapsed)
+        const timeElapsed = Date.now() - animationStartTime;
+        if (timeElapsed > 8500 && currentAnimationIndex < ipsArray.length) {
+            // Bulk update remaining rows and finish
+            bulkUpdateRemainingRows(ipsArray, currentAnimationIndex);
+            stopSequentialUpdate();
+            return;
+        }
+        
         // Update current node
         if (currentAnimationIndex < ipsArray.length) {
             const [ip, data] = ipsArray[currentAnimationIndex];
@@ -606,6 +617,60 @@ const IcmpTableUpdater = (function() {
         // Stop after we've gone through all nodes once
         if (currentAnimationIndex >= ipsArray.length) {
             stopSequentialUpdate();
+        }
+    }
+    
+    function bulkUpdateRemainingRows(ipsArray, startIndex) {
+        // Update all remaining rows without animation
+        for (let i = startIndex; i < ipsArray.length; i++) {
+            const [ip, data] = ipsArray[i];
+            updateSingleRowBulk(ip, data, i);
+        }
+    }
+    
+    function updateSingleRowBulk(ip, data, rowIndex) {
+        const rows = document.querySelectorAll('#icmpTableBody tr');
+        if (rowIndex >= rows.length) return;
+        
+        const row = rows[rowIndex];
+        const oldData = previousDataByIp[ip] || {};
+        
+        // Create new row data
+        const newRow = createTableRow(ip, data);
+        
+        // Set row number
+        const firstCell = newRow.querySelector('td:first-child');
+        if (firstCell) {
+            firstCell.textContent = rowIndex + 1;
+        }
+        
+        // Check for 5-minute timeout styling
+        const lastCheck = new Date(data.lastcheck);
+        const now = new Date();
+        const minutesDiff = (now - lastCheck) / (1000 * 60);
+        if (minutesDiff > 5) {
+            newRow.style.backgroundColor = 'yellow';
+            newRow.style.color = 'black';
+        }
+        
+        // Replace the row immediately (no animation delay)
+        if (row.parentNode) {
+            row.parentNode.replaceChild(newRow, row);
+            
+            // Apply LTA styling and change detection
+            applyLtaStyling(newRow, data);
+            animateCellChanges(newRow, oldData, data, ip);
+            
+            // Store the new data for this IP for next comparison
+            previousDataByIp[ip] = {
+                note: data.note || '',
+                status: data.last_email_status,
+                count: data.count,
+                pineScore: data.score,
+                ms: data.ms,
+                lta: data.average_longterm_ms,
+                lastCheck: data.lastcheck
+            };
         }
     }
     
