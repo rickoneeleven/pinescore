@@ -881,7 +881,10 @@ const IcmpTableUpdater = (function() {
             cells[5].style.fontWeight = 'bold'; // Keep bold until next refresh
         }
         
-        // Last Checked (cell 7) - skip flashing since it always changes
+        // Last Checked (cell 7) - flash bold when row is updated
+        if (cells[7] && lastCheckChanged) {
+            cells[7].style.fontWeight = 'bold'; // Keep bold until next refresh
+        }
     }
     
     function flashCell(cell, effect = 'bold', duration = 400) {
