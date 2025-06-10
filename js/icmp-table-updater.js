@@ -383,7 +383,7 @@ const IcmpTableUpdater = (function() {
         
         // Last Checked column
         const lastCheckCell = document.createElement('td');
-        lastCheckCell.innerHTML = data.lastcheck + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        lastCheckCell.innerHTML = data.lastcheck + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
         row.appendChild(lastCheckCell);
         
         // IP column
