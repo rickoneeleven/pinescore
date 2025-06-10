@@ -106,19 +106,72 @@ do
 	###########################################################################
 	echo
 	echo
+	echo "Checking download URLs validity..."
+	echo "================================="
+	
+	# Define URLs
+	url1="http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw"
+	url2="https://pinescore.com/111/ns_1GB.zip"
+	url3="https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS"
+	url4="http://ipv4.download.thinkbroadband.com/1GB.zip"
+	url5="http://84.21.152.158/ns_1GB.zipCloudLinux"
+	url6="http://virtueazure.pinescore.com/VTL-ST_1GB.zip"
+	
+	# Check each URL
+	echo -n "Apple CDN: "
+	if curl -I -s --connect-timeout 3 "$url1" | grep -q "200\|302"; then echo "VALID"; else echo "INVALID/UNREACHABLE"; fi
+	
+	echo -n "Pinescore: "
+	if curl -I -s --connect-timeout 3 "$url2" | grep -q "200\|302"; then echo "VALID"; else echo "INVALID/UNREACHABLE"; fi
+	
+	echo -n "AWS S3: "
+	if curl -I -s --connect-timeout 3 "$url3" | grep -q "200\|302"; then echo "VALID"; else echo "INVALID/UNREACHABLE"; fi
+	
+	echo -n "ThinkBroadband: "
+	if curl -I -s --connect-timeout 3 "$url4" | grep -q "200\|302"; then echo "VALID"; else echo "INVALID/UNREACHABLE"; fi
+	
+	echo -n "CloudLinux: "
+	if curl -I -s --connect-timeout 3 "$url5" | grep -q "200\|302"; then echo "VALID"; else echo "INVALID/UNREACHABLE"; fi
+	
+	echo -n "VirtueAzure: "
+	if curl -I -s --connect-timeout 3 "$url6" | grep -q "200\|302"; then echo "VALID"; else echo "INVALID/UNREACHABLE"; fi
+	
+	echo "================================="
+	echo
 	echo 4x simultaneous downloads from thinkbroadband, pinescore, AWS and apple cdn, measuring the total aggregated throuput of the external interface
         write_output download >> speedtest.log &
-	curl -s -o ns_1GB.zip -O http://updates-http.cdn-apple.com/2018FallFCS/fullrestores/091-62921/11701D1E-AC8E-11E8-A4EB-C9640A3A3D87/iPad_Pro_HFR_12.0_16A366_Restore.ipsw \
-	-O https://pinescore.com/111/ns_1GB.zip \
-	-O https://virtualmin-london.s3.eu-west-2.amazonaws.com/ns_1GB.zipAWS \
-	-O http://ipv4.download.thinkbroadband.com/1GB.zip \
-	-O http://84.21.152.158/ns_1GB.zipCloudLinux \
-	-O http://virtueazure.pinescore.com/VTL-ST_1GB.zip
+	curl -s -o ns_1GB.zip -O "$url1" \
+	-O "$url2" \
+	-O "$url3" \
+	-O "$url4" \
+	-O "$url5" \
+	-O "$url6"
 
 	sleep 2
 	echo
 	echo
 
+	echo
+	echo "Checking upload destinations validity..."
+	echo "======================================="
+	
+	# Check FTP servers
+	echo -n "VirtueAzure FTP: "
+	if curl --connect-timeout 3 -s ftp://virtueazure.pinescore.com --user ftp_speedtest:ftp_speedtest 2>&1 | grep -q "530\|Permission denied" || [ $? -eq 0 ]; then
+		echo "REACHABLE (auth may fail)"
+	else
+		echo "UNREACHABLE"
+	fi
+	
+	echo -n "Pinescore FTP: "
+	if curl --connect-timeout 3 -s ftp://pinescore.com --user ftp_speedtest.pinescore:ftp_speedtest.pinescore 2>&1 | grep -q "530\|Permission denied" || [ $? -eq 0 ]; then
+		echo "REACHABLE (auth may fail)"
+	else
+		echo "UNREACHABLE"
+	fi
+	
+	echo "======================================="
+	echo
 	echo Aggregated upload test to pinescore.com
 	write_output upload >> speedtest.log &
 	sleep 1
