@@ -484,10 +484,16 @@ const IcmpTableUpdater = (function() {
     
     function createScoreCell(data) {
         const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+        const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
         const scoreChangeTime = new Date(data.pinescore_change);
         
-        if (scoreChangeTime > fifteenMinsAgo) {
+        const seconds = scoreChangeTime.getSeconds();
+        if (seconds === 0 && scoreChangeTime > fifteenMinsAgo) {
+            // Score dropped in last 15 minutes - red
             return '<font color="red"><strong>' + data.score + '</strong></font>';
+        } else if (seconds === 1 && scoreChangeTime > twoHoursAgo) {
+            // Score improved in last 2 hours - green
+            return '<font color="green"><strong>' + data.score + '</strong></font>';
         }
         return data.score;
     }

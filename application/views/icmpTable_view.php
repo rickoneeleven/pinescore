@@ -188,9 +188,15 @@ foreach ($ips as $ip => $latest) {
     echo'<td> '.$latest['last_email_status'].' ['.$count_with_color.']&nbsp;</td>
         <td> ';
     $fifteenminsago = date('Y-m-d H:i:s', strtotime('-15 minute'));
+    $twohoursago = date('Y-m-d H:i:s', strtotime('-2 hour'));
 
-    if (strtotime($latest['pinescore_change']) > strtotime($fifteenminsago)) {
+    $seconds = date('s', strtotime($latest['pinescore_change']));
+    if ($seconds == '00' && strtotime($latest['pinescore_change']) > strtotime($fifteenminsago)) {
+        // Score dropped in last 15 minutes - red
         echo '<font color="red"><strong>'.$latest['score'].'</strong></font>';
+    } else if ($seconds == '01' && strtotime($latest['pinescore_change']) > strtotime($twohoursago)) {
+        // Score improved in last 2 hours - green
+        echo '<font color="green"><strong>'.$latest['score'].'</strong></font>';
     } else {
         echo $latest['score'];
     }
@@ -288,7 +294,8 @@ Key:
     </tr>
     <tr>
         <td>pinescore (the score of the node), <strong>bold</strong> and <font color="red"><strong>Red</strong></font>: 
-            score has dropped in last 15 minutes</td>
+            score has dropped in last 15 minutes, <font color="green"><strong>Green</strong></font>: 
+            score has improved in last 2 hours</td>
     </tr>
         <tr>
         <td>[0] (the number in the box) <br>

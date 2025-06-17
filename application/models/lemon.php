@@ -74,12 +74,16 @@ class Lemon extends CI_model {
         $array['request_type'] = 'distinct_ips';
         $ping_ip_tableTable = $this->sqlqu->getPingIpTable($array);
         foreach($ping_ip_tableTable->result() as $row) {
-            $pinescore = $this->myScore($row->ip);
+            $new_score = $this->myScore($row->ip);
             $update_data = array(
-                'pinescore'     => $pinescore,
+                'pinescore'     => $new_score,
             );
-            if($this->myScore($row->ip) < $row->pinescore) {
-                $update_data['pinescore_change'] = date('Y-m-d H:i:s');
+            if($new_score < $row->pinescore) {
+                // Score dropped - flag with :00 seconds
+                $update_data['pinescore_change'] = date('Y-m-d H:i:00');
+            } else if($new_score > $row->pinescore) {
+                // Score improved - flag with :01 seconds  
+                $update_data['pinescore_change'] = date('Y-m-d H:i:01');
             }
             $this->db->where('ip', $row->ip);
             $this->db->update('ping_ip_table', $update_data);
