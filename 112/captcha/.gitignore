@@ -1,0 +1,9 @@
+# Ignore generated CAPTCHA images
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# Keep the .gitkeep file
+!.gitkeep
+!.gitignore

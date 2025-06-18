@@ -1,0 +1,2 @@
+# This file ensures the captcha directory exists in git
+# CAPTCHA images are generated dynamically and stored here
