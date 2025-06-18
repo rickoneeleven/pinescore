@@ -580,10 +580,13 @@ const IcmpTableUpdater = (function() {
         }
         currentAnimationIndex = 0;
         
-        // Clear any existing row animations
+        // Clear animation styles but preserve yellow timeout styling
         const allRows = document.querySelectorAll('#icmpTableBody tr');
         allRows.forEach(row => {
-            row.style.backgroundColor = '';
+            // Only clear backgroundColor if it's not yellow (5-minute timeout)
+            if (row.style.backgroundColor !== 'yellow') {
+                row.style.backgroundColor = '';
+            }
             row.style.transition = '';
             row.style.transform = '';
             row.style.boxShadow = '';
