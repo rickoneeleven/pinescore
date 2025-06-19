@@ -53,13 +53,14 @@ class Lemon extends CI_model {
     }
 
     public function myScore($ip) {
-        $baseline = $this->db->get_where('stats_total', array('ip' => "baseline"),1,0); //limit offset
-        foreach ($baseline->result() as $row) {
+        $baseline_query = $this->db->get_where('stats_total', array('ip' => "baseline"),1,0); //limit offset
+        $baseline = 0;
+        foreach ($baseline_query->result() as $row) {
             $baseline = $row->score;
         }
         $baseline = 100 + $baseline; //how many failures are counted as acceptable because my server may have caused a few bad returns
         $mine = $this->db->get_where('stats', array('ip' => $ip));
-        $return = $baseline - $mine->num_rows();
+        $return = $baseline - $mine->num_rows;
         if($return > 100) {$return = 100;} //baseline may be 5 failures, this client has had 4, giving it a score of 101
         return $return;
     }
@@ -94,7 +95,7 @@ class Lemon extends CI_model {
                 $log_for_history = array(
                     'logged'        => date('Y-m-d H:i:s'),
                     'ms'            => $row->last_ms,
-                    'pinescore'     => $pinescore,
+                    'pinescore'     => $new_score,
                     'ip'            => $row->ip,
                 );
                 $this->db->insert('historic_pinescore', $log_for_history);
