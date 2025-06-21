@@ -16,26 +16,6 @@ class Tools extends CI_Controller
         $this->pingAdd();
     }
 
-    public function test()
-    {
-        $data = [
-            'name'    => 'newsletter',
-            'id'      => 'newsletter',
-            'value'   => 'accept',
-            'checked' => true,
-            'style'   => 'margin:10px',
-        ];
-        $data2 = [
-            'name'    => 'newsletter',
-            'id'      => 'newsletter',
-            'value'   => 'accept',
-            'checked' => false,
-            'style'   => 'margin:10px',
-        ];
-
-        echo form_radio($data);
-        echo form_radio($data2);
-    }
 
     /**
      * Export node data to CSV
@@ -284,18 +264,6 @@ class Tools extends CI_Controller
         }
     }
 
-    public function speedTest()
-    {
-        $data_meta = ['title'            => 'Flash Based Speed Test',
-                           'description' => 'Basic speed test with no extra spam, flash player required.',
-                           'keywords'    => 'speedtest,flash',
-        ];
-
-        $this->load->view('header_view', $data_meta);
-        $this->load->view('navTop_view', $data_meta);
-        $this->load->view('speedTest_view');
-        $this->load->view('footer_view');
-    }
 
     public function pingAdd($data = null)
     {
@@ -396,19 +364,6 @@ class Tools extends CI_Controller
         }
     }
 
-    public function hits($para1 = null)
-    {
-        $data = ['yesterday' => $para1];
-
-        $data_meta = ['title'            => 'Visitor Tracking',
-                           'description' => 'View recent activity on our website',
-                           'keywords'    => 'page,tracker,pinescore',
-        ];
-        $this->load->view('header_view', $data_meta);
-        $this->load->view('navTop_view', $data_meta);
-        $this->load->view('hits_view', $data);
-        $this->load->view('footer_view');
-    }
 
     public function popOut($refresh = null, $filter_group = null) 
     {
@@ -604,22 +559,4 @@ class Tools extends CI_Controller
         $this->load->view('footer_view');
     }
 
-    public function controlResults()
-    {
-        $this->load->library('table');
-        $this->load->model('icmpmodel');
-        $this->load->model('lemon');
-        $control['results'] = $this->lemon->controlResults();
-
-        $data_meta = ['title'            => 'Control Results',
-                           'description' => 'See when our server has failed the stability test. When we are not happy that the server is performing at maximum capacity it will not mark any nodes as failed.',
-                           'keywords'    => 'control,check,report',
-            //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
-            //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
-        ];
-        $this->load->view('header_view', $data_meta);
-        $this->load->view('navTop_view', $data_meta);
-        $this->load->view('reports/control_view', $control);
-        $this->load->view('footer_view');
-    }
 }
