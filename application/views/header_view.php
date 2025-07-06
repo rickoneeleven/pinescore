@@ -67,3 +67,17 @@
 	</div>
 </div>
 <div class="content">
+<?php
+if (!empty($last_truncation_timestamp)) {
+    $truncation_time = strtotime($last_truncation_timestamp);
+    $three_days_ago = strtotime('-3 days');
+
+    if ($truncation_time > $three_days_ago) {
+        $expiry_date = date('Y-m-d H:i', $truncation_time + (3 * 24 * 60 * 60));
+        echo '<div style="background-color: #ffc; border: 1px solid #e0c600; padding: 15px; margin: 10px 0; color: #333; text-align: center;">';
+        echo '<strong>System Maintenance Notice:</strong> The detailed ping history was recently archived on ' . date('Y-m-d', $truncation_time) . '. ';
+        echo 'Some long-term metrics and historical data may appear sparse until they fully repopulate after ' . $expiry_date . '.';
+        echo '</div>';
+    }
+}
+?>
