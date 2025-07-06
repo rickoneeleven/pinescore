@@ -259,10 +259,15 @@ class Tools extends CI_Controller
         $this->load->model('group');
         $this->group->deleteEmptyGroups();
 
+        $this->db->where('metric', 'ping_table_last_truncation');
+        $truncation_query = $this->db->get('health_dashboard');
+        $last_truncation_timestamp = ($truncation_query->num_rows() > 0) ? $truncation_query->row()->result : null;
+
         $data_meta = [
             'title'       => 'pinescore.com | internet monitoring',
             'description' => 'Rate your connection with our unique algorithm. pinescore [90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]',
             'keywords'    => 'ip,ping,monitoring,report,online,offline,alert',
+            'last_truncation_timestamp' => $last_truncation_timestamp,
         ];
 
         $data['ips'] = $this->cellblock7->icmpTableData();
@@ -367,10 +372,15 @@ class Tools extends CI_Controller
         $engine_query = $this->db->get('health_dashboard');
         $engine_status = $engine_query->row()->result;
         
+        $this->db->where('metric', 'ping_table_last_truncation');
+        $truncation_query = $this->db->get('health_dashboard');
+        $last_truncation_timestamp = ($truncation_query->num_rows() > 0) ? $truncation_query->row()->result : null;
+        
         $data_meta = [
             'title' => 'ICMP Monitor (Table pop out)',
             'description' => 'auto refresh webpage that displays your live ICMP monitors',
             'keywords' => 'ip,monitoring,report,online',
+            'last_truncation_timestamp' => $last_truncation_timestamp,
         ];
     
         $array = [

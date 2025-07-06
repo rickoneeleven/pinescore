@@ -5,6 +5,10 @@
     
             public function index()
             {
+                $this->load->model('table_maintenance_model');
+                $maintenance_result = $this->table_maintenance_model->check_and_truncate_ping_table();
+                log_message('info', 'Nightly cron: Table maintenance check completed with status: ' . $maintenance_result);
+
                 $this->load->model('icmpmodel');
                 $this->load->model('cellblock7');
                 $this->load->model('email_dev_or_no');
