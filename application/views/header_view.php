@@ -67,6 +67,7 @@
 	</div>
 </div>
 <div class="content">
+<br>
 <?php
 if (!empty($last_truncation_timestamp)) {
     $truncation_time = strtotime($last_truncation_timestamp);
@@ -75,8 +76,9 @@ if (!empty($last_truncation_timestamp)) {
     if ($truncation_time > $three_days_ago) {
         $expiry_date = date('Y-m-d H:i', $truncation_time + (3 * 24 * 60 * 60));
         echo '<div style="background-color: #ffc; border: 1px solid #e0c600; padding: 15px; margin: 10px 0; color: #333; text-align: center;">';
-        echo '<strong>System Maintenance Notice:</strong> The detailed ping history was recently archived on ' . date('Y-m-d', $truncation_time) . '. ';
-        echo 'Some long-term metrics and historical data may appear sparse until they fully repopulate after ' . $expiry_date . '.';
+        echo '<strong>System Maintenance Notice:</strong> The ping history was automatically archived on ' . date('Y-m-d', $truncation_time) . ' when the table reached 1 billion records (database integer limit). ';
+        echo 'This is a long-term automatic cleanup process to ensure systems run autonomously for years without requiring user maintenance. ';
+        echo 'Historical data will fully repopulate by ' . $expiry_date . '.';
         echo '</div>';
     }
 }
