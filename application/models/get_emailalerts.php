@@ -16,7 +16,6 @@ class get_emailalerts extends CI_model {
         return $email_addresses;
     }
 
-    //substr to remove first two chars ", " from returned string
     public function returnAlertsFromIDasString($id) {
         $this->db->where('ping_ip_id', $id);
         $alertsTable = $this->db->get('alerts');

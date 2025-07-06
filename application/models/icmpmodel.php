@@ -6,10 +6,7 @@ if (!defined('BASEPATH')) {
 
 class IcmpModel extends CI_model
 {
-    /**
-     * we have to add "' '" to the end of $ping_ids_in_grp, otherwise it ends ", " and causes a db failure when
-     * passing to the where clause.
-     */
+
     public function getIPs($filter = null)
     {
         $this->load->model('group_association');
@@ -20,8 +17,8 @@ class IcmpModel extends CI_model
             $this->db->order_by('note');
         }
         if (!isset($filter['group_id'])) {
-            $this->db->group_by('ip'); //if two customers monitor the same ip, ive already tested and they get
-            //the note name of whatever they assigned, so no problem
+            $this->db->group_by('ip');
+
             $this->db->order_by($order_by);
         }
         if (isset($filter['owner'])) {
@@ -79,19 +76,19 @@ class IcmpModel extends CI_model
 
     public function report($request, $change)
     {
-        $ip_id = $this->db->escape($request['ip_id']); //don't like using array option in query, not sure if works
+        $ip_id = $this->db->escape($request['ip_id']);
         $owner = $request['owner'];
 
-        $query['pi'] = $this->db->query("SELECT * FROM ping_ip_table WHERE id = $ip_id AND owner = $owner"); //make sure your user ID has acceess to report for this IP
+        $query['pi'] = $this->db->query("SELECT * FROM ping_ip_table WHERE id = $ip_id AND owner = $owner");
 
-        if ($query['pi']->num_rows() < 1) { //never returned any rows so user does not have access, need to check if it's public
+        if ($query['pi']->num_rows() < 1) {
             $query['pi'] = $this->db->query("SELECT * FROM ping_ip_table WHERE id = $ip_id");
             if($query['pi']->num_rows() < 1) {
                 echo 'Node has probably been deleted from the syste, sad face';
                 die();
             }
             $public_check = $query['pi']->row();
-            if ($public_check->public != 1) { //if the report is not set as public and you don't have access
+            if ($public_check->public != 1) {
                 echo 'Please '.anchor('', 'login').' to see this report. It has not been configured for public access.';
                 die();
             }
@@ -111,19 +108,15 @@ class IcmpModel extends CI_model
         return $query;
     }
 
-    /**
-     * we remove any pings that are 0, as these are dropped icmps and i don't want them screwing with average. if they are
-     * all 0, we then define 0 and return, rather than trying to work out average of zero.
-     */
     public function lastResultResult($ip)
     {
         $this->db->order_by('datetime', 'desc');
-        $query = $this->db->get_where('ping_result_table', ['ip' => $ip], 11, 0); //limit and offset
+        $query = $this->db->get_where('ping_result_table', ['ip' => $ip], 11, 0);
         $average = [];
         foreach ($query->result() as $row) {
             if (!isset($data['result'])) {
                 $data['result'] = $row->result;
-            } //only set it for the first result which is the most recent, as we're pulling 11 for the average
+            }
             $average[] = $row->ms;
         }
 
@@ -141,7 +134,7 @@ class IcmpModel extends CI_model
     {
         $this->load->model('html_email');
         $this->db->order_by('datetime', 'desc');
-        $report = $this->db->get_where('ping_result_table', ['ip' => $ip, 'change' => 1], 10, 0); //lim,off
+        $report = $this->db->get_where('ping_result_table', ['ip' => $ip, 'change' => 1], 10, 0);
         $last10 = '';
         foreach ($report->result() as $row) {
             $datetime = strtotime($row->datetime);
@@ -202,7 +195,7 @@ class IcmpModel extends CI_model
 
     public function getUserID()
     {
-        if (($this->session->userdata('user_email') != '')) {//is user lgged in check [true] else
+        if (($this->session->userdata('user_email') != '')) {
             $user = $this->session->userdata('user_id');
         } else {
             $user = 13;

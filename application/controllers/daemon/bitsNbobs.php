@@ -10,12 +10,6 @@ class BitsNbobs extends CI_Controller {
         $this->lemon->pinescoreDaemon();
     }
 
-    /**
-     * as well as percent diff, we check for an ms diff, as if the ms in 1 one day, and 2 the next, that's only
-     * an increase of 1ms, but it's 100% different
-     * we only process and update if existing ping is not 0, if it is, we don't need to alert or update
-     * existing ms, and we want to compare it to the ms once the node is back online
-     */
     public function checkChangeOfCurrentMsAgainstLTA() {        
         $this->load->model("cron_protect");
         $this->cron_protect->AllowedIPs();
@@ -25,7 +19,7 @@ class BitsNbobs extends CI_Controller {
         $ping_ip_tableTable =  $this->db->get('ping_ip_table'); 
         foreach($ping_ip_tableTable->result() as $row) {
             $ms_now = $this->getRecentAverage($row->ip);
-            if($ms_now && $row->last_email_status == "Online") { //if $ms_now is anything but zero, and node is online, proceed. We check ms_now is not zero to prevent division by zero errors
+            if($ms_now && $row->last_email_status == "Online") {
                 $difference = round((1 - $row->average_longterm_ms/$ms_now)*100,0);
                 echo "<br>IP: ".$row->ip."  LTA:".$row->average_longterm_ms." now:".$ms_now
                     ." difference: $difference";
@@ -44,10 +38,6 @@ class BitsNbobs extends CI_Controller {
         }
     }
 
-    /**
-     * we've passed IPAndAverage (non-plural), not IP(s)AndAverage, so it contacts only one result
-     * we clean the $ms_cleaned so no minus sign is shown on email subjet or it doesn't read right
-     */
     private function alertDifference($IPAndAverage) {
         $this->load->model('html_email');
         $this->load->model('email_dev_or_no');
@@ -56,7 +46,7 @@ class BitsNbobs extends CI_Controller {
         $this->db->where('ip', $IPAndAverage['ip']);
         $ping_ip_tableTable = $this->db->get('ping_ip_table');
         foreach($ping_ip_tableTable->result() as $row) {
-            //next need to update the lastLTAalertDate after email is sent
+
             $recentAlert = $this->get_emailalerts->recentAlert($row->id);
             $email_addresses_set_for_alerts = $this->get_emailalerts->returnAlertsFromIDasString($row->id);
             if($email_addresses_set_for_alerts && !$recentAlert) {
@@ -87,12 +77,8 @@ class BitsNbobs extends CI_Controller {
         }
     }
 
-    /**
-     * array_filter() - remove empty values to make average better
-     * changed average to actually give "mode" of results, the result which returns most often
-     */
     private function getRecentAverage($ip) {
-        //ping_result_table is quite pruned these days, so we don't need a datetime filter
+
         $this->db->where('ip', $ip);
         $this->db->order_by('id', 'DESC');
         $ping_result_tableTable = $this->db->get('ping_result_table');
@@ -101,52 +87,38 @@ class BitsNbobs extends CI_Controller {
         foreach($ping_result_tableTable->result() as $row) {
             array_push($average_array, $row->ms);
         }
-        $average_array = array_filter($average_array); //filter out zeros (failed pings)
+        $average_array = array_filter($average_array);
         $median = $this->getMedian($average_array);
         return $median;
     }
-    
-    /**
- * A PHP function that will calculate the median value
- * of an array
- * 
- * @param array $arr The array that you want to get the median value of.
- * @return boolean|float|int
- * @throws Exception If it's not an array
- */
+
     private function getMedian($arr) {
-        //Make sure it's an array.
+
         if(!is_array($arr)){
             throw new Exception('$arr must be an array!');
         }
-        //If it's an empty array, return FALSE.
+
         if(empty($arr)){
             return false;
         }
-        //sort the array
+
         asort($arr);
-        
-        //reset keys to match new order
+
         $arr = array_values($arr);
-        
-        //Count how many elements are in the array.
+
         $num = count($arr);
-        //Determine the middle value of the array.
+
         $middleVal = floor(($num - 1) / 2);
-        //If the size of the array is an odd number,
-        //then the middle value is the median.
+
         if($num % 2) { 
             return $arr[$middleVal];
         } 
-        //If the size of the array is an even number, then we
-        //have to get the two middle values and get their
-        //average
+
         else {
-            //The $middleVal var will be the low
-            //end of the middle
+
             $lowMid = $arr[$middleVal];
             $highMid = $arr[$middleVal + 1];
-            //Return the average of the low and high.
+
             return (($lowMid + $highMid) / 2);
         }
     }

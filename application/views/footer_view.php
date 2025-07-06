@@ -15,7 +15,7 @@ if(rand(1,111) === 109) $footer_note = "Success is not final, failure is not fat
       <br>
       <?php
       $this->benchmark->mark('code_end');
-      //echo $this->benchmark->elapsed_time('code_start', 'code_end');
+
       echo "Page loaded in ".substr($this->benchmark->elapsed_time('code_start', 'code_end'),0,-3)." seconds";
       ?>
 </p></footer>

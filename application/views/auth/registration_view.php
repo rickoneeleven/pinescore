@@ -2,7 +2,7 @@
     <div class="form_title">Register</div>
     <div class="form_sub_title"></br></div>
      <?php echo validation_errors('<p class="error">');
-     echo $this->session->flashdata('message'); //this gets set with form submission output
+     echo $this->session->flashdata('message');
      ?>
      
      <?php echo form_open("auth/user/registration"); ?>

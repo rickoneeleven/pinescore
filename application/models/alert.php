@@ -1,25 +1,14 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-// Removed Psr\Log\LoggerInterface use statement
-
 class Alert extends CI_model {
-
-    // Removed logger property
 
     public function __construct()
     {
         parent::__construct();
-        // No logger needed here
+
     }
 
-    /**
-     * Sets the disabled_until timestamp for all alerts associated with a user's email.
-     *
-     * @param string $user_email The email address of the user.
-     * @param string|null $timestamp The future timestamp (YYYY-MM-DD HH:MM:SS) to disable until, or null to enable.
-     * @return bool True on success, False on failure or if no alerts found.
-     */
-    public function set_alerts_disabled_until($user_email, $timestamp) // REMOVED: type hints string, ?string, : bool
+    public function set_alerts_disabled_until($user_email, $timestamp)
     {
         if (empty($user_email)) {
              log_message('warn', 'set_alerts_disabled_until called with empty email. Timestamp: ' . ($timestamp ? $timestamp : 'NULL'));
@@ -31,14 +20,14 @@ class Alert extends CI_model {
         try {
             $this->db->where('email', $user_email);
             $this->db->from('alerts');
-            $count = $this->db->count_all_results(); // Check count before update
+            $count = $this->db->count_all_results();
 
             if ($count === 0) {
                 log_message('info', 'No alerts found for user ' . $user_email . ', no update performed.');
-                return true; // Treat as success if nothing to update
+                return true;
             }
 
-            $data = ['disabled_until' => $timestamp]; // $timestamp can be NULL or string
+            $data = ['disabled_until' => $timestamp];
             $this->db->where('email', $user_email);
             $update_result = $this->db->update('alerts', $data);
 
@@ -51,19 +40,13 @@ class Alert extends CI_model {
                  log_message('error', 'Database error occurred while updating alert disable status for user: ' . $user_email . '. DB Error: ' . print_r($db_error, true));
                 return false;
             }
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
             log_message('error', 'Exception occurred while updating alert disable status for user: ' . $user_email . '. Error: ' . $e->getMessage());
             return false;
         }
     }
 
-    /**
-     * Gets the current disabled_until status for a user's alerts.
-     *
-     * @param string $user_email The email address of the user.
-     * @return string|null The timestamp string if disabled, null if enabled or no alerts found.
-     */
-    public function get_alert_disable_status($user_email) // REMOVED: type hints string, : ?string
+    public function get_alert_disable_status($user_email)
     {
         if (empty($user_email)) {
              log_message('warn', 'get_alert_disable_status called with empty email.');
@@ -76,30 +59,24 @@ class Alert extends CI_model {
             $this->db->select('disabled_until');
             $this->db->from('alerts');
             $this->db->where('email', $user_email);
-            $this->db->limit(1); // Optimization: only need one record to check status
+            $this->db->limit(1);
             $query = $this->db->get();
 
             if ($query->num_rows() > 0) {
                 $result = $query->row();
                 log_message('debug', 'Found alert disable status for user ' . $user_email . ': ' . ($result->disabled_until ? $result->disabled_until : 'NULL'));
-                return $result->disabled_until; // Returns the value (string or NULL)
+                return $result->disabled_until;
             } else {
                 log_message('info', 'No alerts found for user ' . $user_email . ' when checking disable status.');
-                return null; // No alerts found, effectively enabled
+                return null;
             }
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
             log_message('error', 'Exception occurred while fetching alert disable status for user: ' . $user_email . '. Error: ' . $e->getMessage());
-            return null; // Return null on error
+            return null;
         }
     }
 
-    /**
-     * Placeholder function
-     *
-     * @param array $array Input array (structure TBD).
-     * @return void
-     */
-    public function updateMultipleAlertEmailsInGroup($array) // REMOVED: array type hint, : void return type
+    public function updateMultipleAlertEmailsInGroup($array)
     {
         log_message('warn', 'updateMultipleAlertEmailsInGroup function called but is not implemented.');
     }

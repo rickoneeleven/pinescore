@@ -96,7 +96,7 @@
 			$this->load->view('footer_view',$data);
 		}
 		
-		public function register($data=null) { //the nature of the code i took that this has ended as the form/page and 'registrtion' is validation
+		public function register($data=null) {
 			$data['title']= 'New user registration';
 			$data['description'] = "Register to start monitoring your nodes for free.";
 			$data['keywords'] = "register,pinescore.com,monitor";
@@ -104,7 +104,7 @@
 			$this->load->view('header_view',$data);
 			$this->load->view('navTop_view');
 			$this->load->view("auth/registration_view.php");
-			//$this->load->view("auth/signups_closed");
+
 			$this->load->view('footer_view');
 		}
 		
@@ -125,11 +125,9 @@
 			$this->load->library('form_validation');
 			$this->load->helper('string');
 
-			// field name, error message, validation rules
 			$this->form_validation->set_rules('email', 'Email Address', 'valid_email|trim|required|xss_clean');
 			$this->form_validation->set_rules('verify','Verify','required|matches[image]');
 
-		  
 			if($this->form_validation->run() == FALSE)
 			{
 				$data = array('captcha_requested' => "yes",
@@ -163,9 +161,7 @@
 				$data['sent'] = 1;
 				
 				$this->forgot($data);
-				//$this->usermodel->add_user();
-				//$this->thank();
-				 			
+
 			}
 		}
 		
@@ -192,13 +188,11 @@
 			$this->load->library('form_validation');
 			$this->load->model('techbits_model');
 
-			// field name, error message, validation rules
 			$this->form_validation->set_rules('email_address', 'Your Email', 'trim|required|valid_email');
 			$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[4]|max_length[32]');
 			$this->form_validation->set_rules('con_password', 'Password Confirmation', 'trim|required|matches[password]');
 			$this->form_validation->set_rules('verify','Verify','required|matches[image]');
 
-		  
 			if($this->form_validation->run() == FALSE)
 			{
 				$data = array('captcha_requested' => "yes",
@@ -211,13 +205,11 @@
 				$duplicate_check = $this->techbits_model->accountExist(set_value('email_address'));
 				if($duplicate_check->num_rows() > 0){
 					$this->session->set_flashdata('message', '<p class="error">Account already registed with that email address.</p>');
-					redirect(current_url()); //reloads the page and uses the session message to pass error (how does for repop?)
+					redirect(current_url());
 				}
 				
 				$this->mailConfirmation();
-				//$this->usermodel->add_user();
-				//$this->thank();
-				 			
+
 			}
 		}
 	}

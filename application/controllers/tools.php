@@ -8,7 +8,7 @@ class Tools extends CI_Controller
 {
     public function __construct()
     {
-        parent::__construct(); //otherwise codeigniter breaks when using construct
+        parent::__construct();
     }
 
     public function index()
@@ -16,21 +16,13 @@ class Tools extends CI_Controller
         $this->pingAdd();
     }
 
-
-    /**
-     * Export node data to CSV
-     * 
-     * @param int|null $group_id The group ID to filter by, or null for all nodes
-     * @return void Outputs CSV file directly
-     */
     public function export_csv($group_id = null)
     {
         try {
             $this->load->model('cellblock7');
             $this->load->model('icmpmodel');
             $this->load->model('securitychecks');
-            
-            // Verify user has access if this is a private group
+
             if ($group_id) {
                 $array = [
                     'user_id'       => $this->session->userdata('user_id'),
@@ -43,8 +35,7 @@ class Tools extends CI_Controller
                     return;
                 }
             }
-            
-            // Get the same data used for the current view
+
             if ($group_id) {
                 $ips = $this->cellblock7->icmpTableData($group_id);
             } else {
@@ -52,13 +43,11 @@ class Tools extends CI_Controller
                 $data3 = ['owner' => $user];
                 $ips = $this->cellblock7->icmpTableData(); 
             }
-            
-            // Prepare the CSV content with headers
+
             $csv_content = "Note,Status,IP\n";
-            
-            // Add each row of data
+
             foreach ($ips as $ip => $latest) {
-                // Properly escape any commas in the note field
+
                 $note = str_replace('"', '""', $latest['note']);
                 if (strpos($note, ',') !== false) {
                     $note = '"' . $note . '"';
@@ -68,20 +57,18 @@ class Tools extends CI_Controller
                                 $latest['last_email_status'] . ',' . 
                                 $ip . "\n";
             }
-            
-            // Set headers for CSV download
+
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename="pinescore_export_' . date('Y-m-d') . '.csv"');
             header('Pragma: no-cache');
             header('Expires: 0');
-            
-            // Output the CSV
+
             echo $csv_content;
             exit;
             
         } catch (Exception $e) {
             log_message('error', 'CSV Export Error: ' . $e->getMessage());
-            // Return a user-friendly error
+
             header('Content-Type: text/plain');
             echo "An error occurred while generating CSV. Please try again.";
         }
@@ -160,7 +147,7 @@ class Tools extends CI_Controller
 
         $domain_of_email = substr(strrchr($this->input->post('to'), '@'), 1);
         $mx_lookup = $this->techbits_model->lookup($domain_of_email, 'MX');
-        //print_r($mx_lookup);
+
         $data['server'] = $mx_lookup;
         $user_ip = $this->techbits_model->userIP();
         $data['user_ip'] = $user_ip;
@@ -173,11 +160,10 @@ class Tools extends CI_Controller
     {
         $this->load->model('techbits_model');
         $this->load->library('form_validation');
-        //print_r($mx_lookup);
-        //$data['domain_telnet'];
+
         $this->form_validation->set_rules('to', 'To', 'trim|xss_clean|valid_email|required');
         $this->form_validation->set_rules('verify', 'Verify', 'required|matches[image]');
-        //echo $this->input->post('to');
+
         if ($this->form_validation->run() == false) {
             $data = ['captcha_requested' => 'yes',
                           'message'      => '',
@@ -186,14 +172,14 @@ class Tools extends CI_Controller
             $data['start'] = 0;
             $this->telnet($data);
         } else {
-            $data['start'] = 1; //load the telnet page and start the test
+            $data['start'] = 1;
             $this->telnet($data);
         }
     }
 
     public function telnet_formDNSBL()
     {
-        $data['start'] = 0; //regardless of validation we don't want to $start the telnet test as we've loaded then blaclist form
+        $data['start'] = 0;
         $this->load->model('techbits_model');
         $this->load->library('form_validation');
         $this->form_validation->set_rules('ip', 'IP', 'trim|required|valid_ip');
@@ -239,7 +225,7 @@ class Tools extends CI_Controller
             $this->dns();
         } else {
             $this->form_validation->set_rules('host', 'Hostname', 'valid_ip');
-            if ($this->form_validation->run() == true) { //if a valid IP, get PTR else nothing
+            if ($this->form_validation->run() == true) {
                 $data['PTR'] = gethostbyaddr($this->input->post('host'));
             }
             $data['dns'] = 1;
@@ -248,26 +234,23 @@ class Tools extends CI_Controller
             $data['TXT'] = $this->techbits_model->lookup($this->input->post('host'), 'TXT');
             $data['NS'] = $this->techbits_model->lookup($this->input->post('host'), 'NS');
             $data['whois'] = $this->whoisclass->whoislookup($this->input->post('host'));
-            if ($data['MX']['1']['ec'] < 1) { //at least 1 mx record exists
+            if ($data['MX']['1']['ec'] < 1) {
                 foreach ($data['MX'] as $arr => $key) {
                     $data['MX_A'][$arr] = $this->techbits_model->lookup($data['MX'][$arr]['Target'], 'A');
-                    //echo "<pre>"; print_r($data['MX_A'][$arr]); echo "</pre>";
-                    if ($data['MX_A'][$arr]['1']['ec'] < 1) { //if there is an A record setup for MX record
-                        $data['MX_PTR'][$arr] = gethostbyaddr($data['MX_A'][$arr]['1']['IP']); ////because the dns lookup function returns $data['record#'] but for the PTR lookup it will always be returning record#1 for each seperate lookup
+
+                    if ($data['MX_A'][$arr]['1']['ec'] < 1) {
+                        $data['MX_PTR'][$arr] = gethostbyaddr($data['MX_A'][$arr]['1']['IP']);
                     }
-                }//echo "<pre>";print_r($data['MX_A']);echo"</pre>";die();
-                //
-                //$data['PTR_A'] = $this->techbits_model->lookup($data['MX_PTR'],"A");
-                //print_r($data['MX_A']); die();
+                }
+
             }
             $this->dns($data);
         }
     }
 
-
     public function pingAdd($data = null)
     {
-        //$this->load->database();
+
         $this->load->model('techbits_model');
         $this->load->model('icmpmodel');
         $this->load->model('cellblock7');
@@ -292,9 +275,8 @@ class Tools extends CI_Controller
         $data['user_ip'] = $user_ip;
 
         $data['refresh'] = '';
-        
-        // Enable AJAX auto-refresh for pingAdd page
-        $data_meta['refresh_content'] = 10; // 10 seconds
+
+        $data_meta['refresh_content'] = 10;
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
 
         $this->load->view('header_view', $data_meta);
@@ -303,12 +285,11 @@ class Tools extends CI_Controller
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
 
-        //echo $this->techbits_model->captcha111();
     }
 
     public function pingAdd_formProcess()
     {
-        //$this->session->set_userdata('breadcrumbs', uri_string());
+
         $this->load->model('icmpmodel');
         $this->load->model('actionicmp');
         $this->load->model('techbits_model');
@@ -330,7 +311,7 @@ class Tools extends CI_Controller
             $count_check = $this->icmpmodel->monitorCount($this->session->userdata('user_id'));
             if ($count_check->num_rows() > 999) {
                 $this->session->set_flashdata('message', '300 Monitors reached, please edit/delete you existing monitors or upgrade your account.<br><br>');
-                redirect(current_url()); //reloads the page and uses the session message to pass error (how does for repop?)
+                redirect(current_url());
             }
 
             $ping_ip_table_data = [
@@ -354,8 +335,8 @@ class Tools extends CI_Controller
             ];
             $this->sqlqu->insertEmailAlert($insertEmailAlert_data);
 
-            if ($this->input->post('viewGroup') !== false) { //user was viewing a group when adding node, so we're
-                //going to auto add that node to the group
+            if ($this->input->post('viewGroup') !== false) {
+
                 $this->load->model('cellblock7');
                 $this->cellblock7->addNodeToGroup($this->input->post('viewGroup'), $last_insert_id);
             }
@@ -363,7 +344,6 @@ class Tools extends CI_Controller
             redirect(base_url().$this->session->userdata('breadcrumbs'));
         }
     }
-
 
     public function popOut($refresh = null, $filter_group = null) 
     {
@@ -374,8 +354,7 @@ class Tools extends CI_Controller
         $this->load->model('group');
         $this->load->model('group_monthly_scores');
         $this->load->model('groupscore');
-    
-        // Fetch health metrics correctly
+
         $this->db->where('metric', 'jobs_per_minute');
         $jobs_query = $this->db->get('health_dashboard');
         $jobs_per_minute = $jobs_query->row()->result;
@@ -413,17 +392,14 @@ class Tools extends CI_Controller
             $data_meta['refresh_content'] = 10;
             $button = ['action' => 'refresh'];
         }
-    
-        // Add health metrics to button array
+
         $button['jobs_per_minute'] = $jobs_per_minute;
         $button['failed_jobs_past_day'] = $failed_jobs;
         $button['engine_status'] = $engine_status;
-        
-        // Get owner_matches_table before loading header
+
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();
-        
-        // Pass necessary data to header view
+
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
         $data_meta['group_id'] = $filter_group;
     
@@ -503,14 +479,14 @@ class Tools extends CI_Controller
             ];
             $this->sqlqu->insertEmailAlert($insertEmailAlert);
 
-            redirect(base_url().$this->session->userdata('breadcrumbs')); //reloads the page as to refresh the form on successful submission
+            redirect(base_url().$this->session->userdata('breadcrumbs'));
         }
 
         if ($_POST['action'] == 'Reset') {
             redirect(base_url().$this->session->userdata('breadcrumbs'));
         }
 
-        if ($_POST['action'] == 'Delete') { //need confrm delete before we action
+        if ($_POST['action'] == 'Delete') {
             $data['delete'] = 1;
             if (strpos($this->session->userdata('breadcrumbs'), 'viewGroup') !== false) {
                 $this->load->library('../controllers/nc');
@@ -535,7 +511,7 @@ class Tools extends CI_Controller
 
             $this->db->where('ping_ip_id', $this->input->post('id'));
             $this->db->delete('alerts');
-            redirect(base_url().$this->session->userdata('breadcrumbs')); //reloads the page as to refresh the form on successful submission
+            redirect(base_url().$this->session->userdata('breadcrumbs'));
         }
     }
 
@@ -550,8 +526,7 @@ class Tools extends CI_Controller
         $data_meta = ['title'            => 'Activity Report',
                            'description' => "Dropped requests over the last <strong><u>week</u></strong>. You'll only receive an email when a node has been down for a minute, not for each dropped request.",
                            'keywords'    => 'icmp,report,activity',
-            //It's also the metric used for the pinescore ICMP score which is (100 minus the number of sensitive status changes).
-            //A low score compared to your other monitors (or those you see on the front page when not logged in) could indicate a poor line/host.
+
         ];
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);

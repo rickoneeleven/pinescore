@@ -59,16 +59,6 @@ class   Average30days_model extends CI_model {
         $this->db->update('ping_ip_table', $update_array);
     }
 
-    /**
-     * special kind of algorithm this one, as it will be used as one of the orber_by metrics for the nodes on the main
-     * page.
-     * 'last_ms'                    =>
-     * 'average_longterm_ms'        =>
-     * 
-     * basically. you can't have one number as -100 for a worse node, and 100 for a better, as SQL sorts by the this algo count, so you need both the slow and quicker nodes to both return as minus numbers,
-     * i.e. -100. As we throw the minus numbers at the top of the table. Now a node imrpoving speed, can never increase by over 100%, as it would essentially make it zero. So we know improving nodes will never exceeed
-     * -100, whilst slower nodes need to be 500% worse off (>-500), so that's how we color them in the icmpView table.
-     */
     public function ltaCurrentMsDifference($array) {
         $percent_n_ms_diff = $this->average30days_model->getPercentAndMsForDiff();
         $difference_algo = 0;
@@ -78,11 +68,11 @@ class   Average30days_model extends CI_model {
         $difference_ms = $array['average_longterm_ms'] - $array['last_ms'];
         $difference_percent = round((1 - $array['last_ms']/$array['average_longterm_ms'])*100,0);
         if($difference_ms != 0 && $difference_ms < 0) {
-            if($difference_ms <= "-".$percent_n_ms_diff['ms_diff'] && $difference_percent < $percent_n_ms_diff['percent_diff_slower']) { //slower than usual response times
+            if($difference_ms <= "-".$percent_n_ms_diff['ms_diff'] && $difference_percent < $percent_n_ms_diff['percent_diff_slower']) {
                 $difference_algo = $difference_percent;
             }
         } else {
-            if($difference_ms >= $percent_n_ms_diff['ms_diff'] && $difference_percent > $percent_n_ms_diff['percent_diff_quicker']) { //faster than usual response times
+            if($difference_ms >= $percent_n_ms_diff['ms_diff'] && $difference_percent > $percent_n_ms_diff['percent_diff_quicker']) {
                 $difference_algo = "-".$difference_percent;
             }
         }

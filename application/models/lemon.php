@@ -11,14 +11,14 @@ class Lemon extends CI_model {
         $this->db->insert('stats', $data_db);
     }
 
-    public function tallyScore(){ //all this is used for is generating a list of scores so when we use scoreBaseline() and look set the offset to 10% deep, it has numbers to work with
+    public function tallyScore(){
         $this->load->model('icmpmodel');
         $all_ips = $this->icmpmodel->getIPs();
         foreach ($all_ips->result() as $row)
         {
             $score = $this->db->get_where('stats', array('ip' => $row->ip));
             $count = $score->num_rows();
-            $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
+            $data_static = array(
                 'score'    => $count,
                 'datetime' => date('Y-m-d H:i:s')
             );
@@ -36,40 +36,35 @@ class Lemon extends CI_model {
 
     public function scoreBaseline() {
         $this->db->order_by('score', 'asc');
-        $query = $this->db->get('stats_total'); //limit, offset
-        $offset = round($query->num_rows() / 100 * 25); //25% best score offset
+        $query = $this->db->get('stats_total');
+        $offset = round($query->num_rows() / 100 * 25);
 
-        $this->db->order_by('score', 'asc'); //you have to set this again as it resets after db query
-        $query = $this->db->get('stats_total', 1, $offset); //limit, offset
+        $this->db->order_by('score', 'asc');
+        $query = $this->db->get('stats_total', 1, $offset);
         foreach ($query->result() as $row) {
-            $data_static = array( //to stop the users/auto refresh table talking to results table, we store it here
+            $data_static = array(
                 'score'    => $row->score,
                 'datetime' => date('Y-m-d H:i:s')
             );
-            $this->db->where('ip', "baseline"); //where we store the baseline for all compares
-            $this->db->update('stats_total', $data_static); //insert into quick table
+            $this->db->where('ip', "baseline");
+            $this->db->update('stats_total', $data_static);
             return $this->db->last_query();
         }
     }
 
     public function myScore($ip) {
-        $baseline_query = $this->db->get_where('stats_total', array('ip' => "baseline"),1,0); //limit offset
+        $baseline_query = $this->db->get_where('stats_total', array('ip' => "baseline"),1,0);
         $baseline = 0;
         foreach ($baseline_query->result() as $row) {
             $baseline = $row->score;
         }
-        $baseline = 100 + $baseline; //how many failures are counted as acceptable because my server may have caused a few bad returns
+        $baseline = 100 + $baseline;
         $mine = $this->db->get_where('stats', array('ip' => $ip));
         $return = $baseline - $mine->num_rows;
-        if($return > 100) {$return = 100;} //baseline may be 5 failures, this client has had 4, giving it a score of 101
+        if($return > 100) {$return = 100;}
         return $return;
     }
 
-    //calculates the pinescore for all monitored IPs and updates database with score. This used to be done on the
-    //fly, each time a user refreshed a page/group that contained their node. now this is just done once a
-    //minute.
-    //we also try and rand which should hit about once a day, and store score, ip, time and ms for a historical
-    //record.
     public function pinescoreDaemon() {
         $this->load->model('sqlqu');
         $array['request_type'] = 'distinct_ips';
@@ -80,17 +75,17 @@ class Lemon extends CI_model {
                 'pinescore'     => $new_score,
             );
             if($new_score < $row->pinescore) {
-                // Score dropped - flag with :00 seconds
+
                 $update_data['pinescore_change'] = date('Y-m-d H:i:00');
             } else if($new_score > $row->pinescore) {
-                // Score improved - flag with :01 seconds  
+
                 $update_data['pinescore_change'] = date('Y-m-d H:i:01');
             }
             $this->db->where('ip', $row->ip);
             $this->db->update('ping_ip_table', $update_data);
             unset($update_data);
 
-            $hour_and_minute = date("i"); //every hour, as trigger every time minute=00
+            $hour_and_minute = date("i");
             if($hour_and_minute == "00") {
                 $log_for_history = array(
                     'logged'        => date('Y-m-d H:i:s'),

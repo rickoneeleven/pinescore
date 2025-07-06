@@ -23,8 +23,8 @@ class techBits_model extends CI_model {
         
     }
     
-    function pingPort($host,$port=80,$timeout=6) { //YOU NEED escapeshellarg FUNCRION FOR PROTECTION B4 you use this funct
-        $fsock = @fsockopen($host, $port, $errno, $errstr, $timeout); //the "@" before the command surpresses the php error
+    function pingPort($host,$port=80,$timeout=6) {
+        $fsock = @fsockopen($host, $port, $errno, $errstr, $timeout);
         if ( ! $fsock )
         {
                 return "errorcode: jizz | error number:$errno | $errstr";
@@ -42,7 +42,7 @@ class techBits_model extends CI_model {
         'word'	=> '111   ',
         'img_path'	=> './112/captcha/',
         'img_url'	=> base_url().'112/captcha/',
-        //'font_path'	=> './path/to/fonts/texb.ttf',
+
         'img_width'	=> '136',
         'img_height' => 25,
         'expiration' => 7200
@@ -50,14 +50,9 @@ class techBits_model extends CI_model {
         
         $cap = create_captcha($vals);
         return $cap['image'];
-        
-        
+
     }
-    
-    /*
-    / -Windows wait command is in miliseconds, whilst as the linux one is in seconds
-    / -Have to sleep the Windows command otherwise I start dropping packets from the live pinescore server when pinging home
-    */
+
     function pingv2($host, $timeout = 2) {
         for ($k = 0 ; $k < 2; $k++) {
             $output = array();
@@ -88,26 +83,18 @@ class techBits_model extends CI_model {
     }
     
     public function accountExist($email) {
-        $query = $this->db->get_where('user', array('email' => $email), 1, 0); //limit, offset last two params
+        $query = $this->db->get_where('user', array('email' => $email), 1, 0);
         return $query;
     }
-    
-    /**
-     * if $host has been passed as BOOLEAN FALSE the dns_get_record() function spits out a PHP warning
-     *  so we check the variable at the start and set it to a resolvable domain name so the script does
-     *  not slow down when trying to resolve or error with the formentioned php warning
-     *
-     *  due to php bug https://bugs.php.net/bug.php?id=73149 - we turn error reporting off in this method as
-     *  dns_get_record is prone to throwing all kinds of errors and warnings when it can't find this and that
-     */
+
     public function lookup($host, $type) {
         error_reporting(0);
         if($host==FALSE) $host = "google.co.uk";
         $record_count = 1;
         $type_ = $type;
-        $host = str_replace(' ', '', $host); //get rid of space
-        $validtypes=array("A","MX","NS","TXT"); //must be caps
-        // Check that dns type is defined or allowed
+        $host = str_replace(' ', '', $host);
+        $validtypes=array("A","MX","NS","TXT");
+
         if(!defined("DNS_" . $type) or !in_array($type,$validtypes)){
             $record['ec'] = 1;
             $record['em'] = "Invalid DNS Type!";
@@ -122,10 +109,9 @@ class techBits_model extends CI_model {
                 foreach ($rec as $num){
                     $record[$record_count]['ec'] = 0;
                     foreach ($values_for_this_type_dns as $title => $value){
-                        $record[$record_count][$title] = $num[$value]; //should 0= hostname, 1=type, 2=result, 3=priority
-                        //echo $title . " : " . $num[$value] . "<br>";
-                        //echo $record[$record_count][$title];
-                    }$record_count++; //die();
+                        $record[$record_count][$title] = $num[$value];
+
+                    }$record_count++;
                 } 
             }
         }
@@ -135,7 +121,7 @@ class techBits_model extends CI_model {
     public function getDomain() {
         $domain = gethostbyaddr($this->userIP());
         if($domain == "localhost") {
-            $domain = "localhost.local"; //just a fix for php output errors when testing locally and my ip lookup resolves to localhost. the hostdata = explode and array_search stuff messes up if the domain name is not in a FQDN format
+            $domain = "localhost.local";
         }
 	if($domain==false) {echo "<br><br><br><br><br>MUST BE AN IP ADDRESS, NOT A HOST NAME"; die();}
         $urlMap = array('com', 'co.uk');
@@ -146,8 +132,7 @@ class techBits_model extends CI_model {
         $urlData = parse_url($url);
         $hostData = explode('.', $urlData['host']);
         $hostData = array_reverse($hostData);
-        //vdebug($hostData);
-        
+
         if(array_search($hostData[1] . '.' . $hostData[0], $urlMap) !== FALSE) {
           $host = $hostData[2] . '.' . $hostData[1] . '.' . $hostData[0];
         } elseif(array_search($hostData[0], $urlMap) !== FALSE) {
@@ -202,7 +187,7 @@ class techBits_model extends CI_model {
         if(!$this->smtpParse($socket, null, '220')) return false;
         if($this->smtpParse($socket, 'EHLO ' . $mailSettings['from_domain'], '250'))
         {
-                                //Never makes it to here
+
                                 $this->smtpParse($socket, 'MAIL FROM: <'.$mailSettings['from'].'>', '250');
                                 $this->smtpParse($socket, 'RCPT TO: <' . $mailSettings['to'].'>', '250');
                                 $this->smtpParse($socket, 'DATA', '354');
@@ -218,15 +203,13 @@ class techBits_model extends CI_model {
                 $this->smtpParse($socket, $headers, '250');
                 $this->smtpParse($socket, 'QUIT', null);
                 fclose($socket);
-                
-                //echo "<br>Success: ";
-                //return true;
+
         }
         return false;
     }
     
     function dnsbllookup($ip) {
-        $ip = str_replace(' ', '', $ip); //get rid of space
+        $ip = str_replace(' ', '', $ip);
         $dnsbl_lookup=array(
         "b.barracudacentral.org",
         "bl.spamcop.net",
@@ -237,7 +220,7 @@ class techBits_model extends CI_model {
         "sbl.spamhaus.org",
         "xbl.spamhaus.org",
         "zen.spamhaus.org",
-        ); // Add your preferred list of DNSBL's
+        );
 
         $AllCount = count($dnsbl_lookup);
         $BadCount = 0;

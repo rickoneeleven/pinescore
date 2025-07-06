@@ -1,7 +1,7 @@
 <?php
     if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-        class api_nightly extends CI_Controller { //runs on the hour
+        class api_nightly extends CI_Controller {
     
             public function index()
             {
@@ -46,7 +46,7 @@
                     $this->db->delete('alerts');
                 }
                 
-                $this->db->where($old); //delete old email confirmation links not followed
+                $this->db->where($old);
                 $this->db->delete('verify_email');
                 echo $this->db->last_query()."<p>";
                 
@@ -54,7 +54,7 @@
                 $this->db->delete('stats');
                 echo $this->db->last_query()."<p>";
                 
-                $this->db->where($old); //the command that updates timestamp in stats_total runs at the end of every minute
+                $this->db->where($old);
                 $this->db->delete('stats_total');
                 echo $this->db->last_query()."<p>";
 
@@ -85,6 +85,5 @@
                 $this->db->update('ping_ip_table', array('count_direction' => '-'));
             }
     }
-
 
 ?>

@@ -1,12 +1,12 @@
 <?php
 echo "<div id=\"ping_add_container\" style=\"float:left;\">";
 echo "<div id=\"pa_left\">";
-echo $this->session->flashdata('message'); //this gets set with a successful form submission
+echo $this->session->flashdata('message');
 
 ?>
    <form action="<?php echo base_url()?>tools/pingAdd_formProcess" method="post" accept-charset="utf-8" onsubmit="this.elements['ipSubmit'].disabled=true;">
 <?php
-if(($this->session->userdata('user_email')!="")) {//is user logged in check [true] else
+if(($this->session->userdata('user_email')!="")) {
     echo "<table>";
     echo "<tr class=\"darker\"><td colspan=\"2\">New hostname or IP to be monitored:"; if(empty($ips)) {echo "<span class=\"b\"> <font color=\"red\">Start Here</font> </span>";} echo "</td></tr>";
 
@@ -58,8 +58,7 @@ if(($this->session->userdata('user_email')!="")) {//is user logged in check [tru
 
     echo form_hidden('public', $this->session->userdata('default_EA'));
     if($this->uri->segment(2) === "viewGroup") {
-        //we're viewing a group so we need to pass a hidden form field, so in the form processing, we can add
-        //this node directly to this group
+
         echo form_hidden('viewGroup', $this->uri->segment(3));
     }
     echo "<tr><td>";
@@ -80,10 +79,10 @@ if(($this->session->userdata('user_email')!="")) {//is user logged in check [tru
     echo '<div class="screenshots"><a href="'.$gitExcludes111Folder.'111/ns_homepage2.png"><img src="'.$gitExcludes111Folder.'111/ns_homepage2.png" border="1" width="283px"></a></div>';
     echo '<div class="screenshots"><a href="'.$gitExcludes111Folder.'111/ns_homepage3.png"><img src="'.$gitExcludes111Folder.'111/ns_homepage3.png" border="1" width="283px"></a></div>';
     echo '</div>';
-    //<p>Your IP:".$user_ip. "</p>";
+
 }
-echo "</div>"; //left
-if(($this->session->userdata('user_email')!="")) {//is user lgged in check [true] else
+echo "</div>";
+if(($this->session->userdata('user_email')!="")) {
     $count_for_table = 0;
     if(isset($myReports)) {
         foreach ($myReports->result() as $row) {
@@ -138,11 +137,10 @@ if(($this->session->userdata('user_email')!="")) {//is user lgged in check [true
     }
 
     echo "</table>";
-    echo "</div>"; //right
+    echo "</div>";
 }
 
-echo "</div>"; //main
+echo "</div>";
 echo "<br><br><br><br><br>".validation_errors(); 
-
 
 ?>

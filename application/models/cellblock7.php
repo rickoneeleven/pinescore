@@ -32,12 +32,6 @@ class Cellblock7 extends CI_model
             ]);
     }
 
-    /**
-     * array(
-     * 'user_id'
-     * 'group_id'
-     * ).
-     */
     public function groupPublicCheck($array)
     {
         $this->db->where('id', $array['group_id']);
@@ -68,9 +62,9 @@ class Cellblock7 extends CI_model
             $ips = $this->icmpmodel->getIPs($group_id_filter);
         } else {
             $data3 = ['owner' => $user];
-            $ips = $this->icmpmodel->getIPs($data3); //get ips from ip table
+            $ips = $this->icmpmodel->getIPs($data3);
         }
-        $data2 = []; //if no results the array wont get created below so we have to declare here otherwise customers with no tables will get erros as it will try to return data2, but it does not exist
+        $data2 = [];
         foreach ($ips->result() as $row) {
             $data2[$row->ip]['note'] = $row->note;
             $data2[$row->ip]['alert'] = $this->get_emailalerts->returnAlertsFromIDasString($row->id);

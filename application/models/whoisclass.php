@@ -1,12 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-#######################################################################
-#				PHP Whois Lookup Class
-#	Script Url: http://99webtools/php-whois-script.php
-#	Author: Sunny Verma
-#	Email: er.sunny.verma@gmail.com
-#	Website: http://99webtools.com
-#	License: GPL 2.0, @see http://www.gnu.org/licenses/gpl-2.0.html
-########################################################################
+
+#	Script Url: http:
+
+#	Website: http:
+#	License: GPL 2.0, @see http:
+
 class Whoisclass extends CI_model {
 private $WhoisServers = array(
 "com"               =>  array("whois.verisign-grs.com","whois.crsnic.net"),
@@ -152,9 +150,9 @@ private $WhoisServers = array(
 );
 public function whoislookup($domain)
 {
-$domain = trim($domain); //remove space from start and end of domain
-if(substr(strtolower($domain), 0, 7) == "http://") $domain = substr($domain, 7); // remove http:// if included
-if(substr(strtolower($domain), 0, 4) == "www.") $domain = substr($domain, 4);//remove www from domain
+$domain = trim($domain);
+if(substr(strtolower($domain), 0, 7) == "http://") $domain = substr($domain, 7);
+if(substr(strtolower($domain), 0, 4) == "www.") $domain = substr($domain, 4);
 if(preg_match("/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/",$domain))
 return $this->queryWhois("whois.lacnic.net",$domain);
 elseif(preg_match("/^([-a-z0-9]{2,100})\.([a-z\.]{2,8})$/i",$domain))
@@ -162,9 +160,9 @@ elseif(preg_match("/^([-a-z0-9]{2,100})\.([a-z\.]{2,8})$/i",$domain))
 $domain_parts = explode(".", $domain);
 $tld = strtolower(array_pop($domain_parts));
 if(isset($this->WhoisServers[$tld][0])) {
-    $server = $this->WhoisServers[$tld][0]; //ryan fix
+    $server = $this->WhoisServers[$tld][0];
 }
-if(!isset($server)) {//ryan fix
+if(!isset($server)) {
 return "Error: No appropriate Whois server found for $domain domain!";
 }
 $res=$this->queryWhois($server,$domain);
