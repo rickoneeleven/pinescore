@@ -17,7 +17,7 @@ class Nc extends CI_Controller
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
-        //$this->load->view('speedTest_view');
+
         $this->load->view('footer_view');
     }
 
@@ -90,18 +90,14 @@ class Nc extends CI_Controller
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
-        //$this->load->view('pingAdd_view', $data); //otherwises when creting a new group there is also a form input loaded for creating a new monitor above it. the user may not know whar they need to fill out
+
         $this->load->view($view, $data_for_view);
         $this->load->view('footer_view');
     }
 
     public function createGroupForm()
     {
-        /**
-         * $form_label_id = the method that passes form data here dynamically creates form lables for each ping_id, the value is then either 0 or 1 as it's a checkbox.
-         * switch = set the switch as the dynamic form id and if the value of that form id = 1, which means it's been ticked then add it to an array to go into database
-         * form_validation = one rule is nested in the foreach as it has to grab the dynamic values to make sure they've not been changed/hacked during POST. fake validation message to throw hack attempts off.
-         */
+
         $ids_for_new_group = '';
         $this->load->model('icmpmodel');
         $this->load->model('securitychecks');
@@ -160,9 +156,7 @@ class Nc extends CI_Controller
 
     public function editGroupForm()
     {
-        /**
-         * originally copied from function createGroupForm().
-         */
+
         $ids_for_updated_group = '';
         $this->load->model('icmpmodel');
         $this->load->model('securitychecks');
@@ -205,8 +199,7 @@ class Nc extends CI_Controller
 
             $update_monitor_group = [
                 'name' => $this->input->post('groupname'),
-                //'datetime' => date('Y-m-d H:i:s'),
-                //'ping_ip_ids' => $ids_for_updated_group,
+
                 'public' => $this->input->post('public'),
             ];
             $this->db->where('id', $this->input->post('group_id'));
@@ -246,10 +239,7 @@ class Nc extends CI_Controller
 
     public function deleteGroup($id, $confirm = 'no')
     {
-        //echo "confirm: ".$confirm;
-        /*
-         * originally copied from function createGroupForm()
-         */
+
         $this->load->model('icmpmodel');
         $this->load->model('securitychecks');
         $this->load->model('group');
@@ -269,7 +259,7 @@ class Nc extends CI_Controller
                 'title'       => 'Think Twice',
                 'description' => "You're about to walk a path that allows no return.",
                 'keywords'    => 'confirm,delete',
-               // 'refresh_content' => "2",
+
             ];
             $confirmation_view['breadcrumbs'] = 'Are you sure you want to delete the group known as <strong>'.$group_to_be_deleted->row('name').'?</strong>
                 <br><br><table><tr>
@@ -288,10 +278,6 @@ class Nc extends CI_Controller
         }
     }
 
-    /**
-     * $data['group_id'] = $group_id is because we need the group_id in the view to pass the ID to delete or modify group URL
-     * $data['user_ip'] = next to the hostname/ip form input box on pingAdd it gives you your IP in case you want to use that.
-     */
     public function viewGroup($group_id, $data = null)
     {
         $this->load->model('techbits_model');
@@ -316,7 +302,7 @@ class Nc extends CI_Controller
             'title'       => 'Groups',
             'description' => 'Create groups and select which nodes to include.',
             'keywords'    => 'custom,reports',
-            'refresh_content' => 10, // Enable AJAX auto-refresh
+            'refresh_content' => 10,
         ];
 
         $this->db->where('id', $group_id);
@@ -332,8 +318,7 @@ class Nc extends CI_Controller
 
         $user_ip = $this->techbits_model->userIP();
         $data['user_ip'] = $user_ip;
-        
-        // Pass necessary data to header view for AJAX
+
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
         $data_meta['group_id'] = $group_id;
 

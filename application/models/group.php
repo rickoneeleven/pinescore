@@ -6,10 +6,7 @@ if (!defined('BASEPATH')) {
 
 class Group extends CI_model
 {
-    //'name'
-    //'user_id'
-    //'public'
-    //RETURN group_id
+
     public function create($array)
     {
         $group = [
@@ -22,8 +19,6 @@ class Group extends CI_model
         return $this->db->insert_id();
     }
 
-    //'user_id'
-    //RETURN Table Object
     public function read($array)
     {
         $this->db->where('user_id', $array['user_id']);
@@ -46,10 +41,6 @@ class Group extends CI_model
         return $this->db->get('groups');
     }
 
-    //'group_id'
-    //'name'
-    //'user_id'
-    //'public'
     public function update($array)
     {
         $update = [
@@ -61,8 +52,6 @@ class Group extends CI_model
         $this->db->update('groups', $update);
     }
 
-    //'group_id'
-    //'user_id'
     public function delete($array)
     {
         $this->db->where('user_id', $array['user_id']);

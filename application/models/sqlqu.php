@@ -37,13 +37,6 @@ class Sqlqu extends CI_model
         return $this->db->get('historic_pinescore');
     }
 
-    /**
-     * @param $data_db , array(
-     *              'alert' => $this->input->post('email'),
-     *              'ping_ip_id' => $last_insert_id,
-     *         )
-     * drop existing IDs as this method is used for inserting new nodes, with email addresses, and updating existing
-     */
     public function insertEmailAlert($data_db)
     {
         $this->load->model('sr/email_string_to_array');

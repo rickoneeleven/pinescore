@@ -7,44 +7,34 @@ class User_options extends CI_Controller {
         parent::__construct();
         $this->load->library('form_validation');
         $this->load->helper('form');
-        $this->load->helper('date'); // For date calculations
-        $this->load->model('alert'); // Load the alert model
+        $this->load->helper('date');
+        $this->load->model('alert');
 
-        // Ensure user is logged in for all methods in this controller
         $this->_ensure_logged_in();
     }
 
-    /**
-     * Displays the user options page.
-     * Fetches current settings and alert disable status.
-     *
-     * @param array|null $data Additional data to pass to the view.
-     */
-    public function options($data = null) // REMOVED: array type hint and : void return type
+    public function options($data = null)
     {
         $user_email = $this->session->userdata('user_email');
         $user_id = $this->session->userdata('user_id');
 
         log_message('info', 'Loading user options page for user_id: ' . $user_id);
 
-        // Initialize data if not passed
         if ($data === null) {
             $data = [];
         }
 
-        // Fetch current alert disable status
         try {
             $data['alert_disable_status'] = $this->alert->get_alert_disable_status($user_email);
             $data['alerts_are_currently_disabled'] = ($data['alert_disable_status'] !== null && strtotime($data['alert_disable_status']) > now());
              log_message('debug', 'Alert disable status fetched for user_id ' . $user_id . ': ' . ($data['alert_disable_status'] ? $data['alert_disable_status'] : 'NULL') . '; CurrentlyDisabled: ' . ($data['alerts_are_currently_disabled'] ? 'Yes' : 'No'));
 
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
              log_message('error', 'Error fetching alert disable status for user_id ' . $user_id . ': ' . $e->getMessage());
              $data['alert_disable_status'] = null;
              $data['alerts_are_currently_disabled'] = false;
              $this->session->set_flashdata('error_message', 'Could not retrieve alert status.');
         }
-
 
         $data['title'] = 'Account Options';
         $data['description'] = "You can manage your account settings and alert preferences here.";
@@ -55,23 +45,19 @@ class User_options extends CI_Controller {
             $this->load->view('navTop_view');
             $this->load->view("auth/options_view", $data);
             $this->load->view('footer_view');
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
              log_message('error', 'Error loading options view for user_id ' . $user_id . ': ' . $e->getMessage());
             show_error('An error occurred while loading the options page. Please try again later.');
         }
     }
 
-    /**
-     * Handles the submission of the main options form (email, password, preferences).
-     */
-    public function optionsForm() // REMOVED: : void return type
+    public function optionsForm()
     {
         $user_id = $this->session->userdata('user_id');
         $user_email = $this->session->userdata('user_email');
 
         log_message('info', 'Processing options form submission for user_id: ' . $user_id);
 
-        // --- Validation Rules ---
         if ($this->input->post('password')) {
             $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[4]|max_length[32]');
             $this->form_validation->set_rules('password_confirm', 'Password Confirmation', 'trim|required|matches[password]');
@@ -89,7 +75,6 @@ class User_options extends CI_Controller {
         $this->form_validation->set_rules('hideOffline', 'Hide Offline Nodes', 'trim|integer|in_list[0,1]');
         $this->form_validation->set_rules('default_EA', 'Default setting for Public Access', 'trim|integer|in_list[0,1]');
 
-        // --- Process Form ---
         if ($this->form_validation->run() == FALSE) {
              log_message('warn', 'Options form validation failed for user_id: ' . $user_id . ' Errors: ' . validation_errors());
             $this->options();
@@ -126,11 +111,11 @@ class User_options extends CI_Controller {
 
                     $this->session->set_flashdata('message', 'Configuration saved successfully at '.date('H:i:s'));
                 } else {
-                     $db_error = $this->db->error(); // Capture DB error if available
+                     $db_error = $this->db->error();
                      log_message('error', 'Failed to update user options in database for user_id: ' . $user_id . '. DB Error: ' . print_r($db_error, true));
                      $this->session->set_flashdata('error_message', 'Failed to save configuration. Please try again.');
                 }
-            } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+            } catch (Exception $e) {
                  log_message('error', 'Exception during user options update for user_id ' . $user_id . ': ' . $e->getMessage());
                  $this->session->set_flashdata('error_message', 'An unexpected error occurred while saving configuration.');
             }
@@ -139,10 +124,7 @@ class User_options extends CI_Controller {
         }
     }
 
-    /**
-     * Disables email alerts for the logged-in user for a specified duration.
-     */
-    public function disable_alerts_temporarily() // REMOVED: : void return type
+    public function disable_alerts_temporarily()
     {
         $user_id = $this->session->userdata('user_id');
         $user_email = $this->session->userdata('user_email');
@@ -170,7 +152,7 @@ class User_options extends CI_Controller {
                 log_message('error', 'Failed to disable alerts via model for user_id: ' . $user_id);
                 $this->session->set_flashdata('error_message', 'Failed to disable alerts. Please try again.');
             }
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
              log_message('error', 'Exception during alert disable for user_id ' . $user_id . ': ' . $e->getMessage());
              $this->session->set_flashdata('error_message', 'An unexpected error occurred while disabling alerts.');
         }
@@ -178,10 +160,7 @@ class User_options extends CI_Controller {
         redirect(base_url("user_options/options"));
     }
 
-    /**
-     * Re-enables email alerts immediately for the logged-in user.
-     */
-    public function enable_alerts_now() // REMOVED: : void return type
+    public function enable_alerts_now()
     {
         $user_id = $this->session->userdata('user_id');
         $user_email = $this->session->userdata('user_email');
@@ -198,7 +177,7 @@ class User_options extends CI_Controller {
                 log_message('error', 'Failed to enable alerts via model for user_id: ' . $user_id);
                 $this->session->set_flashdata('error_message', 'Failed to enable alerts. Please try again.');
             }
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
              log_message('error', 'Exception during alert enable for user_id ' . $user_id . ': ' . $e->getMessage());
              $this->session->set_flashdata('error_message', 'An unexpected error occurred while enabling alerts.');
         }
@@ -206,13 +185,7 @@ class User_options extends CI_Controller {
         redirect(base_url("user_options/options"));
     }
 
-    /**
-     * Form validation callback to check if an email address already exists for another user.
-     *
-     * @param string $email The email address to check.
-     * @return bool True if the email does not exist for another user, False otherwise.
-     */
-    public function checkEmailExists($email) // REMOVED: string type hint
+    public function checkEmailExists($email)
     {
         $user_id = $this->session->userdata('user_id');
         log_message('debug', 'Callback checkEmailExists running for user_id: ' . $user_id . ' checking email: ' . $email);
@@ -231,17 +204,14 @@ class User_options extends CI_Controller {
                  log_message('debug', 'Email existence check passed for user_id: ' . $user_id . ', Email: ' . $email);
                 return TRUE;
             }
-        } catch (Exception $e) { // Changed to generic Exception for PHP 5.6
+        } catch (Exception $e) {
              log_message('error', 'Exception during email existence check for user_id ' . $user_id . ', Email: ' . $email . '. Error: ' . $e->getMessage());
              $this->form_validation->set_message('checkEmailExists', 'An error occurred while verifying the email address. Please try again.');
              return FALSE;
         }
     }
 
-    /**
-     * Ensures the user is logged in. Redirects to base URL if not.
-     */
-    private function _ensure_logged_in() // REMOVED: : void return type
+    private function _ensure_logged_in()
     {
         if (!$this->session->userdata('logged_in')) {
              log_message('warn', 'Unauthorized access attempt to user_options controller from IP: ' . $this->input->ip_address());

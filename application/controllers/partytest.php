@@ -12,5 +12,4 @@ if (!defined('BASEPATH')) {
             echo $this->groupscore->getTodayGroupScore('1');
         }
 
-        //wip1 work on editing a group
     }

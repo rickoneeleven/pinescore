@@ -10,7 +10,7 @@ if (isset($groupsTable)) {
 }
 
 if (isset($groupsTable)) {
-    $group_name = $groupsTable->row('name'); //wip1 there is no name row
+    $group_name = $groupsTable->row('name');
     echo form_open('nc/editgroupform');
     echo form_hidden('group_id', $groupsTable->row('id'));
 } else {
@@ -64,19 +64,16 @@ echo "<tr><td>&nbsp;</td><td></td></tr>";
     </tr>
         ';
 
-//vdebug($cleaned_ip_ids);
 foreach ($monitors->result() as $row) {
     if ($this->session->userdata('hideOffline') == 1 &&
         date($row->last_online_toggle) < date('Y-m-d H:i:s', strtotime('-72 hours'))) {
         $row->note = $row->note.' <font color="#e8640c">[Offline > 72h Hours]</font> <a class="underlined" href="'.
             base_url().'nc/whyHidden">?</a></a>';
     }
-    /**
-     * set $default_checkbox to null. then if this page has been reloaded from a validation failure then see the comment below as i don't understand how this works. if we're editing a group then $group_details will be set and we need to show already selected members so there is a little if statement to get that working.
-     */
+
     $default_checkbox = '';
     if (validation_errors() != false) {
-        $default_checkbox = set_value($row->id); //i don't understand how this works but it does. how does loading the ID as the default checkbox value return 1?
+        $default_checkbox = set_value($row->id);
     } elseif (isset($groupsTable)) {
         if (in_array($row->id, $cleaned_ip_ids)) {
             $default_checkbox = 1;

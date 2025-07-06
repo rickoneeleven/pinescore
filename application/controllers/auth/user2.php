@@ -9,7 +9,7 @@
 			);
 			$this->session->unset_userdata($newdata );
 			$this->session->sess_destroy();
-			//$this->index();
+
 			redirect(base_url());
 			}
 	}

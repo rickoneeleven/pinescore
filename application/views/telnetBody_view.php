@@ -1,6 +1,6 @@
 <?php     
     echo '<font size="5" color="green">Your IP: '.$user_ip."</font><br><br>";
-    if(isset($_POST['ip'])) { //we have specified an IP, rather than using the one getUserIP() has found
+    if(isset($_POST['ip'])) {
 	    $user_ip = $_POST['ip'];
     }
     
@@ -49,7 +49,7 @@
                     echo form_hidden('image', '111');
                 }
                 echo '<input type="submit" name="mysubmit" onClick="this.form.submit(); this.disabled=true; this.value=\'Processing…\'; " value="Email"/>';
-                //echo ' '.form_submit('mysubmit', 'Email');
+
                 if(isset($captcha_requested)) {
                     echo "<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$cap_img;
                 }
@@ -58,23 +58,11 @@
     
     function getDomainFromEmail($email)
     {
-    // Get the data after the @ sign
+
     $this->load->model('email_dev_or_no');
     $domain = substr(strrchr($email, "@"), 1);
     
     return $domain;
     }
-    
-    /*$this->email->from(from_email, 'pinescore telnet');
-			    $this->email->to('rick1_11@hotmail.com'); 	    
-			    $this->email->subject('telnet abuse check');
-			    $this->email->message('to: '.$mailSettings['to'].' from: '.$mailSettings['from']." body: test email from pinescore.com \r\n\r\ngenerated: ".date('Y-m-d H:i:s')."\r\nfrom: ".$mailSettings['ip_from'].""."\r\n"."\r\n".".");	
-			    $email_dev_array = array(
-                        'from_class__method'            => 'telnetBody_view__index'
-                    );
-			    if($this->email_dev_or_no->amIonAproductionServer($email_dev_array)) $this->email->send();*/
-    
 
-    
-    
 ?>

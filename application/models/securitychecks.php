@@ -8,7 +8,7 @@ class SecurityChecks extends CI_model
 {
     public function loggedIn()
     {
-        if (($this->session->userdata('user_email') != '')) {//is user logged in check [true] else
+        if (($this->session->userdata('user_email') != '')) {
             return true;
         } else {
             return false;
@@ -19,7 +19,7 @@ class SecurityChecks extends CI_model
     {
         if ($this->session->userdata('user_id') !== $owner) {
             echo 'error code: dave has no pajamas';
-            //you don't own this group
+
             header('Refresh: 3;url=https://www.google.co.uk/search?num=20&safe=strict&site=&source=hp&q=sausage+butty+time');
             die();
         } else {

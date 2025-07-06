@@ -23,12 +23,12 @@ echo '
     <td></td>
     <td></td>
     <td></td>';
-    if ($owner_matches_table) { //last td for darker formatting, only see this column if you're owner
+    if ($owner_matches_table) {
         echo '<td></td>';
     }
 echo '
     <td></td>';
-if ($owner_matches_table) { //last td for darker formatting, only see this column if you're owner
+if ($owner_matches_table) {
     echo '<td><a class="powerful" href="'.base_url().'tools/export_csv/'.(isset($group_id) ? $group_id : '').'" target="_blank">[CSV]</a></td>';
 }
 echo '
@@ -44,13 +44,13 @@ echo '
     <td width="145px" ><strong>Trace</strong></td>
     <td width="125px" ><strong>Last Checked</strong></td>
     <td width="180px" ><strong>IP</strong></td>';
-    if ($owner_matches_table) { //only show alert column header if logged in
+    if ($owner_matches_table) {
         echo '
         <td width="200px" ><strong>Email Add. Alert (comma sep)</strong></td>';
     }
     echo '
     <td width="80px" ><strong><a title="Public" href="'.base_url().'nc/externalAccess">Public</a></strong></td>';
-if ($owner_matches_table) { //only show action button column header if logged in
+if ($owner_matches_table) {
     echo '<td width="155px" ><strong>Actions</strong></td>';
 }
 echo '</tr>
@@ -60,7 +60,7 @@ foreach ($ips as $ip => $latest) {
     $difference_percent = 0;
     $ms = $latest['ms'].'ms';
     $now = new DateTime();
-    $last_online_toggle = new DateTime($latest['last_online_toggle']); // or e.g. 2016-01-01 21:00:02
+    $last_online_toggle = new DateTime($latest['last_online_toggle']);
     $wentoffline = strtotime($latest['last_online_toggle']);
     $wentoffline = date('d-m-Y - H:i:s', $wentoffline);
     $difference_ms = $latest['average_longterm_ms'] - $latest['ms'];
@@ -69,7 +69,7 @@ foreach ($ips as $ip => $latest) {
     }
     if (!$latest['average_longterm_ms']) {
         $latest['average_longterm_ms'] = '??';
-    } //no LTA defined yet, new node must have been added. so using current_ms
+    }
 
     $original_ip = $ip;
     echo form_open(base_url().'tools/icmpEdit#'.$latest['id']);
@@ -83,14 +83,13 @@ foreach ($ips as $ip => $latest) {
         $ea_disabled = true;
     }
     ++$count;
-    
-    // Check if lastcheck is older than 5 minutes
+
     $lastcheck_time = new DateTime($latest['lastcheck']);
     $time_difference = $now->diff($lastcheck_time);
     $minutes_difference = $time_difference->days * 24 * 60 + $time_difference->h * 60 + $time_difference->i;
     
     if ($minutes_difference > 5) {
-        $tr = '<tr style="background-color: yellow; color: black;">'; // Set row to black if older than 5 minutes
+        $tr = '<tr style="background-color: yellow; color: black;">';
     } else {
         if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
             $tr = '<tr class="orange">';
@@ -119,7 +118,7 @@ foreach ($ips as $ip => $latest) {
         }
     }
 
-    if (isset($edit) && $latest['id'] == $this->input->post('id_edit')) { //because in foreach loop and we onloy want to edit one record
+    if (isset($edit) && $latest['id'] == $this->input->post('id_edit')) {
         $data = ['name' => 'note',
             'id'        => 'note',
             'value'     => $latest['note'],
@@ -166,7 +165,7 @@ foreach ($ips as $ip => $latest) {
     echo $tr;
     echo "<td>$count</td>";
 
-    if (!isset($edit)) { //only want the report hyperlink to be active if we're not editing, otherwise it clicks through
+    if (!isset($edit)) {
         echo '<td> '.anchor($report, $latest['note']).'</td>';
     } else {
         echo '<td> '.$latest['note'].'</td>';
@@ -192,10 +191,10 @@ foreach ($ips as $ip => $latest) {
 
     $seconds = date('s', strtotime($latest['pinescore_change']));
     if ($seconds == '00' && strtotime($latest['pinescore_change']) > strtotime($fifteenminsago)) {
-        // Score dropped in last 15 minutes - red
+
         echo '<font color="red"><strong>'.$latest['score'].'</strong></font>';
     } else if ($seconds == '01' && strtotime($latest['pinescore_change']) > strtotime($twohoursago)) {
-        // Score improved in last 2 hours - green
+
         echo '<font color="green"><strong>'.$latest['score'].'</strong></font>';
     } else {
         echo $latest['score'];
@@ -213,17 +212,17 @@ foreach ($ips as $ip => $latest) {
         <td>'.anchor(base_url().'traceroute/routesthathavebeentraced/'.$ip, " (tr) ".'&nbsp;').'</td>
         <td> '.$latest['lastcheck'].'&nbsp;</td>
         <td>'.$ip.'</td>';
-    if ($owner_matches_table) { //only show action buttons if logged in
+    if ($owner_matches_table) {
         echo '
             <td> '.$latest['alert'].'</td>';
     }
     echo '
         <td> '.$latest['public'].'</td>';
 
-    if ($owner_matches_table) { //only show action buttons if logged in
+    if ($owner_matches_table) {
         echo'<td>';
 
-        if (isset($edit) && $this->input->post('id_edit') == $latest['id']) { //think we pay an overhead for this, seems to slow form load down
+        if (isset($edit) && $this->input->post('id_edit') == $latest['id']) {
             echo form_hidden('id', $this->input->post('id_edit')).
                 form_hidden('group_id', $this->input->post('group_id')).
                 form_hidden('ip_existing', $original_ip).
@@ -231,14 +230,14 @@ foreach ($ips as $ip => $latest) {
                 .form_submit('action', 'Delete');
         }
 
-        if (isset($delete) && $this->input->post('id') == $latest['id']) { //think we pay an overhead for this, seems to slow form load down
+        if (isset($delete) && $this->input->post('id') == $latest['id']) {
             echo form_hidden('id', $this->input->post('id')).
                 form_submit('action', 'Confirm Delete');
         }
 
         if (!isset($edit) && !isset($delete)) {
             $this->session->set_userdata('breadcrumbs', uri_string());
-            if (!isset($group_id)) { //$group_id comes from array passed to this view
+            if (!isset($group_id)) {
                 if ($this->uri->segment(3) === 'sapiens') {
                     $group_id = $this->uri->segment(4);
                 } else {

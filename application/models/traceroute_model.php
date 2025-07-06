@@ -4,7 +4,7 @@ class traceroute_model extends CI_model {
   
     public function getTraceroutes($ip) {
         $this->db->order_by('id', 'DESC');
-        $query = $this->db->get_where('traceroutes', array('node' => $ip)); //limit, offset last two params
+        $query = $this->db->get_where('traceroutes', array('node' => $ip));
         return $query;
     }
     

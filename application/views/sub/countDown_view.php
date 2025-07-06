@@ -12,14 +12,11 @@ while($week_day_number > 0) {
 
 echo "<div style='display: flex; justify-content: space-between; align-items: center; width: 100%;'>";
 
-// Left side with existing content
 echo "<div>";
 echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
 
-// Auto-refresh links removed - handled by AJAX table updater
 echo "</div>";
 
-// Right side with monitoring stats
 echo "<div id='healthMetrics' style='text-align: right; margin-right: 20px;'>";
 echo "<span style='color: " . ($jobs_per_minute < 1000 ? "orange" : "green") . "'>";
 echo "pings/min: " . number_format($jobs_per_minute) . "</span> | ";

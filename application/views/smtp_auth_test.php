@@ -93,7 +93,6 @@ echo '<p><table>
     </tr>
         ';
 
-
 echo '</table></p>';
 echo form_close();
 if($returned_output) {

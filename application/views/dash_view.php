@@ -1,4 +1,4 @@
-<?php //was a concept I scrapped
+<?php
     $slow = 350;
     foreach($ips as $ip => $latest) {
         echo'
