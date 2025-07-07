@@ -1,8 +1,12 @@
 RewriteEngine on
 
+# Block access to .git directory and files
+RewriteRule ^\.git(/.*)?$ - [F,L]
+RewriteRule ^\.gitignore$ - [F,L]
+
 # Hide the application and system directories by redirecting the request to index.php
 RewriteBase /
-RewriteRule ^(application|system|\.svn|\.git) index.php/$1 [L]
+RewriteRule ^(application|system|\.svn) index.php/$1 [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
