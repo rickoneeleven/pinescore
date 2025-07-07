@@ -1,68 +1,40 @@
 <?php
 
-if (!defined('BASEPATH')) {
-    define('BASEPATH', dirname(__FILE__) . '/../../system/');
-}
-if (!defined('APPPATH')) {
-    define('APPPATH', dirname(__FILE__) . '/../');
-}
+require_once dirname(dirname(dirname(__DIR__))) . '/tests/bootstrap.php';
 
-if (!class_exists('CI_Controller')) {
-    class CI_Controller {
-        public function __get($key) {
-            if ($key === 'load') {
-                return $this->load;
-            }
-            return null;
-        }
-    }
+if (!defined('ENVIRONMENTv2')) {
+    define('ENVIRONMENTv2', 'testing');
 }
 
-if (!function_exists('log_message')) {
-    function log_message($level, $message) {
-        echo "[{$level}] {$message}\n";
-    }
-}
+require_once APPPATH . 'config/config.php';
 
-if (!function_exists('base_url')) {
-    function base_url() {
-        return 'http://example.com/';
-    }
-}
+require_once APPPATH . 'controllers/api_nightly.php';
 
-if (!defined('from_email')) {
-    define('from_email', 'test@example.com');
-}
-
-require_once(APPPATH . 'controllers/api_nightly.php');
-
-class Api_nightly_test
+class ApiNightlyTest extends TestCase
 {
-    private $CI;
-    private $load_mock;
-    private $maintenance_model_mock;
+    private $controller;
     public $model_loaded = false;
     public $maintenance_method_called = false;
 
     public function setUp()
     {
-        $this->CI = new api_nightly();
-        
         $test = $this;
         
-        $this->CI->load = new class($test, $this->CI) {
+        $this->controller = new api_nightly();
+        
+        $this->controller->load = new class($test, $this->controller) {
             private $test;
-            private $CI;
+            private $controller;
             
-            public function __construct($test, $CI) {
+            public function __construct($test, $controller) {
                 $this->test = $test;
-                $this->CI = $CI;
+                $this->controller = $controller;
             }
             
             public function model($model_name) {
                 if ($model_name === 'table_maintenance_model') {
                     $this->test->model_loaded = true;
-                    $this->CI->table_maintenance_model = new class($this->test) {
+                    $this->controller->table_maintenance_model = new class($this->test) {
                         private $test;
                         public function __construct($test) {
                             $this->test = $test;
@@ -75,24 +47,25 @@ class Api_nightly_test
                 } else {
                     $model_parts = explode('/', $model_name);
                     $model_class_name = end($model_parts);
-                    $this->CI->{$model_class_name} = new stdClass();
+                    $this->controller->{$model_class_name} = new stdClass();
+                    
                     if ($model_name === 'cron_protect') {
-                        $this->CI->cron_protect = new class() {
+                        $this->controller->cron_protect = new class() {
                             public function AllowedIPs() {}
                         };
                     }
                     if ($model_name === 'groupscore') {
-                        $this->CI->groupscore = new class() {
+                        $this->controller->groupscore = new class() {
                             public function CalulateShortTermGroupScore() {}
                         };
                     }
                     if ($model_name === 'cellblock7') {
-                        $this->CI->cellblock7 = new class() {
+                        $this->controller->cellblock7 = new class() {
                             public function getOwnerEmail($owner) { return 'test@example.com'; }
                         };
                     }
                     if ($model_name === 'email_dev_or_no') {
-                        $this->CI->email_dev_or_no = new class() {
+                        $this->controller->email_dev_or_no = new class() {
                             public function amIonAproductionServer($arr) { return false; }
                         };
                     }
@@ -100,7 +73,7 @@ class Api_nightly_test
             }
         };
 
-        $this->CI->db = new class() {
+        $this->controller->db = new class() {
             public function where($condition) { return $this; }
             public function get($table) {
                 return new class() {
@@ -112,7 +85,7 @@ class Api_nightly_test
             public function last_query() { return "mock query"; }
         };
 
-        $this->CI->email = new class() {
+        $this->controller->email = new class() {
             public function from($from, $name) { return $this; }
             public function to($to) { return $this; }
             public function bcc($bcc) { return $this; }
@@ -122,38 +95,16 @@ class Api_nightly_test
             public function print_debugger() { return ""; }
         };
 
-        $this->CI->session = new class() {
+        $this->controller->session = new class() {
             public function userdata($key) { return null; }
         };
     }
 
-    public function test_index_method_calls_table_maintenance_model()
+    public function testIndexMethodCallsTableMaintenanceModel()
     {
-        $this->CI->index();
+        $this->controller->index();
         
-        if (!$this->model_loaded) {
-            echo "FAIL: table_maintenance_model was not loaded\n";
-            return false;
-        }
-        
-        if (!$this->maintenance_method_called) {
-            echo "FAIL: check_and_truncate_ping_table() was not called\n";
-            return false;
-        }
-        
-        echo "PASS: table_maintenance_model was loaded and check_and_truncate_ping_table() was called\n";
-        return true;
+        $this->assertTrue($this->model_loaded, 'table_maintenance_model was not loaded');
+        $this->assertTrue($this->maintenance_method_called, 'check_and_truncate_ping_table() was not called');
     }
-
-    public function run()
-    {
-        $this->setUp();
-        return $this->test_index_method_calls_table_maintenance_model();
-    }
-}
-
-if (basename($_SERVER['PHP_SELF']) === 'Api_nightly_test.php' || php_sapi_name() === 'cli') {
-    $test = new Api_nightly_test();
-    $result = $test->run();
-    exit($result ? 0 : 1);
 }

@@ -52,27 +52,27 @@
                 
                 $this->db->where($old);
                 $this->db->delete('verify_email');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Deleted old verify_email records: ' . $this->db->last_query());
                 
                 $this->db->where($old);
                 $this->db->delete('stats');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Deleted old stats records: ' . $this->db->last_query());
                 
                 $this->db->where($old);
                 $this->db->delete('stats_total');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Deleted old stats_total records: ' . $this->db->last_query());
 
                 $this->db->where($old_3year);
                 $this->db->delete('historic_pinescore');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Deleted old historic_pinescore records: ' . $this->db->last_query());
 
                 $this->db->where("datetime < (NOW() - INTERVAL 7 DAY)");
                 $this->db->delete('ping_result_table');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Deleted old ping_result_table records: ' . $this->db->last_query());
                 
                 $this->db->where("created_at < (NOW() - INTERVAL 90 DAY)");
                 $this->db->delete('traceroutes');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Deleted old traceroutes records: ' . $this->db->last_query());
                 
                 $this->groupscore->CalulateShortTermGroupScore();
             }
@@ -82,7 +82,7 @@
                 $this->db->where($old_24hours);
                 $this->db->where('change', "0");
                 $this->db->delete('ping_result_table');
-                echo $this->db->last_query()."<p>";
+                log_message('debug', 'Flushed ping_result_table: ' . $this->db->last_query());
             }
 
             public function onceAday() {

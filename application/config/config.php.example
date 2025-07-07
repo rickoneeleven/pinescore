@@ -24,12 +24,12 @@ $dev_domain_tld = ".test";
 $domain = ! empty($_SERVER['HTTP_HOST']) ? strtolower($_SERVER['HTTP_HOST']) : 'cli';
 if (strpos($domain, $dev_domain_tld) !== false || $domain == 'cli')
 {
-   define('ENVIRONMENTv2', 'development');
-      define('from_email', 'dev_server@pinescore.test');
+   if (!defined('ENVIRONMENTv2')) define('ENVIRONMENTv2', 'development');
+   if (!defined('from_email')) define('from_email', 'dev_server@pinescore.test');
 }
 else {
-   define('ENVIRONMENTv2', 'production');
-      define('from_email', 'dave@pinescore.com');
+   if (!defined('ENVIRONMENTv2')) define('ENVIRONMENTv2', 'production');
+   if (!defined('from_email')) define('from_email', 'ryan@pinescore.com');
 }
 
 /*
