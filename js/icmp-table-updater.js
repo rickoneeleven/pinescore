@@ -9,12 +9,8 @@ const IcmpTableUpdater = (function() {
     let updateCount = 0;
     let isUpdating = false;
     let fullScreenMode = false;
-    let animationInterval = null;
-    let currentAnimationIndex = 0;
-    let animationSpeed = 0;
     let pendingData = null;
     let previousDataByIp = {};
-    let animationStartTime = null;
     
     const tableBodySelector = '#icmpTableBody';
 
@@ -541,66 +537,12 @@ const IcmpTableUpdater = (function() {
         // Skip sequential updates - go straight to bulk
         bulkUpdateRemainingRows(ipsArray, 0);
         pulsePageBackground();
-        return;
-
-        animationSpeed = 55;
-        currentAnimationIndex = 0;
-        animationStartTime = Date.now();
-
-        animationInterval = setInterval(updateNextNode, animationSpeed);
     }
     
     function stopSequentialUpdate() {
-        if (animationInterval) {
-            clearInterval(animationInterval);
-            animationInterval = null;
-        }
-        currentAnimationIndex = 0;
-
-        const allRows = document.querySelectorAll('#icmpTableBody tr');
-        allRows.forEach(row => {
-
-            if (row.style.backgroundColor !== 'yellow') {
-                row.style.backgroundColor = '';
-            }
-            row.style.transition = '';
-            row.style.transform = '';
-            row.style.boxShadow = '';
-            row.style.border = '';
-        });
+        // No longer needed - keeping empty function to avoid breaking calls
     }
     
-    function updateNextNode() {
-        if (!pendingData || !pendingData.ips) {
-            stopSequentialUpdate();
-            return;
-        }
-        
-        const ipsArray = Object.entries(pendingData.ips);
-        if (ipsArray.length === 0) {
-            stopSequentialUpdate();
-            return;
-        }
-
-        const timeElapsed = Date.now() - animationStartTime;
-        if (timeElapsed > 8500 && currentAnimationIndex < ipsArray.length) {
-
-            bulkUpdateRemainingRows(ipsArray, currentAnimationIndex);
-            stopSequentialUpdate();
-            return;
-        }
-
-        if (currentAnimationIndex < ipsArray.length) {
-            const [ip, data] = ipsArray[currentAnimationIndex];
-            updateSingleRow(ip, data, currentAnimationIndex);
-        }
-        
-        currentAnimationIndex++;
-
-        if (currentAnimationIndex >= ipsArray.length) {
-            stopSequentialUpdate();
-        }
-    }
     
     function bulkUpdateRemainingRows(ipsArray, startIndex) {
 
@@ -650,51 +592,6 @@ const IcmpTableUpdater = (function() {
         }
     }
     
-    function updateSingleRow(ip, data, rowIndex) {
-        const rows = document.querySelectorAll('#icmpTableBody tr');
-        if (rowIndex >= rows.length) return;
-        
-        const row = rows[rowIndex];
-
-        applyRowAnimation(row, 'hover');
-
-        const oldData = previousDataByIp[ip] || {};
-
-        const newRow = createTableRow(ip, data);
-
-        const firstCell = newRow.querySelector('td:first-child');
-        if (firstCell) {
-            firstCell.textContent = rowIndex + 1;
-        }
-
-        const lastCheck = new Date(data.lastcheck);
-        const now = new Date();
-        const minutesDiff = (now - lastCheck) / (1000 * 60);
-        if (minutesDiff > 5) {
-            newRow.style.backgroundColor = 'yellow';
-            newRow.style.color = 'black';
-        }
-
-        setTimeout(() => {
-            if (row.parentNode) {
-                row.parentNode.replaceChild(newRow, row);
-
-                applyLtaStyling(newRow, data);
-
-                animateCellChanges(newRow, oldData, data, ip);
-
-                previousDataByIp[ip] = {
-                    note: data.note || '',
-                    status: data.last_email_status,
-                    count: data.count,
-                    pineScore: data.score,
-                    ms: data.ms,
-                    lta: data.average_longterm_ms,
-                    lastCheck: data.lastcheck
-                };
-            }
-        }, 150);
-    }
     
     function pulsePageBackground() {
         const content = document.querySelector('.content');
@@ -709,85 +606,6 @@ const IcmpTableUpdater = (function() {
         }, 300);
     }
     
-    function applyRowAnimation(row, animationType = 'hover') {
-        if (!row) return;
-
-        const originalBg = row.style.backgroundColor;
-        const originalTransition = row.style.transition;
-        const originalTransform = row.style.transform;
-        const originalBoxShadow = row.style.boxShadow;
-        
-        switch(animationType) {
-            case 'hover':
-
-                row.style.transition = 'background-color 0.2s ease-in-out';
-                row.style.backgroundColor = '#f0f0f0';
-                setTimeout(() => {
-                    row.style.backgroundColor = originalBg;
-                }, 400);
-                break;
-                
-            case 'pulse':
-
-                row.style.transition = 'box-shadow 0.3s ease-in-out';
-                row.style.boxShadow = '0 0 10px rgba(0, 123, 255, 0.6)';
-                setTimeout(() => {
-                    row.style.boxShadow = originalBoxShadow;
-                }, 500);
-                break;
-                
-            case 'glow':
-
-                row.style.transition = 'border 0.2s ease-in-out, box-shadow 0.2s ease-in-out';
-                row.style.border = '2px solid #007bff';
-                row.style.boxShadow = '0 0 8px rgba(0, 123, 255, 0.4)';
-                setTimeout(() => {
-                    row.style.border = '';
-                    row.style.boxShadow = originalBoxShadow;
-                }, 400);
-                break;
-                
-            case 'slide':
-
-                row.style.transition = 'transform 0.3s ease-in-out';
-                row.style.transform = 'translateX(10px)';
-                setTimeout(() => {
-                    row.style.transform = 'translateX(0)';
-                }, 150);
-                setTimeout(() => {
-                    row.style.transform = originalTransform;
-                }, 400);
-                break;
-                
-            case 'rainbow':
-
-                const colors = ['#ffcccc', '#ccffcc', '#ccccff', '#ffffcc', '#ffccff'];
-                let colorIndex = 0;
-                row.style.transition = 'background-color 0.1s ease-in-out';
-                
-                const colorInterval = setInterval(() => {
-                    row.style.backgroundColor = colors[colorIndex % colors.length];
-                    colorIndex++;
-                    if (colorIndex >= colors.length * 2) {
-                        clearInterval(colorInterval);
-                        row.style.backgroundColor = originalBg;
-                    }
-                }, 60);
-                break;
-                
-            default:
-
-                row.style.transition = 'background-color 0.2s ease-in-out';
-                row.style.backgroundColor = '#f0f0f0';
-                setTimeout(() => {
-                    row.style.backgroundColor = originalBg;
-                }, 400);
-        }
-
-        setTimeout(() => {
-            row.style.transition = originalTransition;
-        }, 600);
-    }
     
     function animateCellChanges(newRow, oldData, newData, ip) {
         if (!newRow) return;
