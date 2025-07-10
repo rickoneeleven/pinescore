@@ -538,6 +538,10 @@ const IcmpTableUpdater = (function() {
         const ipsArray = Object.entries(pendingData.ips);
         if (ipsArray.length === 0) return;
 
+        // Skip sequential updates - go straight to bulk
+        bulkUpdateRemainingRows(ipsArray, 0);
+        return;
+
         animationSpeed = 55;
         currentAnimationIndex = 0;
         animationStartTime = Date.now();
