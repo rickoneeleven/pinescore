@@ -540,6 +540,7 @@ const IcmpTableUpdater = (function() {
 
         // Skip sequential updates - go straight to bulk
         bulkUpdateRemainingRows(ipsArray, 0);
+        pulsePageBackground();
         return;
 
         animationSpeed = 55;
@@ -693,6 +694,19 @@ const IcmpTableUpdater = (function() {
                 };
             }
         }, 150);
+    }
+    
+    function pulsePageBackground() {
+        const content = document.querySelector('.content');
+        if (!content) return;
+        
+        const originalBg = content.style.backgroundColor || '';
+        
+        content.style.backgroundColor = '#f0f0f0';
+        
+        setTimeout(() => {
+            content.style.backgroundColor = originalBg;
+        }, 300);
     }
     
     function applyRowAnimation(row, animationType = 'hover') {
