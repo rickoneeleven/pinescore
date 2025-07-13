@@ -254,7 +254,10 @@ const IcmpTableUpdater = (function() {
     function isFormInEditMode() {
 
         const editInputs = document.querySelectorAll('#icmpTableBody input[type="text"], #icmpTableBody input[type="radio"]');
-        return editInputs.length > 0;
+        const deleteButton = document.querySelector('#icmpTableBody input[type="submit"][value="Delete"]');
+        const confirmDeleteButton = document.querySelector('#icmpTableBody input[type="submit"][value="Confirm Delete"]');
+        const updateButton = document.querySelector('#icmpTableBody input[type="submit"][value="Update"]');
+        return editInputs.length > 0 || deleteButton !== null || confirmDeleteButton !== null || updateButton !== null;
     }
     
     function fetchAndUpdateTable() {
