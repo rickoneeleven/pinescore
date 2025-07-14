@@ -11,6 +11,9 @@ const IcmpTableUpdater = (function() {
     let fullScreenMode = false;
     let pendingData = null;
     let previousDataByIp = {};
+    let countdownInterval = null;
+    let secondsRemaining = 0;
+    let fetchInProgress = false;
     
     const tableBodySelector = '#icmpTableBody';
 
@@ -65,19 +68,20 @@ const IcmpTableUpdater = (function() {
     function startAutoRefresh() {
         if (updateInterval) return;
         
-        updateInterval = setInterval(fetchAndUpdateTable, refreshRate);
         updateToggleButton(true);
+        updateInterval = true; // Mark as active
+        startCountdown();
 
         fetchAndUpdateTable();
     }
     
     function stopAutoRefresh() {
         if (updateInterval) {
-            clearInterval(updateInterval);
             updateInterval = null;
         }
         
         stopSequentialUpdate();
+        stopCountdown();
         updateToggleButton(false);
     }
     
@@ -114,9 +118,11 @@ const IcmpTableUpdater = (function() {
         if (inEditMode) {
             button.textContent = '[Paused - Edit Mode]';
             button.style.color = 'orange';
+            updateCountdownDisplayForEditMode();
         } else {
             button.textContent = '[Stop Auto Refresh]';
             button.style.color = 'green';
+            resetCountdown();
         }
     }
     
@@ -302,7 +308,9 @@ const IcmpTableUpdater = (function() {
                     });
                 }
                 
-                startSequentialUpdate();
+                return startSequentialUpdate();
+            })
+            .then(() => {
                 updateCount++;
             })
             .catch(error => {
@@ -548,13 +556,13 @@ const IcmpTableUpdater = (function() {
     function startSequentialUpdate() {
         stopSequentialUpdate();
         
-        if (!pendingData || !pendingData.ips) return;
+        if (!pendingData || !pendingData.ips) return Promise.resolve();
         
         const ipsArray = Object.entries(pendingData.ips);
-        if (ipsArray.length === 0) return;
+        if (ipsArray.length === 0) return Promise.resolve();
 
         // Skip sequential updates - go straight to bulk
-        bulkUpdateRemainingRows(ipsArray, 0);
+        return bulkUpdateRemainingRows(ipsArray, 0);
     }
     
     function stopSequentialUpdate() {
@@ -563,11 +571,15 @@ const IcmpTableUpdater = (function() {
     
     
     function bulkUpdateRemainingRows(ipsArray, startIndex) {
-
-        for (let i = startIndex; i < ipsArray.length; i++) {
-            const [ip, data] = ipsArray[i];
-            updateSingleRowBulk(ip, data, i);
-        }
+        return new Promise((resolve) => {
+            for (let i = startIndex; i < ipsArray.length; i++) {
+                const [ip, data] = ipsArray[i];
+                updateSingleRowBulk(ip, data, i);
+            }
+            secondsRemaining = (refreshRate / 1000) - 1;
+            updateCountdownDisplay();
+            resolve();
+        });
     }
     
     function updateSingleRowBulk(ip, data, rowIndex) {
@@ -721,6 +733,57 @@ const IcmpTableUpdater = (function() {
             }
 
         }
+    }
+    
+    function startCountdown() {
+        stopCountdown();
+        secondsRemaining = (refreshRate / 1000) - 1;
+        updateCountdownDisplay();
+        
+        countdownInterval = setInterval(() => {
+            secondsRemaining--;
+            updateCountdownDisplay();
+            
+            if (secondsRemaining <= 0) {
+                fetchAndUpdateTable();
+            }
+        }, 1000);
+    }
+    
+    function stopCountdown() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+        updateCountdownDisplay();
+    }
+    
+    function resetCountdown() {
+        if (countdownInterval) {
+            secondsRemaining = 0;
+            updateCountdownDisplay();
+        }
+    }
+    
+    function updateCountdownDisplay() {
+        const timerElement = document.getElementById('countdownTimer');
+        if (!timerElement) return;
+        
+        if (countdownInterval && updateInterval) {
+            const displaySeconds = Math.max(0, secondsRemaining);
+            timerElement.textContent = displaySeconds + 's';
+            timerElement.style.color = displaySeconds <= 3 ? 'red' : 'green';
+        } else {
+            timerElement.textContent = '';
+        }
+    }
+    
+    function updateCountdownDisplayForEditMode() {
+        const timerElement = document.getElementById('countdownTimer');
+        if (!timerElement) return;
+        
+        timerElement.textContent = 'Paused';
+        timerElement.style.color = 'orange';
     }
 
     return {
