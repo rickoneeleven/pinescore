@@ -22,7 +22,7 @@ echo '
     <td><a id="fullscreenToggle" class="powerful" href="#" style="color: red;">[Full Screen]</a></td>
     <td></td>
     <td></td>
-    <td></td>';
+    <td><span id="countdownTimer" style="color: green; font-weight: bold;"></span></td>';
     if ($owner_matches_table) {
         echo '<td></td>';
     }
