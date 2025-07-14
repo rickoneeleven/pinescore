@@ -286,6 +286,22 @@ const IcmpTableUpdater = (function() {
                 pendingData = data;
                 updateHealthMetrics(data);
                 updateGroupScores(data);
+                
+                // On first load, populate previousDataByIp to prevent everything being bold
+                if (updateCount === 0 && data.ips) {
+                    Object.entries(data.ips).forEach(([ip, ipData]) => {
+                        previousDataByIp[ip] = {
+                            note: ipData.note || '',
+                            status: ipData.last_email_status,
+                            count: ipData.count,
+                            pineScore: ipData.score,
+                            ms: ipData.ms,
+                            lta: ipData.average_longterm_ms,
+                            lastCheck: ipData.lastcheck
+                        };
+                    });
+                }
+                
                 startSequentialUpdate();
                 updateCount++;
             })
@@ -539,7 +555,6 @@ const IcmpTableUpdater = (function() {
 
         // Skip sequential updates - go straight to bulk
         bulkUpdateRemainingRows(ipsArray, 0);
-        pulsePageBackground();
     }
     
     function stopSequentialUpdate() {
@@ -593,20 +608,6 @@ const IcmpTableUpdater = (function() {
                 lastCheck: data.lastcheck
             };
         }
-    }
-    
-    
-    function pulsePageBackground() {
-        const content = document.querySelector('.content');
-        if (!content) return;
-        
-        const originalBg = content.style.backgroundColor || '';
-        
-        content.style.backgroundColor = '#f0f0f0';
-        
-        setTimeout(() => {
-            content.style.backgroundColor = originalBg;
-        }, 300);
     }
     
     
