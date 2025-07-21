@@ -76,8 +76,4 @@ class Alert extends CI_model {
         }
     }
 
-    public function updateMultipleAlertEmailsInGroup($array)
-    {
-        log_message('warn', 'updateMultipleAlertEmailsInGroup function called but is not implemented.');
-    }
 }
