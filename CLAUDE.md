@@ -48,4 +48,4 @@ Use the output from the Gemini CLI to gain the specific knowledge you need, then
 ====-
 ## Project Specific Instructions Below
 
-read readme.txt
+read README.txt
