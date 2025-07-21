@@ -1,6 +1,27 @@
 #!/usr/bin/env php
 <?php
 
+// Check if we're running with PHP 7.0+ (required for anonymous classes)
+if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+    // Try to find and use PHP 7.4 if available
+    $php74_path = '/usr/bin/php7.4';
+    
+    if (file_exists($php74_path) && is_executable($php74_path)) {
+        // Re-execute this script with PHP 7.4
+        $args = $_SERVER['argv'];
+        array_unshift($args, $php74_path);
+        
+        // Execute with PHP 7.4 and exit with the same code
+        passthru(implode(' ', array_map('escapeshellarg', $args)), $exitCode);
+        exit($exitCode);
+    } else {
+        // PHP 7.4 not found, show error
+        echo "Error: PHP 7.0 or higher is required (current version: " . PHP_VERSION . ")\n";
+        echo "Anonymous class syntax requires PHP 7.0+\n";
+        exit(1);
+    }
+}
+
 require_once __DIR__ . '/bootstrap.php';
 
 class TestRunner
