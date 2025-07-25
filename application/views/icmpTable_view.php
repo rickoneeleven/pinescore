@@ -36,7 +36,7 @@ echo '
     <tr>
     <td>#</td>
     <td width="180px">
-        <input type="text" id="node-search-input" placeholder="Search Notes & IPs..." style="width: 95%;">
+        <input type="text" id="node-search-input" placeholder="Search Nodes & IPs..." style="width: 95%;">
     </td>
     <td width="120px" ><strong>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td>
     <td width="85px" ><strong>pinescore</strong> <a class="underlined" title="[90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]" 
