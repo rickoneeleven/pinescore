@@ -151,10 +151,25 @@ class Tools extends CI_Controller
 
             $ips = $this->cellblock7->icmpTableData($groupId, $searchTerm);
 
+            $this->db->where('metric', 'jobs_per_minute');
+            $jobs_query = $this->db->get('health_dashboard');
+            $jobs_per_minute = $jobs_query->row()->result;
+            
+            $this->db->where('metric', 'failed_jobs_past_day');
+            $failed_query = $this->db->get('health_dashboard');
+            $failed_jobs_past_day = $failed_query->row()->result;
+            
+            $this->db->where('metric', 'engine_status');
+            $engine_query = $this->db->get('health_dashboard');
+            $engine_status = $engine_query->row()->result;
+
             $response = [
                 'ips' => $ips,
                 'owner_matches_table' => $this->securitychecks->ownerMatchesLoggedIn('node'),
                 'diffPercentAndMs' => $this->average30days_model->getPercentAndMsForDiff(),
+                'jobs_per_minute' => $jobs_per_minute,
+                'failed_jobs_past_day' => $failed_jobs_past_day,
+                'engine_status' => $engine_status,
             ];
 
             header('Content-Type: application/json');
