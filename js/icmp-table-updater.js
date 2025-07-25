@@ -1,6 +1,6 @@
 
 
-const IcmpTableUpdater = (function() {
+window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     'use strict';
     
     let updateInterval = null;
@@ -15,6 +15,87 @@ const IcmpTableUpdater = (function() {
     let secondsRemaining = 0;
     let fetchInProgress = false;
     
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+    
+    function handleShowAll() {
+        stopAutoRefresh(); 
+
+        const showAllContainer = document.getElementById('show-all-container');
+        if (showAllContainer) {
+            showAllContainer.innerHTML = 'Loading all nodes...';
+        }
+
+        const url = currentGroupId 
+            ? `/tools/getIcmpDataJson/${currentGroupId}` 
+            : '/tools/getIcmpDataJson';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Show All API Error:', data.error);
+                    if (showAllContainer) showAllContainer.innerHTML = 'Error loading nodes.';
+                    return;
+                }
+                renderTable(data.ips);
+                
+                if (showAllContainer) {
+                    showAllContainer.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Show All Fetch Error:', error);
+                if (showAllContainer) showAllContainer.innerHTML = 'Error loading nodes.';
+            });
+    }
+    
+    function handleSearch(searchTerm) {
+        const url = searchTerm 
+            ? (currentGroupId 
+                ? `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}&group_id=${currentGroupId}`
+                : `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}`)
+            : (currentGroupId ? `/tools/getIcmpDataJson/${currentGroupId}` : '/tools/getIcmpDataJson');
+
+        stopAutoRefresh();
+        
+        const tableBody = document.querySelector('#icmpTableBody');
+        if(tableBody) tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Searching...</td></tr>';
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.error) {
+                    console.error('Search API Error:', data.error);
+                    if(tableBody) tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Error during search.</td></tr>';
+                    return;
+                }
+                renderTable(data.ips);
+                
+                const showAllContainer = document.getElementById('show-all-container');
+                if (showAllContainer) {
+                    if (searchTerm) {
+                        showAllContainer.style.display = 'none';
+                    } else {
+                        showAllContainer.style.display = 'block'; 
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Search Fetch Error:', error);
+                if(tableBody) tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Error during search.</td></tr>';
+            });
+    }
+    
     const tableBodySelector = '#icmpTableBody';
 
     const autoRefreshToggleSelector = '#autoRefreshToggle';
@@ -25,6 +106,7 @@ const IcmpTableUpdater = (function() {
         currentGroupId = options.groupId || null;
         
         if (options.autoStart) {
+            // Always start auto-refresh except during active search
             startAutoRefresh();
         }
         
@@ -40,6 +122,27 @@ const IcmpTableUpdater = (function() {
         const fullscreenButton = document.querySelector(fullscreenToggleSelector);
         if (fullscreenButton) {
             fullscreenButton.addEventListener('click', handleFullscreenToggle);
+        }
+        
+        const searchInput = document.getElementById('node-search-input');
+        if (searchInput) {
+            const debouncedSearch = debounce(handleSearch, 300);
+            
+            searchInput.addEventListener('keyup', (e) => {
+                const searchTerm = e.target.value.trim();
+                
+                if (searchTerm.length > 1 || searchTerm.length === 0) {
+                    debouncedSearch(searchTerm);
+                }
+            });
+        }
+        
+        const showAllBtn = document.getElementById('show-all-nodes-btn');
+        if (showAllBtn) {
+            showAllBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleShowAll();
+            });
         }
     }
     
@@ -66,6 +169,11 @@ const IcmpTableUpdater = (function() {
     }
     
     function startAutoRefresh() {
+        const searchInput = document.getElementById('node-search-input');
+        if (searchInput && searchInput.value.trim() !== '') {
+            return;
+        }
+        
         if (updateInterval) return;
         
         updateToggleButton(true);
@@ -308,13 +416,29 @@ const IcmpTableUpdater = (function() {
                     });
                 }
                 
+                // Check if we need to respect 111-node limit on default page
+                const showAllButton = document.querySelector('#show-all-nodes-btn');
+                if (!currentGroupId && showAllButton && data.ips) {
+                    // Limit to first 111 nodes to match PHP rendering
+                    const limitedIps = {};
+                    const entries = Object.entries(data.ips);
+                    for (let i = 0; i < Math.min(111, entries.length); i++) {
+                        limitedIps[entries[i][0]] = entries[i][1];
+                    }
+                    pendingData = { ...data, ips: limitedIps };
+                } else {
+                    pendingData = data;
+                }
+                
                 return startSequentialUpdate();
             })
             .then(() => {
                 updateCount++;
+                startCountdown(); // Restart countdown for next cycle
             })
             .catch(error => {
                 console.error('Fetch Error:', error);
+                startCountdown(); // Restart countdown even on error
             })
             .finally(() => {
                 isUpdating = false;
@@ -735,6 +859,40 @@ const IcmpTableUpdater = (function() {
         }
     }
     
+    function renderTable(ipsData) {
+        const tableBody = document.querySelector('#icmpTableBody');
+        if (!tableBody) {
+            console.error('ICMP table body not found.');
+            return;
+        }
+        
+        // Clear existing rows and create new ones from scratch
+        const fragment = document.createDocumentFragment();
+        let rowCount = 0;
+        
+        Object.entries(ipsData || {}).forEach(([ip, data]) => {
+            rowCount++;
+            const row = createTableRow(ip, data);
+
+            const firstCell = row.querySelector('td:first-child');
+            if (firstCell) {
+                firstCell.textContent = rowCount;
+            }
+
+            const lastCheck = new Date(data.lastcheck);
+            const now = new Date();
+            const minutesDiff = (now - lastCheck) / (1000 * 60);
+            if (minutesDiff > 5) {
+                row.style.backgroundColor = 'yellow';
+                row.style.color = 'black';
+            }
+            fragment.appendChild(row);
+        });
+
+        tableBody.innerHTML = '';
+        tableBody.appendChild(fragment);
+    }
+    
     function startCountdown() {
         stopCountdown();
         secondsRemaining = (refreshRate / 1000) - 1;
@@ -790,12 +948,14 @@ const IcmpTableUpdater = (function() {
         init: init,
         start: startAutoRefresh,
         stop: stopAutoRefresh,
-        refresh: fetchAndUpdateTable
+        refresh: fetchAndUpdateTable,
+        renderTable: renderTable,
+        setGroupId: function(id) { currentGroupId = id; }
     };
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.icmpRefreshConfig) {
-        IcmpTableUpdater.init(window.icmpRefreshConfig);
+    if (window.icmpRefreshConfig && window.IcmpTableUpdater) {
+        window.IcmpTableUpdater.init(window.icmpRefreshConfig);
     }
 });

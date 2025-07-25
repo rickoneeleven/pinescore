@@ -7,7 +7,7 @@ if (!defined('BASEPATH')) {
 class IcmpModel extends CI_model
 {
 
-    public function getIPs($filter = null)
+    public function getIPs($filter = null, $searchTerm = null)
     {
         $this->load->model('group_association');
         $this->load->model('group');
@@ -22,7 +22,7 @@ class IcmpModel extends CI_model
             $this->db->order_by($order_by);
         }
         if (isset($filter['owner'])) {
-            $query = $this->ownerSet($filter);
+            $query = $this->ownerSet($filter, $searchTerm);
         } elseif (isset($filter['group_id'])) {
             $filter_grp_id = $filter['group_id'];
             $this->db->where('group_id', $filter_grp_id);
@@ -47,11 +47,24 @@ class IcmpModel extends CI_model
                 $this->db->where_in('id', $ping_ids_array);
             }
             $this->db->order_by($order_by);
+            
+            $this->addSearchFilter($searchTerm);
+            
             $query = $this->db->get('ping_ip_table');
         } elseif (isset($filter['status'])) {
             $status = $filter['status'];
-            $query = $this->db->get_where('ping_ip_table', ['last_email_status' => $status]);
+            
+            if (!empty($searchTerm)) {
+                $this->db->where('last_email_status', $status);
+                $this->addSearchFilter($searchTerm);
+                $query = $this->db->get('ping_ip_table');
+            } else {
+                $query = $this->db->get_where('ping_ip_table', ['last_email_status' => $status]);
+            }
         } elseif (!isset($filter['single_ip'])) {
+            
+            $this->addSearchFilter($searchTerm);
+            
             $query = $this->db->get('ping_ip_table');
         } else {
             $ip = $filter['single_ip'];
@@ -61,14 +74,35 @@ class IcmpModel extends CI_model
         return $query;
     }
 
-    private function ownerSet($filter)
+    private function addSearchFilter($searchTerm)
+    {
+        if (!empty($searchTerm)) {
+            $this->db->where("(LOWER(note) LIKE '%" . $this->db->escape_like_str(strtolower($searchTerm)) . "%' OR ip LIKE '%" . $this->db->escape_like_str($searchTerm) . "%')");
+        }
+    }
+
+    private function ownerSet($filter, $searchTerm = null)
     {
         $owner = $filter['owner'];
+        $owner_escaped = $this->db->escape($owner);
         if ($this->session->userdata('hideOffline') == 1 && !isset($filter['group_creation'])) {
-            $query_request = 'last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND owner = '.$owner." OR last_email_status = 'Online' AND owner = ".$owner;
-            $query = $this->db->get_where('ping_ip_table', $query_request);
+            $query_request = 'last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND owner = '.$owner_escaped." OR last_email_status = 'Online' AND owner = ".$owner_escaped;
+            if (!empty($searchTerm)) {
+                $this->db->where($query_request);
+                $this->addSearchFilter($searchTerm);
+                $query = $this->db->get('ping_ip_table');
+            } else {
+                $query = $this->db->get_where('ping_ip_table', $query_request);
+            }
         } else {
-            $query = $this->db->get_where('ping_ip_table', ['owner' => $owner]);
+            
+            if (!empty($searchTerm)) {
+                $this->db->where('owner', $owner);
+                $this->addSearchFilter($searchTerm);
+                $query = $this->db->get('ping_ip_table');
+            } else {
+                $query = $this->db->get_where('ping_ip_table', ['owner' => $owner]);
+            }
         }
 
         return $query;

@@ -130,6 +130,42 @@ class Tools extends CI_Controller
         echo json_encode($response);
     }
 
+    public function searchNodes()
+    {
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }
+
+        try {
+            $searchTerm = $this->input->get('term', TRUE);
+            $groupId = $this->input->get('group_id', TRUE);
+            
+            // Ensure empty group_id is treated as null
+            if (empty($groupId)) {
+                $groupId = null;
+            }
+
+            $this->load->model('cellblock7');
+            $this->load->model('securitychecks');
+            $this->load->model('average30days_model');
+
+            $ips = $this->cellblock7->icmpTableData($groupId, $searchTerm);
+
+            $response = [
+                'ips' => $ips,
+                'owner_matches_table' => $this->securitychecks->ownerMatchesLoggedIn('node'),
+                'diffPercentAndMs' => $this->average30days_model->getPercentAndMsForDiff(),
+            ];
+
+            header('Content-Type: application/json');
+            echo json_encode($response);
+        } catch (Exception $e) {
+            log_message('error', 'Search Nodes Error: ' . $e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Search failed. Please try again.']);
+        }
+    }
+
     public function telnet($data = null)
     {
         if ($data == null) {
@@ -283,6 +319,7 @@ class Tools extends CI_Controller
 
         $data_meta['refresh_content'] = 10;
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
+        $data_meta['group_id'] = null;
 
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
