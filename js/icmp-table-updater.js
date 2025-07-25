@@ -24,8 +24,6 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     }
     
     function handleShowAll() {
-        stopAutoRefresh(); 
-
         const showAllContainer = document.getElementById('show-all-container');
         if (showAllContainer) {
             showAllContainer.innerHTML = 'Loading all nodes...';
@@ -35,7 +33,11 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             ? `/tools/getIcmpDataJson/${currentGroupId}` 
             : '/tools/getIcmpDataJson';
 
-        fetch(url)
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
@@ -61,8 +63,6 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 ? `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}&group_id=${currentGroupId}`
                 : `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}`)
             : (currentGroupId ? `/tools/getIcmpDataJson/${currentGroupId}` : '/tools/getIcmpDataJson');
-
-        stopAutoRefresh();
         
         const tableBody = document.querySelector('#icmpTableBody');
         if(tableBody) tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Searching...</td></tr>';
@@ -169,11 +169,6 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     }
     
     function startAutoRefresh() {
-        const searchInput = document.getElementById('node-search-input');
-        if (searchInput && searchInput.value.trim() !== '') {
-            return;
-        }
-        
         if (updateInterval) return;
         
         updateToggleButton(true);
@@ -385,11 +380,21 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         }
         
         isUpdating = true;
-        const url = currentGroupId 
-            ? `/tools/getIcmpDataJson/${currentGroupId}`
-            : '/tools/getIcmpDataJson';
         
-        fetch(url)
+        const searchInput = document.getElementById('node-search-input');
+        const searchTerm = searchInput ? searchInput.value.trim() : '';
+        
+        const url = searchTerm 
+            ? (currentGroupId 
+                ? `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}&group_id=${currentGroupId}`
+                : `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}`)
+            : (currentGroupId ? `/tools/getIcmpDataJson/${currentGroupId}` : '/tools/getIcmpDataJson');
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
