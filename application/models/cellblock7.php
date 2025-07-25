@@ -50,7 +50,7 @@ class Cellblock7 extends CI_model
         return true;
     }
 
-    public function icmpTableData($group_id = null)
+    public function icmpTableData($group_id = null, $searchTerm = null)
     {
         $this->load->model('icmpmodel');
         $this->load->model('lemon');
@@ -59,10 +59,10 @@ class Cellblock7 extends CI_model
 
         if (isset($group_id)) {
             $group_id_filter = ['group_id' => $group_id];
-            $ips = $this->icmpmodel->getIPs($group_id_filter);
+            $ips = $this->icmpmodel->getIPs($group_id_filter, $searchTerm);
         } else {
             $data3 = ['owner' => $user];
-            $ips = $this->icmpmodel->getIPs($data3);
+            $ips = $this->icmpmodel->getIPs($data3, $searchTerm);
         }
         $data2 = [];
         foreach ($ips->result() as $row) {

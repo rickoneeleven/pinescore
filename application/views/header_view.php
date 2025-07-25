@@ -23,7 +23,7 @@
         };
         window.ownerMatchesTable = <?php echo isset($owner_matches_table) && $owner_matches_table ? 'true' : 'false'; ?>;
     </script>
-    <script src="<?php echo base_url()?>js/icmp-table-updater.js" defer></script>
+    <script src="<?php echo base_url()?>js/icmp-table-updater.js?v=<?php echo time(); ?>-defaultfix" defer></script>
     <?php else: ?>
     <meta http-equiv="refresh" content="<?php echo $refresh_content;?>">
     <?php endif; ?>

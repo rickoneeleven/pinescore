@@ -35,7 +35,9 @@ echo '
     </tr>
     <tr>
     <td>#</td>
-    <td width="180px" ><strong>Note</strong></td>
+    <td width="180px">
+        <input type="text" id="node-search-input" placeholder="Search Notes & IPs..." style="width: 95%;">
+    </td>
     <td width="120px" ><strong>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td>
     <td width="85px" ><strong>pinescore</strong> <a class="underlined" title="[90-100 = Solid], [50-89 = Good], [0-49 Suboptimal], [< 0 = ...]" 
         href="'.base_url().'nc/whatIspinescore">?</a> </td>
@@ -56,7 +58,11 @@ if ($owner_matches_table) {
 echo '</tr>
     </thead>
     <tbody id="icmpTableBody">';
+$node_limit = 111;
+$nodes_displayed = 0;
+$total_nodes = count($ips);
 foreach ($ips as $ip => $latest) {
+    $nodes_displayed++;
     $difference_percent = 0;
     $ms = $latest['ms'].'ms';
     $now = new DateTime();
@@ -256,9 +262,18 @@ foreach ($ips as $ip => $latest) {
         echo form_close().'</td>';
     }
     echo '</tr>';
+    if ($nodes_displayed >= $node_limit) {
+        break;
+    }
 }
 echo '</tbody>
 </table>';
+
+if ($total_nodes > $node_limit) {
+    echo '<div id="show-all-container" style="text-align: center; padding: 10px;">';
+    echo '<a href="#" id="show-all-nodes-btn" class="greenButton">Show All ' . $total_nodes . ' Nodes</a>';
+    echo '</div>';
+}
 ?>
 <br>
 Key:
