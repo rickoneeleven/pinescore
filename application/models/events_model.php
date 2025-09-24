@@ -55,11 +55,7 @@ class Events_model extends CI_Model
             }
         }
 
-        if (!empty($search)) {
-            $escaped = $this->db->escape_like_str($search);
-            $lower = $this->db->escape_like_str(strtolower($search));
-            $this->db->where("(LOWER(IFNULL(pit.note, '')) LIKE '%{$lower}%' OR prt.ip LIKE '%{$escaped}%')");
-        }
+        $this->apply_search_filter($search);
 
         $this->order_scope();
         $this->db->limit($query_limit);
@@ -86,6 +82,25 @@ class Events_model extends CI_Model
         ];
     }
 
+    public function fetch_all_events($owner_id, $group_id = null, $window = '24h', $search = null)
+    {
+        $window = $window === 'all' ? 'all' : '24h';
+
+        $this->apply_scope($owner_id, $group_id);
+
+        if ($window === '24h') {
+            $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
+        }
+
+        $this->apply_search_filter($search);
+
+        $this->order_scope();
+
+        $query = $this->db->get();
+
+        return $this->map_rows($query->result());
+    }
+
     private function apply_scope($owner_id, $group_id)
     {
         $this->db->select('prt.id, prt.ip, pit.note, prt.datetime, prt.email_sent, prt.result, pit.id AS node_id');
@@ -105,6 +120,17 @@ class Events_model extends CI_Model
     {
         $this->db->order_by('prt.datetime', 'DESC');
         $this->db->order_by('prt.id', 'DESC');
+    }
+
+    private function apply_search_filter($search)
+    {
+        if ($search === null || $search === '') {
+            return;
+        }
+
+        $escaped = $this->db->escape_like_str($search);
+        $lower = $this->db->escape_like_str(strtolower($search));
+        $this->db->where("(LOWER(IFNULL(pit.note, '')) LIKE '%{$lower}%' OR prt.ip LIKE '%{$escaped}%')");
     }
 
     private function map_rows($rows)

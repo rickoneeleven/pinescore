@@ -98,6 +98,60 @@ class Events extends CI_Controller
         $this->output_json($response);
     }
 
+    public function export()
+    {
+        $owner_id = $this->session->userdata('user_id');
+        if (!$owner_id) {
+            redirect('auth/user/login');
+            return;
+        }
+
+        $context = $this->resolve_group($owner_id, $this->input->get('group'), false);
+        if ($context['status']) {
+            show_error($context['message'], $context['status']);
+            return;
+        }
+
+        $window = $this->input->get('window');
+        $search = $this->input->get('q');
+
+        $items = $this->events_model->fetch_all_events(
+            $owner_id,
+            $context['id'],
+            $window,
+            $search
+        );
+
+        $filenameParts = ['events'];
+        if ($context['id']) {
+            $filenameParts[] = 'group' . (int) $context['id'];
+        }
+        $filenameParts[] = ($window === 'all') ? 'all' : '24h';
+        $filenameParts[] = date('Y-m-d_H-i-s');
+        $filename = implode('_', $filenameParts) . '.csv';
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $stream = fopen('php://output', 'w');
+        if ($stream === false) {
+            show_error('Unable to start export', 500);
+            return;
+        }
+
+        fputcsv($stream, ['Date', 'Label', 'IP', 'Status']);
+
+        foreach ($items as $item) {
+            $label = $item['note'] !== null && $item['note'] !== '' ? $item['note'] : $item['ip'];
+            fputcsv($stream, [$item['datetime'], $label, $item['ip'], $item['status']]);
+        }
+
+        fclose($stream);
+        exit;
+    }
+
     private function resolve_group($owner_id, $group_param, $strict)
     {
         if ($group_param === null || $group_param === '' || $group_param === false) {

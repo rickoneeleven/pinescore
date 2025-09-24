@@ -4,6 +4,7 @@ $groupName = isset($group_name) ? $group_name : null;
 $defaultWindow = isset($default_window) ? $default_window : '24h';
 $config = [
     'endpoint' => site_url('events/json'),
+    'exportEndpoint' => site_url('events/export'),
     'groupId' => $groupId,
     'defaultWindow' => $defaultWindow,
     'liveInterval' => 60000,
@@ -27,6 +28,7 @@ $config = [
         </div>
         <input type="text" class="events-search" placeholder="Search IP or note" data-events-search>
         <button type="button" class="events-control" data-events-refresh>Refresh</button>
+        <button type="button" class="events-control" data-events-export>Export CSV</button>
         <label class="events-live">
             <input type="checkbox" data-events-live>
             Live

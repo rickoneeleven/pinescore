@@ -14,6 +14,7 @@
     var loadMoreButton = root.querySelector('[data-events-load-more]');
     var searchInput = root.querySelector('[data-events-search]');
     var refreshButton = root.querySelector('[data-events-refresh]');
+    var exportButton = root.querySelector('[data-events-export]');
     var liveToggle = root.querySelector('[data-events-live]');
     var windowButtonsContainer = root.querySelector('[data-events-window-buttons]');
 
@@ -115,6 +116,16 @@
             });
         }
 
+        if (exportButton) {
+            exportButton.addEventListener('click', function () {
+                var url = buildExportUrl();
+                if (!url) {
+                    return;
+                }
+                window.open(url, '_blank');
+            });
+        }
+
         if (liveToggle) {
             liveToggle.addEventListener('change', function () {
                 if (liveToggle.checked) {
@@ -183,6 +194,22 @@
         }
         var separator = config.endpoint.indexOf('?') === -1 ? '?' : '&';
         return config.endpoint + separator + params.join('&');
+    }
+
+    function buildExportUrl() {
+        if (!config.exportEndpoint) {
+            return null;
+        }
+        var params = [];
+        params.push('window=' + encodeURIComponent(state.window));
+        if (config.groupId) {
+            params.push('group=' + encodeURIComponent(config.groupId));
+        }
+        if (state.search) {
+            params.push('q=' + encodeURIComponent(state.search));
+        }
+        var separator = config.exportEndpoint.indexOf('?') === -1 ? '?' : '&';
+        return config.exportEndpoint + separator + params.join('&');
     }
 
     function renderItems(items, append) {
@@ -263,7 +290,11 @@
         if (parts.length < 2) {
             return datetime;
         }
-        return parts[0] + ' ' + parts[1].slice(0, 5);
+        var timePart = parts[1].split('.')[0];
+        if (timePart.length >= 8) {
+            timePart = timePart.slice(0, 8);
+        }
+        return parts[0] + ' ' + timePart;
     }
 
     function setStatus(message, isError) {

@@ -84,7 +84,11 @@
         if (parts.length < 2) {
             return datetime;
         }
-        return parts[1].slice(0, 5);
+        var timePart = parts[1].split('.')[0];
+        if (timePart.length >= 8) {
+            return timePart.slice(0, 8);
+        }
+        return timePart;
     }
 
     function render(items) {
