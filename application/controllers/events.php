@@ -205,10 +205,13 @@ class Events extends CI_Controller
     {
         if (function_exists('http_response_code')) {
             http_response_code($status);
-        } else {
+        } elseif (!headers_sent()) {
             header($this->status_header_line($status));
         }
-        header('Content-Type: application/json');
+
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+        }
         echo json_encode($payload);
     }
 
