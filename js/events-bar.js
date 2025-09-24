@@ -50,12 +50,18 @@
         return (crc ^ -1) >>> 0;
     }
 
-    function ipColor(ip) {
+    function nodeColors(ip) {
         if (!ip) {
-            return 'hsl(0, 0%, 90%)';
+            return {
+                background: 'hsl(0, 0%, 98%)',
+                border: 'hsl(0, 0%, 88%)'
+            };
         }
         var hue = crc32(ip) % 360;
-        return 'hsl(' + hue + ', 70%, 90%)';
+        return {
+            background: 'hsl(' + hue + ', 65%, 95%)',
+            border: 'hsl(' + hue + ', 45%, 78%)'
+        };
     }
 
     function buildUrl() {
@@ -100,19 +106,27 @@
         var node = document.createElement('div');
         node.className = 'events-item';
 
-        var chip = document.createElement('span');
-        chip.className = 'events-chip';
-        chip.style.backgroundColor = ipColor(item.ip);
-        node.appendChild(chip);
+        var colors = nodeColors(item.ip);
+        node.style.backgroundColor = colors.background;
+        node.style.borderColor = colors.border;
 
         var time = document.createElement('span');
         time.className = 'events-time';
         time.textContent = formatTime(item.datetime);
         node.appendChild(time);
 
-        var label = document.createElement('span');
-        label.className = 'events-ip';
-        label.textContent = item.note || item.ip;
+        var labelText = item.note || item.ip;
+        var label;
+        if (item.node_id) {
+            label = document.createElement('a');
+            label.className = 'events-ip events-ip-link';
+            label.href = '/tools/report/' + item.node_id;
+            label.textContent = labelText;
+        } else {
+            label = document.createElement('span');
+            label.className = 'events-ip';
+            label.textContent = labelText;
+        }
         node.appendChild(label);
 
         var badge = document.createElement('span');

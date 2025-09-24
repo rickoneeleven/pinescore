@@ -88,7 +88,7 @@ class Events_model extends CI_Model
 
     private function apply_scope($owner_id, $group_id)
     {
-        $this->db->select('prt.id, prt.ip, pit.note, prt.datetime, prt.email_sent, prt.result');
+        $this->db->select('prt.id, prt.ip, pit.note, prt.datetime, prt.email_sent, prt.result, pit.id AS node_id');
         $this->db->from('ping_result_table prt');
         $this->db->join('ping_ip_table pit', 'pit.ip = prt.ip');
         $this->db->where('prt.change', 1);
@@ -119,6 +119,7 @@ class Events_model extends CI_Model
                 'datetime' => $row->datetime,
                 'email_sent' => $row->email_sent,
                 'status' => $status,
+                'node_id' => isset($row->node_id) ? (int) $row->node_id : null,
             ];
         }
 

@@ -57,12 +57,18 @@
         return (crc ^ -1) >>> 0;
     }
 
-    function ipColor(ip) {
+    function nodeColors(ip) {
         if (!ip) {
-            return 'hsl(0, 0%, 90%)';
+            return {
+                background: 'hsl(0, 0%, 98%)',
+                border: 'hsl(0, 0%, 88%)'
+            };
         }
         var hue = crc32(ip) % 360;
-        return 'hsl(' + hue + ', 70%, 90%)';
+        return {
+            background: 'hsl(' + hue + ', 65%, 95%)',
+            border: 'hsl(' + hue + ', 45%, 78%)'
+        };
     }
 
     function bindEvents() {
@@ -203,32 +209,33 @@
         var node = document.createElement('div');
         node.className = 'events-item';
 
-        var chip = document.createElement('span');
-        chip.className = 'events-chip';
-        chip.style.backgroundColor = ipColor(item.ip);
-        node.appendChild(chip);
+        var colors = nodeColors(item.ip);
+        node.style.backgroundColor = colors.background;
+        node.style.borderColor = colors.border;
 
-        var content = document.createElement('div');
-        content.className = 'events-item-content';
+        var time = document.createElement('span');
+        time.className = 'events-time';
+        time.textContent = formatDateTime(item.datetime);
+        node.appendChild(time);
 
-        var timeRow = document.createElement('div');
-        timeRow.className = 'events-time';
-        timeRow.textContent = formatDateTime(item.datetime);
-        content.appendChild(timeRow);
-
-        var ipRow = document.createElement('div');
-        ipRow.className = 'events-ip';
-        ipRow.textContent = item.ip;
-        content.appendChild(ipRow);
-
-        if (item.note) {
-            var noteRow = document.createElement('div');
-            noteRow.className = 'events-note';
-            noteRow.textContent = item.note;
-            content.appendChild(noteRow);
+        var labelText = item.note || item.ip;
+        var label;
+        if (item.node_id) {
+            label = document.createElement('a');
+            label.className = 'events-ip events-ip-link';
+            label.href = '/tools/report/' + item.node_id;
+            label.textContent = labelText;
+        } else {
+            label = document.createElement('span');
+            label.className = 'events-ip';
+            label.textContent = labelText;
         }
+        node.appendChild(label);
 
-        node.appendChild(content);
+        var address = document.createElement('span');
+        address.className = 'events-ip-address';
+        address.textContent = item.ip;
+        node.appendChild(address);
 
         var badge = document.createElement('span');
         badge.className = 'events-badge ' + statusClassName(item.status);
