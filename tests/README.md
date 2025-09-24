@@ -15,9 +15,13 @@ php run-tests.php
 ```
 tests/
 ├── unit/               # Unit tests (isolated component testing)
-│   └── models/         # Model tests
-├── integration/        # Integration tests (multiple components)
-│   └── controllers/    # Controller tests
+│   └── models/
+├── integration/        # Integration tests
+│   └── controllers/
+│       ├── ApiNightlyTest.php
+│       ├── EventsTest.php
+│       ├── SearchNodesTest.php
+│       └── ToolsControllerTest.php
 ├── bootstrap.php       # Test environment setup
 └── run-tests.php       # Auto-discovery test runner
 ```

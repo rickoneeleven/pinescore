@@ -322,6 +322,11 @@ class Nc extends CI_Controller
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
         $data_meta['group_id'] = $group_id;
 
+        $events_bar_data = [
+            'group_id' => $group_id,
+            'group_name' => $data['group_name'],
+        ];
+
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
         $this->load->view('pingAdd_view', $data);
@@ -330,6 +335,7 @@ class Nc extends CI_Controller
         }
         $this->load->view('groupheader', $data);
         $this->load->view('group_scores_view', $data);
+        $this->load->view('sub/events_bar_view', $events_bar_data);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
         if (strpos(uri_string(), 'icmpEdit') === false) {

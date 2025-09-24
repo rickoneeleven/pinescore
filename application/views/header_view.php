@@ -13,6 +13,7 @@
 	<meta name="keywords" content="<?php echo $keywords; ?>">
 	<meta name="author" content="Ryan Alexander Partington">
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>112/Styles.css">
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url()?>112/events.css">
     <?php if ($refresh_content && $refresh_content > 0): ?>
     <!-- AJAX refresh enabled instead of meta refresh -->
     <script>

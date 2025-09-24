@@ -339,6 +339,7 @@ class Tools extends CI_Controller
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
         $this->load->view('pingAdd_view', $data);
+        $this->load->view('sub/events_bar_view', ['group_id' => null]);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
 
@@ -464,6 +465,11 @@ class Tools extends CI_Controller
 
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
         $data_meta['group_id'] = $filter_group;
+
+        $events_bar_data = ['group_id' => $filter_group ? (int) $filter_group : null];
+        if ($filter_group && isset($button['group_name'])) {
+            $events_bar_data['group_name'] = $button['group_name'];
+        }
     
         $this->load->view('header_view', $data_meta);
     
@@ -480,6 +486,7 @@ class Tools extends CI_Controller
     
         $this->load->view('sub/countDown_view', $button);
         $this->load->view('group_scores_view', $button);
+        $this->load->view('sub/events_bar_view', $events_bar_data);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
     }
