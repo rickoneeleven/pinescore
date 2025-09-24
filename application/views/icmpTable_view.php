@@ -94,7 +94,7 @@ foreach ($ips as $ip => $latest) {
     $time_difference = $now->diff($lastcheck_time);
     $minutes_difference = $time_difference->days * 24 * 60 + $time_difference->h * 60 + $time_difference->i;
     
-    if ($minutes_difference > 5) {
+    if ($minutes_difference > 10) {
         $tr = '<tr style="background-color: yellow; color: black;">';
     } else {
         if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {
