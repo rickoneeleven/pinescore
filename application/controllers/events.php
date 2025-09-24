@@ -141,11 +141,12 @@ class Events extends CI_Controller
             return;
         }
 
-        fputcsv($stream, ['Date', 'Label', 'IP', 'Status']);
+        fputcsv($stream, ['Date', 'Label', 'IP', 'Status', 'Progress']);
 
         foreach ($items as $item) {
             $label = $item['note'] !== null && $item['note'] !== '' ? $item['note'] : $item['ip'];
-            fputcsv($stream, [$item['datetime'], $label, $item['ip'], $item['status']]);
+            $progress = isset($item['progress']) && $item['progress'] !== null ? $item['progress'] : '';
+            fputcsv($stream, [$item['datetime'], $label, $item['ip'], $item['status'], $progress]);
         }
 
         fclose($stream);

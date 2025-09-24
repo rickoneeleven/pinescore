@@ -146,6 +146,7 @@ class Events_model extends CI_Model
                 'email_sent' => $row->email_sent,
                 'status' => $status,
                 'node_id' => isset($row->node_id) ? (int) $row->node_id : null,
+                'progress' => $this->extract_progress($row->email_sent),
             ];
         }
 
@@ -203,5 +204,23 @@ class Events_model extends CI_Model
             'datetime' => $parts[0],
             'id' => (int) $parts[1],
         ];
+    }
+
+    private function extract_progress($email_sent)
+    {
+        if ($email_sent === null || $email_sent === '') {
+            return null;
+        }
+
+        if (preg_match('/(\d{1,2}\s*\/\s*10)/', $email_sent, $matches)) {
+            return str_replace(' ', '', $matches[1]);
+        }
+
+        $clean = trim(strip_tags($email_sent));
+        if ($clean === '' || $clean === '0' || $clean === '1') {
+            return null;
+        }
+
+        return $clean;
     }
 }

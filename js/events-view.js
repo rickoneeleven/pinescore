@@ -212,6 +212,13 @@
         return config.exportEndpoint + separator + params.join('&');
     }
 
+    function shouldHighlightRow(progress) {
+        if (progress === null || progress === undefined || progress === '') {
+            return false;
+        }
+        return String(progress).replace(/\s+/g, '') !== '1/10';
+    }
+
     function renderItems(items, append) {
         if (!append) {
             listNode.innerHTML = '';
@@ -236,6 +243,10 @@
         var node = document.createElement('div');
         node.className = 'events-item';
 
+        if (shouldHighlightRow(item.progress)) {
+            node.classList.add('events-strong');
+        }
+
         var colors = nodeColors(item.ip);
         node.style.backgroundColor = colors.background;
         node.style.borderColor = colors.border;
@@ -244,6 +255,14 @@
         time.className = 'events-time';
         time.textContent = formatDateTime(item.datetime);
         node.appendChild(time);
+
+        var progress = document.createElement('span');
+        progress.className = 'events-progress';
+        progress.textContent = formatProgress(item.progress);
+        if (item.email_sent) {
+            progress.title = item.email_sent;
+        }
+        node.appendChild(progress);
 
         var labelText = item.note || item.ip;
         var label;
@@ -295,6 +314,13 @@
             timePart = timePart.slice(0, 8);
         }
         return parts[0] + ' ' + timePart;
+    }
+
+    function formatProgress(progress) {
+        if (progress === null || progress === undefined || progress === '') {
+            return '-';
+        }
+        return progress;
     }
 
     function setStatus(message, isError) {

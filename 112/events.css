@@ -62,6 +62,17 @@
     line-height: 1.25;
 }
 
+.events-item.events-strong {
+    font-weight: 600;
+}
+
+.events-item.events-strong .events-time,
+.events-item.events-strong .events-ip,
+.events-item.events-strong .events-ip-address,
+.events-item.events-strong .events-progress {
+    font-weight: 600;
+}
+
 .events-chip {
     width: 16px;
     height: 16px;
@@ -128,6 +139,23 @@
     text-align: left;
     flex-shrink: 0;
     white-space: nowrap;
+}
+
+.events-progress {
+    font-family: "SFMono-Regular", "Menlo", "Monaco", monospace;
+    font-size: 0.76rem;
+    color: #1f2933;
+    min-width: 66px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.events-bar .events-progress {
+    min-width: 58px;
+}
+
+.events-view .events-progress {
+    min-width: 90px;
 }
 
 .events-note {
