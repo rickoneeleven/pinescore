@@ -1,99 +1,117 @@
-DATETIME of last agent review: 24/09/2025 11:02 BST
+DATETIME of last agent review: 24/09/2025 13:14 BST
 
-Worlds number one ICMP monitoring solution
-CodeIgniter 2.2.0 Project
-req's: 
-- MySQL 5.7 (doesn't work on 8 because of the sql_mode we have to set below) / 10.5.15-MariaDB works, other Maria versions may work too
-- PHP 5.6 (CI 2.2.0). Test runner requires PHP 7.0+.
-- 10Gb Memory - including swap - add whatever swappage you need to get mem to 10Gb
+# Pinescore ICMP Monitoring
 
---------------------------------------------------
-Database
+Pinescore is a CodeIgniter 2.2.0 application that tracks ICMP latency and packet loss. The project runs on a classic LEMP stack and uses scheduled HTTP calls to keep scores and reports current.
+
+## Requirements
+
+- MySQL 5.7 (works on MariaDB 10.5.15; MySQL 8 fails because of required sql_mode)
+- PHP 5.6 for the application (test runner needs PHP 7.0 or newer)
+- 10 GB system memory available, swap included
+- Lynx command line browser for cron driven HTTP calls
+
+## Quick Start
+
+### 1. Prepare the database
+
+```bash
 mysqladmin -u root -p create pinescore
 mysql -u root -p pinescore < database_structure.sql
+```
 
---------------------------------------------------
-Setup
-cp ./application/config/config.php.example ./application/config/config.php
-cp ./application/config/database.php.example ./application/config/database.php
+### 2. Copy base configuration
 
-vim ./application/config/config.php
-$dev_domain_tld = ".test"; // if this is your development server, make sure tld matches domain. If production system, you can ignore this.
-define('from_email', 'dev_server@pinescore.test'); // dev default; production is set in config.php.example
-$config['encryption_key'] = '<set-strong-random>';
-:wq
+```bash
+cp application/config/config.php.example application/config/config.php
+cp application/config/database.php.example application/config/database.php
+```
 
-vim application/models/email_dev_or_no.php
-	update the various email bits to decide if you get alerted in your development environment
+### 3. Application configuration
 
-vim ./application/config/database.php
-	'username' => 'db_user',
-	'password' => 'harrylikesherchainberofsecrets',
-	'database' => 'pinescore',
-:wq
+Edit `application/config/config.php` and set:
 
-vim application/models/cron_protect.php
-	add servers local IP here, not 127.0.0.1, the real local IP
+- `$dev_domain_tld` to match the local development domain (for production leave as is)
+- `from_email` to a valid sender address for outbound notifications
+- `$config['encryption_key']` to a strong random string
 
-sudo vim /etc/mysql/my.cnf
-paste the below at the bottom
+Update `application/models/email_dev_or_no.php` to decide when development environments send alert emails.
+
+### 4. Database credentials and cron protection
+
+Edit `application/config/database.php` and set the connection credentials:
+
+```php
+'username' => 'db_user',
+'password' => 'harrylikesherchainberofsecrets',
+'database' => 'pinescore',
+```
+
+Update `application/models/cron_protect.php` with the server's real local IP (not 127.0.0.1).
+
+### 5. MySQL SQL mode
+
+Append the SQL mode block to `/etc/mysql/my.cnf` and restart MySQL:
+
+```ini
 [mysqld]
 sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+```
+
+```bash
 sudo service mysql restart
-otherwise you get this error: https://stackoverflow.com/questions/34115174/error-related-to-only-full-group-by-when-executing-a-query-in-mysql
+```
 
-OTHER:
-the pine engine wasn't quite working on webadmin Server Configuration, Website options until I changed:
-PHP script execution mode: CGI Wrapper
-Maximum PHP script run time: 3600
-this all speaks to the fact the ping engine needs to be rewritten. 
---------------------------------------------------
-crontabs
-#creates score stats for offset and baseline, only needs to run once daily
-0 0 * * * lynx --dump http://pinescore.com/api_ping/ > /dev/null 2>&1
+This prevents ONLY_FULL_GROUP_BY errors when running API queries.
 
-#daily clean up tasks and general db maintenance
-26 04 * * * lynx --dump https://pinescore.com/api_nightly/onceAday > /dev/null 2>&1
+### 6. Web server tuning
 
-#colate group_shortterm_scores into group_longterm_scores and flush shortterm rows. runs only mon-fri at 5pm to give us a more accurate score
-#for nodes dropping packets in the week during the day
-23,33,44 17 * * 1-5 lynx --dump http://pinescore.com/api_ping/longTermGroupScores > /dev/null 2>&1
+On Webmin Hosting (or equivalent), the ping engine operates reliably with:
 
-#Cleans up tables and logs shortterm group scores
-24 * * * * lynx --dump https://pinescore.com/api_nightly/ > /dev/null 2>&1
-#^^ table updated in above daemon is created as part of the laravel migrations in the engine project
-*/5 * * * * lynx --dump https://pinescore.com/api_nightly/flushPingResultTable > /dev/null 2>&1
+- PHP script execution mode: CGI Wrapper
+- Maximum PHP script run time: 3600 seconds
 
-# nightly maintenance note
-# api_nightly also checks ping_result_table AUTO_INCREMENT and truncates when it exceeds 1000000000,
-# recording the timestamp to health_dashboard with metric 'ping_table_last_truncation'.
+After setup, confirm the daemon endpoint responds:
 
-#calculate the "pinescore" and update database for each IP
-* * * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
-
-#daily average ms update and alert
-31 08 * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/checkChangeOfCurrentMsAgainstLTA > /dev/null 2>&1
-
-#monthly average ms update (updates every 4 hours)
-35 00,06,12,18 * * * lynx --dump https://pinescore.com/daemon/average30days > /dev/null 2>&1
-
-#crons below this line are not essential for the pinescore project to work
-#delete files from pinescore.com/111 older than 30 days
-10 09 * * * find /home/pinescore/public_html/111/* -mtime +30 -type f -delete
-
-#more touching of files we want to remain
-11 11 11 * * touch /home/pinescore/public_html/111/ns_*
-
-after sorting crontabs, test by running this command:
+```bash
 lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore
+```
 
-#other notes
-	when exporting DB structure:
-		remove these tables as they are handled by laravel migrations:
-			failed_jobs
-			traceroutes
-			group_monthly_scores			
-			had issues if you don't even though migrations should drop tables first.
-				
-Known Buggies:
-- If you're getting an error in ref to header size when trying to update/add new nodes. Make sure $config['sess_use_database'] is set to true in application/config/config.php. You'll need to create a new table in DB for session sates, see database_structure.sql
+## Scheduled Jobs
+
+All cron entries rely on `lynx --dump` to hit application endpoints. Install these on the production scheduler.
+
+| Schedule | Purpose | Command |
+| --- | --- | --- |
+| `0 0 * * *` | Build offset and baseline score stats (daily) | `lynx --dump http://pinescore.com/api_ping/ > /dev/null 2>&1` |
+| `26 04 * * *` | Nightly cleanup tasks | `lynx --dump https://pinescore.com/api_nightly/onceAday > /dev/null 2>&1` |
+| `23,33,44 17 * * 1-5` | Promote short term scores to long term during weekdays | `lynx --dump http://pinescore.com/api_ping/longTermGroupScores > /dev/null 2>&1` |
+| `24 * * * *` | Cleanup tables and log short term group scores | `lynx --dump https://pinescore.com/api_nightly/ > /dev/null 2>&1` |
+| `*/5 * * * *` | Flush ping_result_table when thresholds are met | `lynx --dump https://pinescore.com/api_nightly/flushPingResultTable > /dev/null 2>&1` |
+| `* * * * *` | Recalculate Pinescore for each monitored IP | `lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1` |
+| `31 08 * * *` | Daily latency alert check | `lynx --dump https://pinescore.com/daemon/bitsNbobs/checkChangeOfCurrentMsAgainstLTA > /dev/null 2>&1` |
+| `35 00,06,12,18 * * *` | Update 30-day average latency | `lynx --dump https://pinescore.com/daemon/average30days > /dev/null 2>&1` |
+| `10 09 * * *` | Purge uploads older than 30 days | `find /home/pinescore/public_html/111/* -mtime +30 -type f -delete` |
+| `11 11 11 * *` | Touch static files to keep timestamps fresh | `touch /home/pinescore/public_html/111/ns_*` |
+
+Additional cron behavior:
+
+- `api_nightly` truncates `ping_result_table` when AUTO_INCREMENT exceeds 1,000,000,000 and records the event in `health_dashboard` with metric `ping_table_last_truncation`.
+- Crons below the deletion task are optional for basic uptime monitoring but recommended for hygiene.
+
+## Database export notes
+
+When exporting `database_structure.sql`, omit tables managed by the Laravel-based engine project migrations:
+
+- `failed_jobs`
+- `traceroutes`
+- `group_monthly_scores`
+
+## Troubleshooting
+
+- If node management pages complain about header size, set `$config['sess_use_database'] = true` in `application/config/config.php` and ensure the session table from `database_structure.sql` exists.
+
+## Related documentation
+
+- Tests live in `tests/` with instructions in `tests/README.md`.
+- Debug helper guidance is under `application/helpers/codeigniter-developers-debug-helper/README.md`.
