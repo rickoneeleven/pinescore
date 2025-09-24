@@ -1,7 +1,7 @@
 <?php
 
 require_once dirname(dirname(dirname(__DIR__))) . '/tests/bootstrap.php';
-require_once APPPATH . 'controllers/Events.php';
+require_once APPPATH . 'controllers/events.php';
 
 class EventsTest extends TestCase
 {
