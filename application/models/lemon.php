@@ -2,15 +2,6 @@
 
 class Lemon extends CI_model {
 
-    public function score($ip) {
-        $data_db = array(
-            'ip'       => $ip,
-            'datetime' => date('Y-m-d H:i:s'),
-            'score'    => -1
-        );
-        $this->db->insert('stats', $data_db);
-    }
-
     public function tallyScore(){
         $this->load->model('icmpmodel');
         $all_ips = $this->icmpmodel->getIPs();
