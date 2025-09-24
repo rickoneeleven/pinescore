@@ -1,8 +1,10 @@
+DATETIME of last agent review: 24/09/2025 11:02 BST
+
 Worlds number one ICMP monitoring solution
 CodeIgniter 2.2.0 Project
 req's: 
 - MySQL 5.7 (doesn't work on 8 because of the sql_mode we have to set below) / 10.5.15-MariaDB works, other Maria versions may work too
-- php 5.6
+- PHP 5.6 (CI 2.2.0). Test runner requires PHP 7.0+.
 - 10Gb Memory - including swap - add whatever swappage you need to get mem to 10Gb
 
 --------------------------------------------------
@@ -16,9 +18,9 @@ cp ./application/config/config.php.example ./application/config/config.php
 cp ./application/config/database.php.example ./application/config/database.php
 
 vim ./application/config/config.php
-$dev_domain_tld = ".test"; //if this is youe development server, make sure tld matches domain. If production system, you can ignore this.
-define('from_email', 'dave@pinescore.com'); //general emails are sent from this address
-$config['encryption_key'] = 'breasts';
+$dev_domain_tld = ".test"; // if this is your development server, make sure tld matches domain. If production system, you can ignore this.
+define('from_email', 'dev_server@pinescore.test'); // dev default; production is set in config.php.example
+$config['encryption_key'] = '<set-strong-random>';
 :wq
 
 vim application/models/email_dev_or_no.php
@@ -30,7 +32,7 @@ vim ./application/config/database.php
 	'database' => 'pinescore',
 :wq
 
-vim vim application/models/cron_protect.php
+vim application/models/cron_protect.php
 	add servers local IP here, not 127.0.0.1, the real local IP
 
 sudo vim /etc/mysql/my.cnf
@@ -62,6 +64,10 @@ crontabs
 #^^ table updated in above daemon is created as part of the laravel migrations in the engine project
 */5 * * * * lynx --dump https://pinescore.com/api_nightly/flushPingResultTable > /dev/null 2>&1
 
+# nightly maintenance note
+# api_nightly also checks ping_result_table AUTO_INCREMENT and truncates when it exceeds 1000000000,
+# recording the timestamp to health_dashboard with metric 'ping_table_last_truncation'.
+
 #calculate the "pinescore" and update database for each IP
 * * * * * lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore > /dev/null 2>&1
 
@@ -87,7 +93,7 @@ lynx --dump https://pinescore.com/daemon/bitsNbobs/updatepinescore
 			failed_jobs
 			traceroutes
 			group_monthly_scores			
-				had issues if you don't even though migrations should drop tables first.111
+			had issues if you don't even though migrations should drop tables first.
 				
 Known Buggies:
 - If you're getting an error in ref to header size when trying to update/add new nodes. Make sure $config['sess_use_database'] is set to true in application/config/config.php. You'll need to create a new table in DB for session sates, see database_structure.sql
