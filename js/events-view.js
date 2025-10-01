@@ -292,7 +292,7 @@
     }
 
     function statusClassName(status) {
-        if (status === 'Online') {
+        if (status === 'Online' || status === 'Respond') {
             return 'events-status-online';
         }
         if (status === 'Offline') {

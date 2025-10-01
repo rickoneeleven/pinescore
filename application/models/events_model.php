@@ -138,6 +138,16 @@ class Events_model extends CI_Model
         $items = [];
         foreach ($rows as $row) {
             $status = $this->derive_status($row->result);
+            if ($status === 'Drop' && isset($row->email_sent)) {
+                $clean = strtolower(strip_tags((string) $row->email_sent));
+                if (
+                    strpos($clean, 'ping received') !== false ||
+                    strpos($clean, 'responding') !== false ||
+                    strpos($clean, 'status confirmed: online') !== false
+                ) {
+                    $status = 'Respond';
+                }
+            }
             $items[] = [
                 'id' => (int) $row->id,
                 'ip' => $row->ip,

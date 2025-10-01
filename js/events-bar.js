@@ -17,7 +17,8 @@
     var statusClasses = {
         Online: 'events-status-online',
         Offline: 'events-status-offline',
-        Drop: 'events-status-drop'
+        Drop: 'events-status-drop',
+        Respond: 'events-status-online'
     };
 
     var crcTable = createCrcTable();
