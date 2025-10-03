@@ -69,9 +69,7 @@
 </div>
 <div class="content">
 <br>
-<div style="background-color:#e8f4ff;border:1px solid #5aa0e8;padding:12px 15px;margin:10px 0;color:#0b3d62;text-align:center;font-size:14px;line-height:1.4;">
-    <strong>Service notice:</strong> The ping engine is currently running with slower polling than usual whilst we work with upstream providers to remove wait limits. Normal behaviour should resume over the next few days.
-</div>
+<!-- Service notice removed: system operating at 100% -->
 <?php
 if (!empty($last_truncation_timestamp)) {
     $truncation_time = strtotime($last_truncation_timestamp);
