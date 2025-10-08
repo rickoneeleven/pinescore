@@ -80,6 +80,13 @@
             return cfg;
         }
 
+        return 25;
+    }
+
+    function displayLimit(filter) {
+        if (filter === 'onePlus' || filter === 'twoPlus' || filter === 'tenPlus') {
+            return 5;
+        }
         return 5;
     }
 
@@ -144,8 +151,9 @@
             return;
         }
 
-        if (state.filter === 'onePlus') {
-            filteredItems = filteredItems.slice(0, 5);
+        var limit = displayLimit(state.filter);
+        if (limit > 0 && filteredItems.length > limit) {
+            filteredItems = filteredItems.slice(0, limit);
         }
 
         for (var i = 0; i < filteredItems.length; i += 1) {
