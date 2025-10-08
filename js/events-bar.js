@@ -151,10 +151,7 @@
             return;
         }
 
-        var limit = displayLimit(state.filter);
-        if (limit > 0 && filteredItems.length > limit) {
-            filteredItems = filteredItems.slice(0, limit);
-        }
+        filteredItems = limitItems(filteredItems, state.filter);
 
         for (var i = 0; i < filteredItems.length; i += 1) {
             listNode.appendChild(createItem(filteredItems[i]));
@@ -175,15 +172,14 @@
             return true;
         }
         var count = parseProgressCount(item.progress);
-        var status = item.status;
         if (filter === 'twoPlus') {
-            if (isStatusTransition(status)) {
+            if (isStatusTransitionEvent(item)) {
                 return true;
             }
             return count !== null && count >= 2;
         }
         if (filter === 'tenPlus') {
-            if (isStatusTransition(status)) {
+            if (isStatusTransitionEvent(item)) {
                 return true;
             }
             return count !== null && count >= 10;
@@ -203,8 +199,31 @@
         return isNaN(value) ? null : value;
     }
 
-    function isStatusTransition(status) {
-        return status === 'Offline' || status === 'Online';
+    function isStatusTransitionEvent(item) {
+        if (!item) {
+            return false;
+        }
+        if (item.status === 'Offline' || item.status === 'Online') {
+            return true;
+        }
+
+        var progressText = (item.progress || '').toString().toLowerCase();
+        var emailText = (item.email_sent || '').toString().toLowerCase();
+        var combined = progressText + ' ' + emailText;
+        if (combined.indexOf('status confirmed') !== -1) {
+            return true;
+        }
+        if (combined.indexOf('node is now') !== -1) {
+            return true;
+        }
+        if (combined.indexOf('service restored') !== -1) {
+            return true;
+        }
+        if (combined.indexOf('back online') !== -1) {
+            return true;
+        }
+
+        return false;
     }
 
     function resolveDefaultFilter(filter) {
@@ -254,6 +273,52 @@
     }
 
     bindFilterEvents();
+
+    function limitItems(items, filter) {
+        var limit = displayLimit(filter);
+        if (limit <= 0 || items.length <= limit) {
+            return items;
+        }
+
+        if (filter === 'onePlus') {
+            return items.slice(0, limit);
+        }
+
+        var priorities = [];
+        var others = [];
+
+        for (var i = 0; i < items.length; i += 1) {
+            if (isPriorityItem(items[i], filter)) {
+                priorities.push(items[i]);
+            } else {
+                others.push(items[i]);
+            }
+        }
+
+        var result = [];
+        for (var p = 0; p < priorities.length && result.length < limit; p += 1) {
+            result.push(priorities[p]);
+        }
+        for (var o = 0; o < others.length && result.length < limit; o += 1) {
+            result.push(others[o]);
+        }
+
+        return result;
+    }
+
+    function isPriorityItem(item, filter) {
+        if (isStatusTransitionEvent(item)) {
+            return true;
+        }
+        var count = parseProgressCount(item.progress);
+        if (count === null) {
+            return false;
+        }
+        if (filter === 'tenPlus') {
+            return count >= 10;
+        }
+        return count >= 5;
+    }
 
     function createItem(item) {
         var node = document.createElement('div');
