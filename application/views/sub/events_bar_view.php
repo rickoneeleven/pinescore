@@ -9,11 +9,20 @@ $config = [
     'endpoint' => site_url('events/bar'),
     'groupId' => $groupId,
     'pollInterval' => 10000,
+    'defaultFilter' => 'twoPlus',
+    'limit' => 25,
 ];
 ?>
 <div class="events-bar" data-events-bar>
     <div class="events-bar-header">
-        <span class="events-bar-title">Latest events</span>
+        <div class="events-bar-heading">
+            <span class="events-bar-title">Latest events</span>
+            <div class="events-bar-filter-group" data-events-bar-filters>
+                <button type="button" class="events-bar-filter" data-filter="onePlus">1+</button>
+                <button type="button" class="events-bar-filter" data-filter="twoPlus">2+</button>
+                <button type="button" class="events-bar-filter" data-filter="tenPlus">10+</button>
+            </div>
+        </div>
         <a class="events-bar-link" href="<?php echo $timelineUrl; ?>">View timeline</a>
     </div>
     <?php if ($groupName): ?>

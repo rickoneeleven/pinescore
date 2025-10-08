@@ -58,7 +58,19 @@ class Events extends CI_Controller
             return;
         }
 
-        $items = $this->events_model->fetch_recent_events($owner_id, $context['id']);
+        $limitParam = $this->input->get('limit');
+        $useLimit = null;
+        if ($limitParam !== null && $limitParam !== '') {
+            if (ctype_digit((string) $limitParam) || is_numeric($limitParam)) {
+                $useLimit = (int) $limitParam;
+            }
+        }
+
+        if ($useLimit !== null) {
+            $items = $this->events_model->fetch_recent_events($owner_id, $context['id'], $useLimit);
+        } else {
+            $items = $this->events_model->fetch_recent_events($owner_id, $context['id']);
+        }
         $this->output_json($items);
     }
 

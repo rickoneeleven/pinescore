@@ -14,6 +14,7 @@
         return;
     }
 
+    var filterContainer = container.querySelector('[data-events-bar-filters]');
     var statusClasses = {
         Online: 'events-status-online',
         Offline: 'events-status-offline',
@@ -24,6 +25,10 @@
     var crcTable = createCrcTable();
     var pollInterval = typeof config.pollInterval === 'number' ? config.pollInterval : 10000;
     var pollTimer = null;
+    var state = {
+        filter: resolveDefaultFilter(config.defaultFilter),
+        items: []
+    };
 
     function createCrcTable() {
         var table = [];
@@ -65,16 +70,33 @@
         };
     }
 
+    function activeLimit() {
+        if (state.filter === 'onePlus') {
+            return 5;
+        }
+
+        var cfg = parseInt(config.limit, 10);
+        if (!isNaN(cfg) && cfg > 0) {
+            return cfg;
+        }
+
+        return 5;
+    }
+
     function buildUrl() {
-        var url = config.endpoint;
         var params = [];
         if (config.groupId) {
             params.push('group=' + encodeURIComponent(config.groupId));
         }
-        if (params.length > 0) {
-            url += (url.indexOf('?') === -1 ? '?' : '&') + params.join('&');
+        var limitValue = activeLimit();
+        if (limitValue > 0) {
+            params.push('limit=' + encodeURIComponent(limitValue));
         }
-        return url;
+        if (params.length === 0) {
+            return config.endpoint;
+        }
+        var separator = config.endpoint.indexOf('?') === -1 ? '?' : '&';
+        return config.endpoint + separator + params.join('&');
     }
 
     function formatTime(datetime) {
@@ -108,18 +130,122 @@
 
     function render(items) {
         listNode.innerHTML = '';
-        if (!items || items.length === 0) {
+
+        var filteredItems = applyFilter(items);
+        if (filteredItems.length === 0) {
             var empty = document.createElement('div');
             empty.className = 'events-empty';
-            empty.textContent = 'No events recorded in the last 24 hours.';
+            if (items && items.length > 0) {
+                empty.textContent = 'No events match the selected filter.';
+            } else {
+                empty.textContent = 'No events recorded in the last 24 hours.';
+            }
             listNode.appendChild(empty);
             return;
         }
 
-        for (var i = 0; i < items.length; i += 1) {
-            listNode.appendChild(createItem(items[i]));
+        if (state.filter === 'onePlus') {
+            filteredItems = filteredItems.slice(0, 5);
+        }
+
+        for (var i = 0; i < filteredItems.length; i += 1) {
+            listNode.appendChild(createItem(filteredItems[i]));
         }
     }
+
+    function applyFilter(items) {
+        if (!items || items.length === 0) {
+            return [];
+        }
+        return items.filter(function (item) {
+            return matchesFilter(item, state.filter);
+        });
+    }
+
+    function matchesFilter(item, filter) {
+        if (!filter || filter === 'onePlus') {
+            return true;
+        }
+        var count = parseProgressCount(item.progress);
+        var status = item.status;
+        if (filter === 'twoPlus') {
+            if (isStatusTransition(status)) {
+                return true;
+            }
+            return count !== null && count >= 2;
+        }
+        if (filter === 'tenPlus') {
+            if (isStatusTransition(status)) {
+                return true;
+            }
+            return count !== null && count >= 10;
+        }
+        return true;
+    }
+
+    function parseProgressCount(progress) {
+        if (!progress || typeof progress !== 'string') {
+            return null;
+        }
+        var match = progress.match(/^(\d{1,2})\/10$/);
+        if (!match) {
+            return null;
+        }
+        var value = parseInt(match[1], 10);
+        return isNaN(value) ? null : value;
+    }
+
+    function isStatusTransition(status) {
+        return status === 'Offline' || status === 'Online';
+    }
+
+    function resolveDefaultFilter(filter) {
+        if (filter === 'onePlus' || filter === 'twoPlus' || filter === 'tenPlus') {
+            return filter;
+        }
+        return 'twoPlus';
+    }
+
+    function updateFilterButtons() {
+        if (!filterContainer) {
+            return;
+        }
+
+        var buttons = filterContainer.querySelectorAll('[data-filter]');
+        for (var i = 0; i < buttons.length; i += 1) {
+            var button = buttons[i];
+            if (button.getAttribute('data-filter') === state.filter) {
+                button.classList.add('events-bar-filter-active');
+            } else {
+                button.classList.remove('events-bar-filter-active');
+            }
+        }
+    }
+
+    function bindFilterEvents() {
+        if (!filterContainer) {
+            return;
+        }
+
+        filterContainer.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target || !target.hasAttribute('data-filter')) {
+                return;
+            }
+            var nextFilter = target.getAttribute('data-filter');
+            if (!nextFilter || nextFilter === state.filter) {
+                return;
+            }
+            state.filter = resolveDefaultFilter(nextFilter);
+            updateFilterButtons();
+            render(state.items);
+            load();
+        });
+
+        updateFilterButtons();
+    }
+
+    bindFilterEvents();
 
     function createItem(item) {
         var node = document.createElement('div');
@@ -189,9 +315,11 @@
                 return response.json();
             })
             .then(function (payload) {
-                render(payload);
+                state.items = Array.isArray(payload) ? payload : [];
+                render(state.items);
             })
             .catch(function () {
+                state.items = [];
                 handleError();
             });
     }

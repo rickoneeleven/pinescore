@@ -199,6 +199,19 @@ class EventsTest extends TestCase
         $this->assertEquals('Edge', $response[0]['note']);
     }
 
+    public function testBarUsesLimitParameterWhenProvided()
+    {
+        $this->sessionStub->userId = 18;
+        $this->inputStub->set('limit', '25');
+        $this->recentReturn = [];
+
+        ob_start();
+        $this->controller->bar();
+        ob_end_clean();
+
+        $this->assertEquals([18, null, 25], $this->recentArgs);
+    }
+
     public function testJsonHonorsParametersAndCursor()
     {
         $this->sessionStub->userId = 21;
