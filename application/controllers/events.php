@@ -48,8 +48,9 @@ class Events extends CI_Controller
     {
         $owner_id = $this->session->userdata('user_id');
         if (!$owner_id) {
-            $this->output_json(['error' => 'Authentication required'], 401);
-            return;
+            // Fallback to demo user for unauthenticated requests (align with ICMP table behavior)
+            $this->load->model('icmpmodel');
+            $owner_id = $this->icmpmodel->getUserID();
         }
 
         $context = $this->resolve_group($owner_id, $this->input->get('group'), false);
@@ -81,8 +82,9 @@ class Events extends CI_Controller
     {
         $owner_id = $this->session->userdata('user_id');
         if (!$owner_id) {
-            $this->output_json(['error' => 'Authentication required'], 401);
-            return;
+            // Fallback to demo user for unauthenticated requests (align with ICMP table behavior)
+            $this->load->model('icmpmodel');
+            $owner_id = $this->icmpmodel->getUserID();
         }
 
         $context = $this->resolve_group($owner_id, $this->input->get('group'), false);

@@ -29,4 +29,3 @@ db_tasks/cleanup_db.php
 111/ns_*
 111/ftp_speedtest/*
 application/controllers/partytest.php
-AGENTS.md
