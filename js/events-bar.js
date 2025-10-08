@@ -22,6 +22,16 @@
         Respond: 'events-status-online'
     };
 
+    function displayStatusText(status) {
+        if (status === 'Online' || status === 'Respond') {
+            return 'Response';
+        }
+        if (status === 'Offline' || status === 'Drop') {
+            return 'Dropped';
+        }
+        return status || '';
+    }
+
     var crcTable = createCrcTable();
     var pollInterval = typeof config.pollInterval === 'number' ? config.pollInterval : 10000;
     var pollTimer = null;
@@ -238,7 +248,7 @@
         var badge = document.createElement('span');
         var statusClass = statusClasses[item.status] || 'events-status-drop';
         badge.className = 'events-badge ' + statusClass;
-        badge.textContent = item.status;
+        badge.textContent = displayStatusText(item.status);
         node.appendChild(badge);
 
         return node;

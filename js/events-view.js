@@ -300,7 +300,7 @@
 
         var badge = document.createElement('span');
         badge.className = 'events-badge ' + statusClassName(item.status);
-        badge.textContent = item.status;
+        badge.textContent = displayStatusText(item.status);
         node.appendChild(badge);
 
         return node;
@@ -314,6 +314,16 @@
             return 'events-status-offline';
         }
         return 'events-status-drop';
+    }
+
+    function displayStatusText(status) {
+        if (status === 'Online' || status === 'Respond') {
+            return 'Response';
+        }
+        if (status === 'Offline' || status === 'Drop') {
+            return 'Dropped';
+        }
+        return status || '';
     }
 
     function formatDateTime(datetime) {
