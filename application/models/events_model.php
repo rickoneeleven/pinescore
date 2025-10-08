@@ -17,40 +17,19 @@ class Events_model extends CI_Model
         }
 
         $filterKey = $this->normalise_filter($filter);
-        $fetchLimit = $this->determine_fetch_window($limit, $filterKey);
-        $maxFetch = 1000;
 
-        // Fetch, and progressively expand window if we do not have enough items after filtering
-        $items = [];
-        $attempts = 0;
-        $lastRowCount = -1;
-        do {
-            $this->apply_scope($owner_id, $group_id);
-            $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
-            $this->order_scope();
-            $this->db->limit($fetchLimit);
+        $this->apply_scope($owner_id, $group_id);
+        $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
+        $this->apply_filter_sql($filterKey);
+        $this->order_scope();
+        $this->db->limit($limit);
 
-            $query = $this->db->get();
-            $rows = $query->result();
-            $rowCount = is_array($rows) ? count($rows) : 0;
+        $query = $this->db->get();
 
-            // If no additional rows are available, stop and keep current items
-            if ($rowCount <= $lastRowCount) {
-                break;
-            }
-
-            $lastRowCount = $rowCount;
-            $items = $this->map_rows($rows);
-            $items = $this->filter_recent_items($items, $filterKey);
-
-            if (count($items) >= $limit || $fetchLimit >= $maxFetch) {
-                break;
-            }
-
-            $attempts++;
-            $fetchLimit = min($maxFetch, $fetchLimit * 2);
-        } while ($attempts < 5);
-
+        $items = $this->map_rows($query->result());
+        // Items should already match the filter via SQL; keep PHP filtering as a guard in case of
+        // edge-case mismatches, but do not fetch more than needed to honor single-query design.
+        $items = $this->filter_recent_items($items, $filterKey);
         if (count($items) > $limit) {
             $items = array_slice($items, 0, $limit);
         }
@@ -279,6 +258,42 @@ class Events_model extends CI_Model
             return min(200, max($limit * 8, 40));
         }
         return min(200, max($limit * 3, 15));
+    }
+
+    private function apply_filter_sql($filter)
+    {
+        // Build WHERE conditions to let the database pre-filter results in a single query.
+        if ($filter === 'onePlus') {
+            return; // no additional filter
+        }
+
+        $progressRegex = "[0-9]{1,2}[[:space:]]*/[[:space:]]*10";
+        $twoPlusRegex = "(^|[^0-9])(10|[2-9])[[:space:]]*/[[:space:]]*10";
+        $tenPlusRegex = "(^|[^0-9])10[[:space:]]*/[[:space:]]*10";
+
+        $phraseCondition = "(LOWER(prt.email_sent) LIKE '%status confirmed%'"
+            . " OR LOWER(prt.email_sent) LIKE '%node is now%'"
+            . " OR LOWER(prt.email_sent) LIKE '%service restored%'"
+            . " OR LOWER(prt.email_sent) LIKE '%back online%'
+            OR LOWER(prt.email_sent) LIKE '%went offline%'
+            OR LOWER(prt.email_sent) LIKE '%went online%'
+            OR LOWER(prt.email_sent) LIKE '% is offline%'
+            OR LOWER(prt.email_sent) LIKE '% is online%')";
+
+        $noProgress = "(prt.email_sent NOT REGEXP '{$progressRegex}')";
+        $statusNoProgress = "(LOWER(prt.result) IN ('online','offline') AND {$noProgress})";
+
+        if ($filter === 'twoPlus') {
+            $twoPlus = "(prt.email_sent REGEXP '{$twoPlusRegex}')";
+            $this->db->where("({$twoPlus} OR {$statusNoProgress} OR {$phraseCondition})");
+            return;
+        }
+
+        if ($filter === 'tenPlus') {
+            $tenPlus = "(prt.email_sent REGEXP '{$tenPlusRegex}')";
+            $this->db->where("({$tenPlus} OR {$statusNoProgress} OR {$phraseCondition})");
+            return;
+        }
     }
 
     private function filter_recent_items(array $items, $filter)

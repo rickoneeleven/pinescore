@@ -186,7 +186,7 @@ class EventsFlowTest extends TestCase
         $this->assertTrue(in_array('pit.owner', $conditions));
         $this->assertTrue(in_array('ga.group_id', $conditions));
         $this->assertTrue(in_array('ga.user_id', $conditions));
-        $this->assertEquals([15, null], $query['limit']);
+        $this->assertEquals([5, null], $query['limit']);
     }
 
     public function testJsonProvidesNextCursorForWindowAll()

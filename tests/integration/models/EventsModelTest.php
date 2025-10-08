@@ -40,7 +40,7 @@ class EventsModelTest extends TestCase
         $items = $this->model->fetch_recent_events(12, 6, 500);
 
         $this->assertEquals('Offline', $items[0]['status']);
-        $this->assertEquals([150, null], $this->db->history[0]['limit']);
+        $this->assertEquals([50, null], $this->db->history[0]['limit']);
 
         $conditions = array_map(function ($w) {
             return $w[0];
@@ -110,7 +110,7 @@ class EventsModelTest extends TestCase
 
         $items = $this->model->fetch_recent_events(4, null, 5, 'twoPlus');
 
-        $this->assertEquals([40, null], $this->db->history[0]['limit']);
+        $this->assertEquals([5, null], $this->db->history[0]['limit']);
         $this->assertEquals(5, count($items));
         $ids = array_column($items, 'id');
         $this->assertEquals([60, 59, 57, 56, 55], $ids);
@@ -169,7 +169,7 @@ class EventsModelTest extends TestCase
 
         $items = $this->model->fetch_recent_events(4, null, 5, 'tenPlus');
 
-        $this->assertEquals([60, null], $this->db->history[0]['limit']);
+        $this->assertEquals([5, null], $this->db->history[0]['limit']);
         $this->assertEquals(3, count($items));
         $ids = array_column($items, 'id');
         $this->assertEquals([70, 69, 68], $ids);
