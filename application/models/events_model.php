@@ -175,10 +175,14 @@ class Events_model extends CI_Model
 
     private function derive_status($result)
     {
-        if ($result === '1') {
+        // Normalise common representations for result
+        $val = is_string($result) ? strtolower(trim($result)) : $result;
+
+        if ($val === '1' || $val === 1 || $val === true || $val === 'online') {
             return 'Online';
         }
-        if ($result === '0') {
+
+        if ($val === '0' || $val === 0 || $val === false || $val === 'offline') {
             return 'Offline';
         }
 
@@ -312,30 +316,43 @@ class Events_model extends CI_Model
 
     private function is_transition_item(array $item)
     {
-        if (isset($item['status']) && ($item['status'] === 'Offline' || $item['status'] === 'Online')) {
-            return true;
-        }
-
         $email = '';
         if (isset($item['email_sent']) && $item['email_sent'] !== null) {
             $email = strtolower(strip_tags((string) $item['email_sent']));
         }
 
-        if ($email === '') {
-            return false;
+        // Phrase-based transitions always survive
+        if ($email !== '') {
+            if (strpos($email, 'status confirmed') !== false) {
+                return true;
+            }
+            if (strpos($email, 'node is now') !== false) {
+                return true;
+            }
+            if (strpos($email, 'service restored') !== false) {
+                return true;
+            }
+            if (strpos($email, 'back online') !== false) {
+                return true;
+            }
+            // Common variants seen in the wild
+            if (strpos($email, 'went offline') !== false || strpos($email, 'went online') !== false) {
+                return true;
+            }
+            if (strpos($email, ' is offline') !== false || strpos($email, ' is online') !== false) {
+                return true;
+            }
         }
 
-        if (strpos($email, 'status confirmed') !== false) {
-            return true;
+        // If classified as a terminal status, treat as transition only
+        // when there is no progressive count like "x/10" present.
+        $hasProgress = false;
+        if ($email !== '') {
+            $hasProgress = preg_match('/\b\d{1,2}\s*\/\s*10\b/', $email) === 1;
         }
-        if (strpos($email, 'node is now') !== false) {
-            return true;
-        }
-        if (strpos($email, 'service restored') !== false) {
-            return true;
-        }
-        if (strpos($email, 'back online') !== false) {
-            return true;
+
+        if (isset($item['status']) && ($item['status'] === 'Offline' || $item['status'] === 'Online')) {
+            return $hasProgress === false;
         }
 
         return false;

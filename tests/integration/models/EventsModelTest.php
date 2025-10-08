@@ -266,4 +266,44 @@ class EventsModelTest extends TestCase
         $this->assertTrue($searchApplied);
         $this->assertEquals([100, null], $this->db->history[0]['limit']);
     }
+
+    public function testTextualResultMappingTreatsOfflineAsTransitionWhenNoProgress()
+    {
+        $this->db->pushResult([
+            (object) [
+                'id' => 80,
+                'ip' => '10.10.10.10',
+                'note' => 'Southlands',
+                'datetime' => '2025-10-08 09:35:00',
+                'email_sent' => 'Power cut reported',
+                'result' => 'Offline',
+                'node_id' => 301,
+            ],
+        ]);
+
+        $items = $this->model->fetch_recent_events(7, null, 5, 'tenPlus');
+
+        $this->assertEquals(1, count($items));
+        $this->assertEquals('Offline', $items[0]['status']);
+        $this->assertEquals(80, $items[0]['id']);
+    }
+
+    public function testTextualOfflineWithProgressIsNotTransition()
+    {
+        $this->db->pushResult([
+            (object) [
+                'id' => 81,
+                'ip' => '10.10.10.11',
+                'note' => 'Southlands',
+                'datetime' => '2025-10-08 09:36:00',
+                'email_sent' => 'Packet dropped, confirming outage (1/10)',
+                'result' => 'Offline',
+                'node_id' => 302,
+            ],
+        ]);
+
+        $items = $this->model->fetch_recent_events(7, null, 5, 'tenPlus');
+
+        $this->assertEquals(0, count($items), 'Progress 1/10 should not pass tenPlus even if result says Offline');
+    }
 }
