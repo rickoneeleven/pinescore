@@ -18,16 +18,38 @@ class Events_model extends CI_Model
 
         $filterKey = $this->normalise_filter($filter);
         $fetchLimit = $this->determine_fetch_window($limit, $filterKey);
+        $maxFetch = 1000;
 
-        $this->apply_scope($owner_id, $group_id);
-        $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
-        $this->order_scope();
-        $this->db->limit($fetchLimit);
+        // Fetch, and progressively expand window if we do not have enough items after filtering
+        $items = [];
+        $attempts = 0;
+        $lastRowCount = -1;
+        do {
+            $this->apply_scope($owner_id, $group_id);
+            $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
+            $this->order_scope();
+            $this->db->limit($fetchLimit);
 
-        $query = $this->db->get();
+            $query = $this->db->get();
+            $rows = $query->result();
+            $rowCount = is_array($rows) ? count($rows) : 0;
 
-        $items = $this->map_rows($query->result());
-        $items = $this->filter_recent_items($items, $filterKey);
+            // If no additional rows are available, stop and keep current items
+            if ($rowCount <= $lastRowCount) {
+                break;
+            }
+
+            $lastRowCount = $rowCount;
+            $items = $this->map_rows($rows);
+            $items = $this->filter_recent_items($items, $filterKey);
+
+            if (count($items) >= $limit || $fetchLimit >= $maxFetch) {
+                break;
+            }
+
+            $attempts++;
+            $fetchLimit = min($maxFetch, $fetchLimit * 2);
+        } while ($attempts < 5);
 
         if (count($items) > $limit) {
             $items = array_slice($items, 0, $limit);
