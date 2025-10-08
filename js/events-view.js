@@ -16,11 +16,12 @@
     var refreshButton = root.querySelector('[data-events-refresh]');
     var exportButton = root.querySelector('[data-events-export]');
     var liveToggle = root.querySelector('[data-events-live]');
-    var windowButtonsContainer = root.querySelector('[data-events-window-buttons]');
+    var filterButtonsContainer = root.querySelector('[data-events-view-filters]');
 
     var crcTable = createCrcTable();
     var state = {
-        window: config.defaultWindow === 'all' ? 'all' : '24h',
+        window: 'all',
+        filter: 'onePlus',
         nextCursor: null,
         search: '',
         loading: false,
@@ -28,7 +29,6 @@
         limit: typeof config.limit === 'number' ? config.limit : 100
     };
 
-    updateWindowButtons();
     bindEvents();
     load(false);
 
@@ -73,23 +73,25 @@
     }
 
     function bindEvents() {
-        if (windowButtonsContainer) {
-            windowButtonsContainer.addEventListener('click', function (event) {
+        if (filterButtonsContainer) {
+            filterButtonsContainer.addEventListener('click', function (event) {
                 var target = event.target;
-                while (target && target !== windowButtonsContainer && !target.hasAttribute('data-window')) {
+                while (target && target !== filterButtonsContainer && !target.hasAttribute('data-filter')) {
                     target = target.parentNode;
                 }
-                if (!target || !target.hasAttribute('data-window')) {
+                if (!target || !target.hasAttribute('data-filter')) {
                     return;
                 }
-                var newWindow = target.getAttribute('data-window');
-                if (newWindow !== state.window) {
-                    state.window = newWindow === 'all' ? 'all' : '24h';
-                    state.nextCursor = null;
-                    updateWindowButtons();
-                    load(false);
+                var nextFilter = target.getAttribute('data-filter');
+                if (!nextFilter || nextFilter === state.filter) {
+                    return;
                 }
+                state.filter = nextFilter;
+                state.nextCursor = null;
+                updateFilterButtons();
+                load(false);
             });
+            updateFilterButtons();
         }
 
         if (searchInput) {
@@ -164,14 +166,14 @@
         }
     }
 
-    function updateWindowButtons() {
-        if (!windowButtonsContainer) {
+    function updateFilterButtons() {
+        if (!filterButtonsContainer) {
             return;
         }
-        var buttons = windowButtonsContainer.querySelectorAll('[data-window]');
+        var buttons = filterButtonsContainer.querySelectorAll('[data-filter]');
         for (var i = 0; i < buttons.length; i += 1) {
             var button = buttons[i];
-            if (button.getAttribute('data-window') === state.window) {
+            if (button.getAttribute('data-filter') === state.filter) {
                 button.classList.add('events-control-active');
             } else {
                 button.classList.remove('events-control-active');
@@ -181,15 +183,16 @@
 
     function buildUrl(append) {
         var params = [];
-        params.push('window=' + encodeURIComponent(state.window));
+        params.push('window=all');
         params.push('limit=' + encodeURIComponent(state.limit));
+        params.push('filter=' + encodeURIComponent(state.filter));
         if (config.groupId) {
             params.push('group=' + encodeURIComponent(config.groupId));
         }
         if (state.search) {
             params.push('q=' + encodeURIComponent(state.search));
         }
-        if (state.window === 'all' && append && state.nextCursor) {
+        if (append && state.nextCursor) {
             params.push('cursor=' + encodeURIComponent(state.nextCursor));
         }
         var separator = config.endpoint.indexOf('?') === -1 ? '?' : '&';
@@ -201,7 +204,8 @@
             return null;
         }
         var params = [];
-        params.push('window=' + encodeURIComponent(state.window));
+        params.push('window=all');
+        params.push('filter=' + encodeURIComponent(state.filter));
         if (config.groupId) {
             params.push('group=' + encodeURIComponent(config.groupId));
         }
@@ -261,6 +265,17 @@
         progress.textContent = formatProgress(item.progress);
         if (item.email_sent) {
             progress.title = item.email_sent;
+        }
+        // Highlight 'Status confirmed' messages in progress cell with Online/Offline colors
+        var progressLower = String(progress.textContent || '').toLowerCase();
+        var emailLower = String(item.email_sent || '').toLowerCase();
+        if (progressLower.indexOf('status confirmed') !== -1 || emailLower.indexOf('status confirmed') !== -1) {
+            progress.classList.add('events-progress-confirmed');
+            if (item.status === 'Online' || item.status === 'Respond') {
+                progress.classList.add('events-progress-confirmed-online');
+            } else if (item.status === 'Offline') {
+                progress.classList.add('events-progress-confirmed-offline');
+            }
         }
         node.appendChild(progress);
 
@@ -339,7 +354,7 @@
         if (!loadMoreButton) {
             return;
         }
-        if (state.window === 'all' && state.nextCursor) {
+        if (state.nextCursor) {
             loadMoreButton.style.display = 'block';
             loadMoreButton.disabled = false;
         } else {

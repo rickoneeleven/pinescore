@@ -146,6 +146,11 @@
     min-width: 150px;
 }
 
+/* Ensure adequate spacing in the compact events bar */
+.events-bar .events-time {
+    min-width: 150px;
+}
+
 .events-ip {
     font-size: 0.8rem;
     color: #1f2933;
@@ -191,6 +196,17 @@
 
 .events-view .events-progress {
     min-width: 90px;
+}
+
+/* Emphasise 'Status confirmed' progress text using status colors */
+.events-progress-confirmed {
+    font-weight: 700;
+}
+.events-progress-confirmed-online {
+    color: #0f7a3b; /* matches .events-status-online */
+}
+.events-progress-confirmed-offline {
+    color: #b91c1c; /* matches .events-status-offline */
 }
 
 .events-note {

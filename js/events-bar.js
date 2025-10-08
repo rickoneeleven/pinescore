@@ -88,7 +88,7 @@
         return config.endpoint + separator + params.join('&');
     }
 
-    function formatTime(datetime) {
+    function formatDateTime(datetime) {
         if (!datetime) {
             return '';
         }
@@ -98,9 +98,9 @@
         }
         var timePart = parts[1].split('.')[0];
         if (timePart.length >= 8) {
-            return timePart.slice(0, 8);
+            timePart = timePart.slice(0, 8);
         }
-        return timePart;
+        return parts[0] + ' ' + timePart;
     }
 
     function formatProgress(progress) {
@@ -199,7 +199,7 @@
 
         var time = document.createElement('span');
         time.className = 'events-time';
-        time.textContent = formatTime(item.datetime);
+        time.textContent = formatDateTime(item.datetime);
         node.appendChild(time);
 
         var progress = document.createElement('span');
@@ -207,6 +207,17 @@
         progress.textContent = formatProgress(item.progress);
         if (item.email_sent) {
             progress.title = item.email_sent;
+        }
+        // Highlight 'Status confirmed' messages in progress cell with Online/Offline colors
+        var progressLower = String(progress.textContent || '').toLowerCase();
+        var emailLower = String(item.email_sent || '').toLowerCase();
+        if (progressLower.indexOf('status confirmed') !== -1 || emailLower.indexOf('status confirmed') !== -1) {
+            progress.classList.add('events-progress-confirmed');
+            if (item.status === 'Online' || item.status === 'Respond') {
+                progress.classList.add('events-progress-confirmed-online');
+            } else if (item.status === 'Offline') {
+                progress.classList.add('events-progress-confirmed-offline');
+            }
         }
         node.appendChild(progress);
 

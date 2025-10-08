@@ -35,7 +35,7 @@ class Events extends CI_Controller
         $data = [
             'group_id' => $group_id,
             'group_name' => $group_name,
-            'default_window' => '24h',
+            'default_window' => 'all',
         ];
 
         $this->load->view('header_view', $data_meta);
@@ -95,6 +95,7 @@ class Events extends CI_Controller
         $cursor = $this->input->get('cursor');
         $limit = $this->input->get('limit');
         $search = $this->input->get('q');
+        $filter = $this->input->get('filter');
 
         $result = $this->events_model->fetch_events_window(
             $owner_id,
@@ -102,7 +103,8 @@ class Events extends CI_Controller
             $window,
             $cursor,
             $limit,
-            $search
+            $search,
+            $filter
         );
 
         $response = ['items' => $result['items']];
@@ -128,13 +130,15 @@ class Events extends CI_Controller
         }
 
         $window = $this->input->get('window');
+        $filter = $this->input->get('filter');
         $search = $this->input->get('q');
 
         $items = $this->events_model->fetch_all_events(
             $owner_id,
             $context['id'],
             $window,
-            $search
+            $search,
+            $filter
         );
 
         $filenameParts = ['events'];

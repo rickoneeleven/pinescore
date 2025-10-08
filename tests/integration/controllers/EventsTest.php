@@ -46,9 +46,9 @@ class EventsTest extends TestCase
                 return $this->test->recentReturn;
             }
 
-            public function fetch_events_window($owner_id, $group_id, $window, $cursor, $limit, $search)
+            public function fetch_events_window($owner_id, $group_id, $window, $cursor, $limit, $search, $filter = null)
             {
-                $this->test->windowArgs = [$owner_id, $group_id, $window, $cursor, $limit, $search];
+                $this->test->windowArgs = [$owner_id, $group_id, $window, $cursor, $limit, $search, $filter];
                 return $this->test->windowReturn;
             }
         };
@@ -180,7 +180,7 @@ class EventsTest extends TestCase
         $timeline = $this->views[2];
         $this->assertEquals('reports/events_view', $timeline['view']);
         $this->assertEquals(null, $timeline['data']['group_id']);
-        $this->assertEquals('24h', $timeline['data']['default_window']);
+        $this->assertEquals('all', $timeline['data']['default_window']);
     }
 
     public function testBarReturnsRecentEvents()
@@ -242,7 +242,7 @@ class EventsTest extends TestCase
         $this->controller->json();
         $response = json_decode(ob_get_clean(), true);
 
-        $this->assertEquals([21, 12, 'all', 'abc', '150', 'router'], $this->windowArgs);
+        $this->assertEquals([21, 12, 'all', 'abc', '150', 'router', null], $this->windowArgs);
         $this->assertEquals('next123', $response['next_cursor']);
         $this->assertEquals('Offline', $response['items'][0]['status']);
     }

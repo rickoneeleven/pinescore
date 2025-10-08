@@ -1,7 +1,7 @@
 <?php
 $groupId = isset($group_id) ? (int) $group_id : null;
 $groupName = isset($group_name) ? $group_name : null;
-$defaultWindow = isset($default_window) ? $default_window : '24h';
+$defaultWindow = 'all';
 $config = [
     'endpoint' => site_url('events/json'),
     'exportEndpoint' => site_url('events/export'),
@@ -22,9 +22,10 @@ $config = [
     <div class="events-chip-group">Scope: All groups</div>
     <?php endif; ?>
     <div class="events-controls">
-        <div class="events-control-group" data-events-window-buttons>
-            <button type="button" class="events-control" data-window="24h">Last 24h</button>
-            <button type="button" class="events-control" data-window="all">All</button>
+        <div class="events-control-group" data-events-view-filters>
+            <button type="button" class="events-control" data-filter="onePlus">1+</button>
+            <button type="button" class="events-control" data-filter="twoPlus">2+</button>
+            <button type="button" class="events-control" data-filter="tenPlus">10+</button>
         </div>
         <input type="text" class="events-search" placeholder="Search IP or note" data-events-search>
         <button type="button" class="events-control" data-events-refresh>Refresh</button>

@@ -19,7 +19,7 @@ class Events_model extends CI_Model
         $filterKey = $this->normalise_filter($filter);
 
         $this->apply_scope($owner_id, $group_id);
-        $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
+        // Remove 24h cutoff: always consider all history for recent bar
         $this->apply_filter_sql($filterKey);
         $this->order_scope();
         $this->db->limit($limit);
@@ -37,7 +37,7 @@ class Events_model extends CI_Model
         return $items;
     }
 
-    public function fetch_events_window($owner_id, $group_id = null, $window = '24h', $cursor = null, $limit = 100, $search = null)
+    public function fetch_events_window($owner_id, $group_id = null, $window = '24h', $cursor = null, $limit = 100, $search = null, $filter = null)
     {
         $limit = (int) $limit;
         if ($limit < 1) {
@@ -67,6 +67,7 @@ class Events_model extends CI_Model
         }
 
         $this->apply_search_filter($search);
+        $this->apply_filter_sql($this->normalise_filter($filter));
 
         $this->order_scope();
         $this->db->limit($query_limit);
@@ -93,7 +94,7 @@ class Events_model extends CI_Model
         ];
     }
 
-    public function fetch_all_events($owner_id, $group_id = null, $window = '24h', $search = null)
+    public function fetch_all_events($owner_id, $group_id = null, $window = '24h', $search = null, $filter = null)
     {
         $window = $window === 'all' ? 'all' : '24h';
 
@@ -104,6 +105,7 @@ class Events_model extends CI_Model
         }
 
         $this->apply_search_filter($search);
+        $this->apply_filter_sql($this->normalise_filter($filter));
 
         $this->order_scope();
 
