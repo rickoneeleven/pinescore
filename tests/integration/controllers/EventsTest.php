@@ -40,9 +40,9 @@ class EventsTest extends TestCase
                 $this->test = $test;
             }
 
-            public function fetch_recent_events($owner_id, $group_id = null, $limit = 5)
+            public function fetch_recent_events($owner_id, $group_id = null, $limit = 5, $filter = 'onePlus')
             {
-                $this->test->recentArgs = [$owner_id, $group_id, $limit];
+                $this->test->recentArgs = [$owner_id, $group_id, $limit, $filter];
                 return $this->test->recentReturn;
             }
 
@@ -194,7 +194,7 @@ class EventsTest extends TestCase
         $this->controller->bar();
         $response = json_decode(ob_get_clean(), true);
 
-        $this->assertEquals([11, null, 5], $this->recentArgs);
+        $this->assertEquals([11, null, 5, 'onePlus'], $this->recentArgs);
         $this->assertNotNull($response);
         $this->assertEquals('Edge', $response[0]['note']);
     }
@@ -209,7 +209,19 @@ class EventsTest extends TestCase
         $this->controller->bar();
         ob_end_clean();
 
-        $this->assertEquals([18, null, 25], $this->recentArgs);
+        $this->assertEquals([18, null, 25, 'onePlus'], $this->recentArgs);
+    }
+
+    public function testBarPassesFilterParameterWhenProvided()
+    {
+        $this->sessionStub->userId = 3;
+        $this->inputStub->set('filter', 'twoPlus');
+
+        ob_start();
+        $this->controller->bar();
+        ob_end_clean();
+
+        $this->assertEquals([3, null, 5, 'twoPlus'], $this->recentArgs);
     }
 
     public function testJsonHonorsParametersAndCursor()

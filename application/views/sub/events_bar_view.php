@@ -10,7 +10,7 @@ $config = [
     'groupId' => $groupId,
     'pollInterval' => 10000,
     'defaultFilter' => 'twoPlus',
-    'limit' => 25,
+    'limit' => 5,
 ];
 ?>
 <div class="events-bar" data-events-bar>

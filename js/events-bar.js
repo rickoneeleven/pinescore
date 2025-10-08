@@ -70,35 +70,17 @@
         };
     }
 
-    function activeLimit() {
-        if (state.filter === 'onePlus') {
-            return 5;
-        }
-
-        var cfg = parseInt(config.limit, 10);
-        if (!isNaN(cfg) && cfg > 0) {
-            return cfg;
-        }
-
-        return 25;
-    }
-
-    function displayLimit(filter) {
-        if (filter === 'onePlus' || filter === 'twoPlus' || filter === 'tenPlus') {
-            return 5;
-        }
-        return 5;
-    }
-
-    function buildUrl() {
+    function buildUrl(filterOverride) {
         var params = [];
         if (config.groupId) {
             params.push('group=' + encodeURIComponent(config.groupId));
         }
-        var limitValue = activeLimit();
-        if (limitValue > 0) {
+        var limitValue = parseInt(config.limit, 10);
+        if (!isNaN(limitValue) && limitValue > 0) {
             params.push('limit=' + encodeURIComponent(limitValue));
         }
+        var filterValue = filterOverride || state.filter;
+        params.push('filter=' + encodeURIComponent(filterValue));
         if (params.length === 0) {
             return config.endpoint;
         }
@@ -138,92 +120,21 @@
     function render(items) {
         listNode.innerHTML = '';
 
-        var filteredItems = applyFilter(items);
-        if (filteredItems.length === 0) {
+        if (!items || items.length === 0) {
             var empty = document.createElement('div');
             empty.className = 'events-empty';
-            if (items && items.length > 0) {
-                empty.textContent = 'No events match the selected filter.';
-            } else {
+            if (state.filter === 'onePlus') {
                 empty.textContent = 'No events recorded in the last 24 hours.';
+            } else {
+                empty.textContent = 'No events match the selected filter.';
             }
             listNode.appendChild(empty);
             return;
         }
 
-        filteredItems = limitItems(filteredItems, state.filter);
-
-        for (var i = 0; i < filteredItems.length; i += 1) {
-            listNode.appendChild(createItem(filteredItems[i]));
+        for (var i = 0; i < items.length; i += 1) {
+            listNode.appendChild(createItem(items[i]));
         }
-    }
-
-    function applyFilter(items) {
-        if (!items || items.length === 0) {
-            return [];
-        }
-        return items.filter(function (item) {
-            return matchesFilter(item, state.filter);
-        });
-    }
-
-    function matchesFilter(item, filter) {
-        if (!filter || filter === 'onePlus') {
-            return true;
-        }
-        var count = parseProgressCount(item.progress);
-        if (filter === 'twoPlus') {
-            if (isStatusTransitionEvent(item)) {
-                return true;
-            }
-            return count !== null && count >= 2;
-        }
-        if (filter === 'tenPlus') {
-            if (isStatusTransitionEvent(item)) {
-                return true;
-            }
-            return count !== null && count >= 10;
-        }
-        return true;
-    }
-
-    function parseProgressCount(progress) {
-        if (!progress || typeof progress !== 'string') {
-            return null;
-        }
-        var match = progress.match(/^(\d{1,2})\/10$/);
-        if (!match) {
-            return null;
-        }
-        var value = parseInt(match[1], 10);
-        return isNaN(value) ? null : value;
-    }
-
-    function isStatusTransitionEvent(item) {
-        if (!item) {
-            return false;
-        }
-        if (item.status === 'Offline' || item.status === 'Online') {
-            return true;
-        }
-
-        var progressText = (item.progress || '').toString().toLowerCase();
-        var emailText = (item.email_sent || '').toString().toLowerCase();
-        var combined = progressText + ' ' + emailText;
-        if (combined.indexOf('status confirmed') !== -1) {
-            return true;
-        }
-        if (combined.indexOf('node is now') !== -1) {
-            return true;
-        }
-        if (combined.indexOf('service restored') !== -1) {
-            return true;
-        }
-        if (combined.indexOf('back online') !== -1) {
-            return true;
-        }
-
-        return false;
     }
 
     function resolveDefaultFilter(filter) {
@@ -265,7 +176,7 @@
             }
             state.filter = resolveDefaultFilter(nextFilter);
             updateFilterButtons();
-            render(state.items);
+            showLoading();
             load();
         });
 
@@ -273,52 +184,6 @@
     }
 
     bindFilterEvents();
-
-    function limitItems(items, filter) {
-        var limit = displayLimit(filter);
-        if (limit <= 0 || items.length <= limit) {
-            return items;
-        }
-
-        if (filter === 'onePlus') {
-            return items.slice(0, limit);
-        }
-
-        var priorities = [];
-        var others = [];
-
-        for (var i = 0; i < items.length; i += 1) {
-            if (isPriorityItem(items[i], filter)) {
-                priorities.push(items[i]);
-            } else {
-                others.push(items[i]);
-            }
-        }
-
-        var result = [];
-        for (var p = 0; p < priorities.length && result.length < limit; p += 1) {
-            result.push(priorities[p]);
-        }
-        for (var o = 0; o < others.length && result.length < limit; o += 1) {
-            result.push(others[o]);
-        }
-
-        return result;
-    }
-
-    function isPriorityItem(item, filter) {
-        if (isStatusTransitionEvent(item)) {
-            return true;
-        }
-        var count = parseProgressCount(item.progress);
-        if (count === null) {
-            return false;
-        }
-        if (filter === 'tenPlus') {
-            return count >= 10;
-        }
-        return count >= 5;
-    }
 
     function createItem(item) {
         var node = document.createElement('div');
@@ -377,7 +242,8 @@
     }
 
     function load() {
-        fetch(buildUrl(), {
+        var requestFilter = state.filter;
+        fetch(buildUrl(requestFilter), {
             credentials: 'same-origin',
             cache: 'no-store'
         })
@@ -388,10 +254,16 @@
                 return response.json();
             })
             .then(function (payload) {
+                if (state.filter !== requestFilter) {
+                    return;
+                }
                 state.items = Array.isArray(payload) ? payload : [];
                 render(state.items);
             })
             .catch(function () {
+                if (state.filter !== requestFilter) {
+                    return;
+                }
                 state.items = [];
                 handleError();
             });
@@ -404,6 +276,15 @@
         pollTimer = setInterval(load, pollInterval);
     }
 
+    function showLoading() {
+        listNode.innerHTML = '';
+        var loading = document.createElement('div');
+        loading.className = 'events-empty';
+        loading.textContent = 'Loading...';
+        listNode.appendChild(loading);
+    }
+
+    showLoading();
     load();
     startPolling();
 })();

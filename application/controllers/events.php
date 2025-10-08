@@ -59,6 +59,9 @@ class Events extends CI_Controller
         }
 
         $limitParam = $this->input->get('limit');
+        $filterParam = $this->input->get('filter');
+        $filterKey = $filterParam !== null ? $filterParam : 'onePlus';
+
         $useLimit = null;
         if ($limitParam !== null && $limitParam !== '') {
             if (ctype_digit((string) $limitParam) || is_numeric($limitParam)) {
@@ -66,11 +69,11 @@ class Events extends CI_Controller
             }
         }
 
-        if ($useLimit !== null) {
-            $items = $this->events_model->fetch_recent_events($owner_id, $context['id'], $useLimit);
-        } else {
-            $items = $this->events_model->fetch_recent_events($owner_id, $context['id']);
+        if ($useLimit === null) {
+            $useLimit = 5;
         }
+
+        $items = $this->events_model->fetch_recent_events($owner_id, $context['id'], $useLimit, $filterKey);
         $this->output_json($items);
     }
 

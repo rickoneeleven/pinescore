@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
 
 class Events_model extends CI_Model
 {
-    public function fetch_recent_events($owner_id, $group_id = null, $limit = 5)
+    public function fetch_recent_events($owner_id, $group_id = null, $limit = 5, $filter = 'onePlus')
     {
         $limit = (int) $limit;
         if ($limit < 1) {
@@ -16,14 +16,24 @@ class Events_model extends CI_Model
             $limit = 50;
         }
 
+        $filterKey = $this->normalise_filter($filter);
+        $fetchLimit = $this->determine_fetch_window($limit, $filterKey);
+
         $this->apply_scope($owner_id, $group_id);
         $this->db->where('prt.datetime >=', $this->twenty_four_hours_ago());
         $this->order_scope();
-        $this->db->limit($limit);
+        $this->db->limit($fetchLimit);
 
         $query = $this->db->get();
 
-        return $this->map_rows($query->result());
+        $items = $this->map_rows($query->result());
+        $items = $this->filter_recent_items($items, $filterKey);
+
+        if (count($items) > $limit) {
+            $items = array_slice($items, 0, $limit);
+        }
+
+        return $items;
     }
 
     public function fetch_events_window($owner_id, $group_id = null, $window = '24h', $cursor = null, $limit = 100, $search = null)
@@ -214,6 +224,121 @@ class Events_model extends CI_Model
             'datetime' => $parts[0],
             'id' => (int) $parts[1],
         ];
+    }
+
+    private function normalise_filter($filter)
+    {
+        if (!is_string($filter)) {
+            return 'onePlus';
+        }
+
+        $filter = strtolower(trim($filter));
+        if ($filter === 'twoplus' || $filter === 'two-plus' || $filter === '2+' || $filter === 'twoPlus') {
+            return 'twoPlus';
+        }
+        if ($filter === 'tenplus' || $filter === 'ten-plus' || $filter === '10+' || $filter === 'tenPlus') {
+            return 'tenPlus';
+        }
+
+        return 'onePlus';
+    }
+
+    private function determine_fetch_window($limit, $filter)
+    {
+        $limit = (int) $limit;
+        if ($filter === 'tenPlus') {
+            return min(200, max($limit * 12, 60));
+        }
+        if ($filter === 'twoPlus') {
+            return min(200, max($limit * 8, 40));
+        }
+        return min(200, max($limit * 3, 15));
+    }
+
+    private function filter_recent_items(array $items, $filter)
+    {
+        if ($filter === 'onePlus' || empty($items)) {
+            return $items;
+        }
+
+        $filtered = [];
+        foreach ($items as $item) {
+            if ($this->matches_filter($item, $filter)) {
+                $filtered[] = $item;
+            }
+        }
+
+        return $filtered;
+    }
+
+    private function matches_filter(array $item, $filter)
+    {
+        if ($filter === 'onePlus') {
+            return true;
+        }
+
+        if ($this->is_transition_item($item)) {
+            return true;
+        }
+
+        $count = $this->progress_count(isset($item['progress']) ? $item['progress'] : null);
+
+        if ($filter === 'twoPlus') {
+            return $count !== null && $count >= 2;
+        }
+
+        if ($filter === 'tenPlus') {
+            return $count !== null && $count >= 10;
+        }
+
+        return true;
+    }
+
+    private function progress_count($progress)
+    {
+        if (!is_string($progress) || $progress === '') {
+            return null;
+        }
+
+        if (preg_match('/^(\d{1,2})\\s*\\/\\s*10$/', $progress, $matches)) {
+            $value = (int) $matches[1];
+            if ($value >= 0 && $value <= 10) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    private function is_transition_item(array $item)
+    {
+        if (isset($item['status']) && ($item['status'] === 'Offline' || $item['status'] === 'Online')) {
+            return true;
+        }
+
+        $email = '';
+        if (isset($item['email_sent']) && $item['email_sent'] !== null) {
+            $email = strtolower(strip_tags((string) $item['email_sent']));
+        }
+
+        if ($email === '') {
+            return false;
+        }
+
+        if (strpos($email, 'status confirmed') !== false) {
+            return true;
+        }
+        if (strpos($email, 'node is now') !== false) {
+            return true;
+        }
+        if (strpos($email, 'service restored') !== false) {
+            return true;
+        }
+        if (strpos($email, 'back online') !== false) {
+            return true;
+        }
+
+        return false;
     }
 
     private function extract_progress($email_sent)
