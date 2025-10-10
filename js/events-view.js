@@ -377,7 +377,7 @@
             return;
         }
         state.loading = true;
-        setStatus('Loading...', false);
+        setStatus('how you doing today mate?', false);
         if (loadMoreButton && append) {
             loadMoreButton.disabled = true;
         }

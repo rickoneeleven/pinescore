@@ -715,7 +715,7 @@ class CI_Jquery extends CI_Javascript {
 		// ajaxStart and ajaxStop are better choices here... but this is a stop gap
 		if ($this->CI->config->item('javascript_ajax_img') == '')
 		{
-			$loading_notifier = "Loading...";
+			$loading_notifier = "how you doing today mate?";
 		}
 		else
 		{

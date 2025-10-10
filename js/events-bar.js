@@ -301,7 +301,7 @@
         listNode.innerHTML = '';
         var loading = document.createElement('div');
         loading.className = 'events-empty';
-        loading.textContent = 'Loading...';
+        loading.textContent = 'how you doing today mate?';
         listNode.appendChild(loading);
     }
 
