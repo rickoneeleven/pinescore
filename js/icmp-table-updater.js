@@ -14,6 +14,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     let countdownInterval = null;
     let secondsRemaining = 0;
     let fetchInProgress = false;
+    let pausedState = { manual: false, edit: false };
     
     function debounce(func, delay) {
         let timeout;
@@ -175,6 +176,10 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         updateInterval = true; // Mark as active
         startCountdown();
 
+        pausedState.manual = false;
+        if (!pausedState.edit) {
+            try { document.dispatchEvent(new CustomEvent('icmp:resume', { detail: { reason: 'manual' } })); } catch (e) {}
+        }
         fetchAndUpdateTable();
     }
     
@@ -186,6 +191,11 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         stopSequentialUpdate();
         stopCountdown();
         updateToggleButton(false);
+
+        if (!pausedState.manual) {
+            pausedState.manual = true;
+            try { document.dispatchEvent(new CustomEvent('icmp:pause', { detail: { reason: 'manual' } })); } catch (e) {}
+        }
     }
     
     function updateToggleButton(isActive) {
@@ -374,8 +384,18 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
 
         if (isFormInEditMode()) {
             updateToggleButtonForEditMode(true);
+            if (!pausedState.edit) {
+                pausedState.edit = true;
+                try { document.dispatchEvent(new CustomEvent('icmp:pause', { detail: { reason: 'edit' } })); } catch (e) {}
+            }
             return;
         } else {
+            if (pausedState.edit) {
+                pausedState.edit = false;
+                if (updateInterval && !pausedState.manual) {
+                    try { document.dispatchEvent(new CustomEvent('icmp:resume', { detail: { reason: 'edit' } })); } catch (e) {}
+                }
+            }
             updateToggleButtonForEditMode(false);
         }
         

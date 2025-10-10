@@ -35,6 +35,7 @@
     var crcTable = createCrcTable();
     var pollInterval = typeof config.pollInterval === 'number' ? config.pollInterval : 10000;
     var pollTimer = null;
+    var externallyPaused = false;
     var state = {
         filter: resolveDefaultFilter(config.defaultFilter),
         items: []
@@ -294,6 +295,9 @@
         if (pollTimer) {
             clearInterval(pollTimer);
         }
+        if (externallyPaused) {
+            return;
+        }
         pollTimer = setInterval(load, pollInterval);
     }
 
@@ -304,6 +308,27 @@
         loading.textContent = 'how you doing today mate?';
         listNode.appendChild(loading);
     }
+
+    function handleIcmpPause() {
+        externallyPaused = true;
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    function handleIcmpResume() {
+        var wasPaused = externallyPaused;
+        externallyPaused = false;
+        if (wasPaused) {
+            showLoading();
+            load();
+            startPolling();
+        }
+    }
+
+    document.addEventListener('icmp:pause', handleIcmpPause);
+    document.addEventListener('icmp:resume', handleIcmpResume);
 
     showLoading();
     load();
