@@ -171,15 +171,24 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     
     function startAutoRefresh() {
         if (updateInterval) return;
-        
+
         updateToggleButton(true);
         updateInterval = true; // Mark as active
+
+        // If starting while the form is already in edit mode, do not fetch
+        // and ensure the events bar is paused immediately.
+        if (isFormInEditMode()) {
+            pausedState.edit = true;
+            updateToggleButtonForEditMode(true);
+            try { document.dispatchEvent(new CustomEvent('icmp:pause', { detail: { reason: 'edit' } })); } catch (e) {}
+            stopCountdown();
+            return;
+        }
+
         startCountdown();
 
         pausedState.manual = false;
-        if (!pausedState.edit) {
-            try { document.dispatchEvent(new CustomEvent('icmp:resume', { detail: { reason: 'manual' } })); } catch (e) {}
-        }
+        try { document.dispatchEvent(new CustomEvent('icmp:resume', { detail: { reason: 'manual' } })); } catch (e) {}
         fetchAndUpdateTable();
     }
     

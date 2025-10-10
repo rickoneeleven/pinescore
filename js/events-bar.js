@@ -36,6 +36,8 @@
     var pollInterval = typeof config.pollInterval === 'number' ? config.pollInterval : 10000;
     var pollTimer = null;
     var externallyPaused = false;
+    var fetchController = null;
+    var currentRequestId = 0;
     var state = {
         filter: resolveDefaultFilter(config.defaultFilter),
         items: []
@@ -264,11 +266,25 @@
     }
 
     function load() {
+        if (externallyPaused) {
+            showLoading();
+            return;
+        }
         var requestFilter = state.filter;
-        fetch(buildUrl(requestFilter), {
+        if (fetchController && typeof fetchController.abort === 'function') {
+            try { fetchController.abort(); } catch (e) {}
+        }
+        var supportsAbort = (typeof AbortController !== 'undefined');
+        fetchController = supportsAbort ? new AbortController() : null;
+        var myRequestId = ++currentRequestId;
+        var fetchOptions = {
             credentials: 'same-origin',
             cache: 'no-store'
-        })
+        };
+        if (fetchController && fetchController.signal) {
+            fetchOptions.signal = fetchController.signal;
+        }
+        fetch(buildUrl(requestFilter), fetchOptions)
             .then(function (response) {
                 if (!response.ok) {
                     throw new Error('Bad response');
@@ -276,13 +292,22 @@
                 return response.json();
             })
             .then(function (payload) {
+                if (externallyPaused) {
+                    return; // Discard results while paused
+                }
+                if (myRequestId !== currentRequestId) {
+                    return; // Outdated response
+                }
                 if (state.filter !== requestFilter) {
                     return;
                 }
                 state.items = Array.isArray(payload) ? payload : [];
                 render(state.items);
             })
-            .catch(function () {
+            .catch(function (err) {
+                if (externallyPaused) {
+                    return; // Ignore errors during pause/abort
+                }
                 if (state.filter !== requestFilter) {
                     return;
                 }
@@ -315,6 +340,10 @@
             clearInterval(pollTimer);
             pollTimer = null;
         }
+        if (fetchController && typeof fetchController.abort === 'function') {
+            try { fetchController.abort(); } catch (e) {}
+        }
+        showLoading();
     }
 
     function handleIcmpResume() {
