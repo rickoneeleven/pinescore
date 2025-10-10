@@ -330,7 +330,27 @@
     document.addEventListener('icmp:pause', handleIcmpPause);
     document.addEventListener('icmp:resume', handleIcmpResume);
 
-    showLoading();
-    load();
-    startPolling();
+    function isIcmpEditMode() {
+        var table = document.getElementById('icmpTableBody');
+        if (!table) {
+            return false;
+        }
+        if (table.querySelector('input[type="text"], input[type="radio"]')) {
+            return true;
+        }
+        if (table.querySelector('input[type="submit"][value="Update"], input[type="submit"][value="Delete"], input[type="submit"][value="Confirm Delete"]')) {
+            return true;
+        }
+        return false;
+    }
+
+    // If ICMP table is in edit mode on load, do not issue the initial fetch.
+    if (isIcmpEditMode()) {
+        externallyPaused = true;
+        showLoading();
+    } else {
+        showLoading();
+        load();
+        startPolling();
+    }
 })();
