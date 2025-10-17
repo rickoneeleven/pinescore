@@ -21,13 +21,14 @@ The following guidelines govern how agents work in this repository. They apply t
 - At session start, always fetch the canonical instructions from this RAW URL and replace the local file:
   - https://notes.pinescore.com/note/note_683df4954cc0f4.04393849.raw
 
-## Bootstrap Outline (minimal prompts)
+## Bootstrap process
 - Announce exactly: "Bootstrapping: fetched latest AGENTS.md and scanning README.md files. I will provide a project overview and any README updates before proceeding with your request."
 - Discover README files (README.md/readme.md), excluding vendor/third-party and build directories. Prefer fast local search tools.
 - Flag any README missing the header `DATETIME of last agent review:` or older than 31 days (use file modification time or a parsed header date).
 - For each flagged README, run the README Validation Procedure before addressing the primary task.
 - After validation, ensure the header reads `DATETIME of last agent review: <UK formatted datetime>` for each validated README.
 - Post a concise project overview and list of README files updated, then proceed with the user request.
+- This whole process is to be performed before your first response to the user.
 
 ## **Software Development Principles**
 This is the mandatory development philosophy for making changes. Adherence is required to ensure a high-quality, maintainable, and scalable system.
@@ -60,3 +61,5 @@ This is the mandatory development philosophy for making changes. Adherence is re
 - Use ASCII-only punctuation in all user-visible text.
 - Avoid non-breaking hyphens, en/em dashes, and curly quotes.
 - Prefer simple quotes (" ") and hyphens (-); avoid typographic variants.
+
+[Proceed with complete Bootstrap process now]

@@ -346,21 +346,99 @@ class Nc extends CI_Controller
     public function storyTimeNode($id)
     {
         $this->load->model('sqlqu');
+
         $pingiptableSQLrequest = [
             'request_type' => 'ip_by_id',
             'id'           => $id,
-            ];
+        ];
         $ping_ip_TableTable = $this->sqlqu->getPingIpTable($pingiptableSQLrequest);
+        if ($ping_ip_TableTable->num_rows() === 0) {
+            die('one onion per bargy');
+        }
+
+        $ip = $ping_ip_TableTable->row('ip');
+
+        // Inputs with safe defaults
+        $limit = (int) $this->input->get('limit');
+        if ($limit < 1) { $limit = 500; }
+        if ($limit > 1000) { $limit = 1000; }
+
+        $order = strtolower((string) $this->input->get('order')) === 'asc' ? 'asc' : 'desc';
+        $before_id = (int) $this->input->get('before_id');
+        $after_id  = (int) $this->input->get('after_id');
+
+        $from = $this->input->get('from');
+        $to   = $this->input->get('to');
+        $month = $this->input->get('month');
+
+        $user_range = false;
+        if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
+            $from = date('Y-m-01', strtotime($month . '-01'));
+            $to   = date('Y-m-t', strtotime($month . '-01'));
+            $user_range = true;
+        } elseif ($from && $to) {
+            $user_range = true;
+        }
+
+        // Explicit flags to clear any date filters
+        $oldest_flag = $this->input->get('oldest');
+        $newest_flag = $this->input->get('newest');
+
+        // Apply query date window only if explicitly requested by user (month or from/to)
+        $query_from = $user_range ? $from : null;
+        $query_to   = $user_range ? $to   : null;
+
+        // Force-clear date filters when jumping to Oldest/Newest
+        if ($oldest_flag) {
+            $order = 'asc';
+            $query_from = null;
+            $query_to = null;
+            $after_id = 0; // start from absolute oldest
+        }
+        if ($newest_flag) {
+            $order = 'desc';
+            $query_from = null;
+            $query_to = null;
+            $before_id = 0; // start from absolute newest
+        }
+
+        // When paging with before_id/after_id, ignore any date filters to allow seamless cross-month paging
+        if (($order === 'desc' && $before_id > 0) || ($order === 'asc' && $after_id > 0)) {
+            $query_from = null;
+            $query_to = null;
+            $user_range = false;
+        }
+
         $historicSQLrequest = [
             'request_type' => 'single_ip',
-            'ip'           => $ping_ip_TableTable->row('ip'),
+            'ip'           => $ip,
+            'limit'        => $limit,
+            'order'        => strtoupper($order),
+            'from'         => $query_from,
+            'to'           => $query_to,
         ];
-        if($ping_ip_TableTable->num_rows() === 0) die("one onion per bargy");
+        if ($order === 'desc' && $before_id > 0) { $historicSQLrequest['before_id'] = $before_id; }
+        if ($order === 'asc'  && $after_id  > 0) { $historicSQLrequest['after_id']  = $after_id; }
+
         $view['historic_pinescoreTable'] = $this->sqlqu->getHistoricpinescore($historicSQLrequest);
-        $data_meta = ['title' => '3 Year Log [ '.$ping_ip_TableTable->row('ip').' ]',
-            'description'     => 'We save some limited data for a period of 3 years.',
-            'keywords'        => 'long, term, behaviour, pinescore',
+
+        $data_meta = [
+            'title'       => '3 Year Log [ ' . $ip . ' ]',
+            'description' => 'We save some limited data for a period of 3 years.',
+            'keywords'    => 'long, term, behaviour, pinescore',
         ];
+
+        // Provide simple navigation context
+        $view['nav'] = [
+            'limit' => $limit,
+            'order' => $order,
+            'from'  => $from,
+            'to'    => $to,
+            'month' => $month,
+            'user_range' => $user_range,
+            'base'  => site_url('nc/storyTimeNode/' . $id),
+        ];
+
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
         $this->load->view('reports/pinescore_history_view', $view);

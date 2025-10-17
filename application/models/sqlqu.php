@@ -25,7 +25,27 @@ class Sqlqu extends CI_model
     {
         if ($array['request_type'] === 'single_ip') {
             $this->db->where('ip', $array['ip']);
-            $this->db->order_by('id', 'DESC');
+
+            if (!empty($array['from'])) {
+                $this->db->where('logged >=', $array['from'] . ' 00:00:00');
+            }
+            if (!empty($array['to'])) {
+                $this->db->where('logged <=', $array['to'] . ' 23:59:59');
+            }
+
+            $order = (isset($array['order']) && strtoupper($array['order']) === 'ASC') ? 'ASC' : 'DESC';
+            if ($order === 'DESC' && !empty($array['before_id'])) {
+                $this->db->where('id <', (int) $array['before_id']);
+            }
+            if ($order === 'ASC' && !empty($array['after_id'])) {
+                $this->db->where('id >', (int) $array['after_id']);
+            }
+
+            $this->db->order_by('id', $order);
+
+            if (!empty($array['limit'])) {
+                $this->db->limit((int) $array['limit']);
+            }
         }
         if ($array['request_type'] === 'single_ip_one_month') {
             $one_month_ago = 'logged > (NOW() - INTERVAL 1 MONTH)';
