@@ -35,6 +35,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             : '/tools/getIcmpDataJson';
 
         fetch(url, {
+            credentials: 'same-origin',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -69,6 +70,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         if(tableBody) tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Searching...</td></tr>';
         
         fetch(url, {
+            credentials: 'same-origin',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -420,6 +422,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             : (currentGroupId ? `/tools/getIcmpDataJson/${currentGroupId}` : '/tools/getIcmpDataJson');
         
         fetch(url, {
+            credentials: 'same-origin',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }

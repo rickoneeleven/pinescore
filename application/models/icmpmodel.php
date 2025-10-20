@@ -229,13 +229,23 @@ class IcmpModel extends CI_model
 
     public function getUserID()
     {
-        if (($this->session->userdata('user_email') != '')) {
-            $user = $this->session->userdata('user_id');
-        } else {
-            $user = 13;
+        // Prefer explicit user_id from session to avoid false fallbacks
+        $user_id = $this->session->userdata('user_id');
+        if (!empty($user_id)) {
+            return $user_id;
         }
 
-        return $user;
+        // Legacy fallback: some flows used user_email as a proxy for auth
+        $user_email = $this->session->userdata('user_email');
+        if (!empty($user_email)) {
+            $user_id = $this->session->userdata('user_id');
+            if (!empty($user_id)) {
+                return $user_id;
+            }
+        }
+
+        // Demo user when no authenticated session
+        return 13;
     }
 
     private function remove_element($array, $value)
