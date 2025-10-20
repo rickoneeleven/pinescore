@@ -100,6 +100,9 @@
         if (!isNaN(minScoreValue)) {
             params.push('min_score=' + encodeURIComponent(minScoreValue));
         }
+        if (config.strict === true) {
+            params.push('strict=1');
+        }
         if (params.length === 0) {
             return config.endpoint;
         }
@@ -313,6 +316,20 @@
         listNode.appendChild(error);
     }
 
+    function showAuthRequired() {
+        listNode.innerHTML = '';
+        var note = document.createElement('div');
+        note.className = 'events-empty';
+        var link = document.createElement('a');
+        link.href = '/auth/user/login';
+        link.textContent = 'sign in';
+        // Build: 'Session expired - refresh the page or sign in.'
+        note.appendChild(document.createTextNode('Session expired - refresh the page or '));
+        note.appendChild(link);
+        note.appendChild(document.createTextNode('.'));
+        listNode.appendChild(note);
+    }
+
     function load() {
         if (externallyPaused) {
             showLoading();
@@ -334,6 +351,10 @@
         }
         fetch(buildUrl(requestFilter), fetchOptions)
             .then(function (response) {
+                if (response && response.status === 401) {
+                    showAuthRequired();
+                    throw { name: 'AuthError' };
+                }
                 if (!response.ok) {
                     throw new Error('Bad response');
                 }
@@ -364,6 +385,9 @@
                     return;
                 }
                 if (err && (err.name === 'AbortError' || err.code === 20)) {
+                    return;
+                }
+                if (err && err.name === 'AuthError') {
                     return;
                 }
                 state.items = [];

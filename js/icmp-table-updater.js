@@ -24,15 +24,41 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         };
     }
     
+    function withStrict(url) {
+        if (window.ownerMatchesTable) {
+            return url + (url.indexOf('?') === -1 ? '?strict=1' : '&strict=1');
+        }
+        return url;
+    }
+
+    function showAuthInIcmpTable() {
+        const tableBody = document.querySelector('#icmpTableBody');
+        if (!tableBody) return;
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 12;
+        td.style.textAlign = 'center';
+        td.appendChild(document.createTextNode('Session expired - refresh the page or '));
+        const link = document.createElement('a');
+        link.href = '/auth/user/login';
+        link.textContent = 'sign in';
+        td.appendChild(link);
+        td.appendChild(document.createTextNode('.'));
+        tr.appendChild(td);
+        tableBody.innerHTML = '';
+        tableBody.appendChild(tr);
+    }
+
     function handleShowAll() {
         const showAllContainer = document.getElementById('show-all-container');
         if (showAllContainer) {
             showAllContainer.innerHTML = 'Loading all nodes...';
         }
 
-        const url = currentGroupId 
+        let url = currentGroupId 
             ? `/tools/getIcmpDataJson/${currentGroupId}` 
             : '/tools/getIcmpDataJson';
+        url = withStrict(url);
 
         fetch(url, {
             credentials: 'same-origin',
@@ -40,7 +66,14 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response && response.status === 401) {
+                    showAuthInIcmpTable();
+                    stopAutoRefresh();
+                    throw { name: 'AuthError' };
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.error) {
                     console.error('Show All API Error:', data.error);
@@ -60,11 +93,12 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     }
     
     function handleSearch(searchTerm) {
-        const url = searchTerm 
+        let url = searchTerm 
             ? (currentGroupId 
                 ? `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}&group_id=${currentGroupId}`
                 : `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}`)
             : (currentGroupId ? `/tools/getIcmpDataJson/${currentGroupId}` : '/tools/getIcmpDataJson');
+        url = withStrict(url);
         
         const tableBody = document.querySelector('#icmpTableBody');
         if(tableBody) tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Searching...</td></tr>';
@@ -75,7 +109,14 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response && response.status === 401) {
+                    showAuthInIcmpTable();
+                    stopAutoRefresh();
+                    throw { name: 'AuthError' };
+                }
+                return response.json();
+            })
             .then(data => {
                 if(data.error) {
                     console.error('Search API Error:', data.error);
@@ -415,11 +456,12 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         const searchInput = document.getElementById('node-search-input');
         const searchTerm = searchInput ? searchInput.value.trim() : '';
         
-        const url = searchTerm 
+        let url = searchTerm 
             ? (currentGroupId 
                 ? `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}&group_id=${currentGroupId}`
                 : `/tools/searchNodes?term=${encodeURIComponent(searchTerm)}`)
             : (currentGroupId ? `/tools/getIcmpDataJson/${currentGroupId}` : '/tools/getIcmpDataJson');
+        url = withStrict(url);
         
         fetch(url, {
             credentials: 'same-origin',
@@ -427,7 +469,14 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response && response.status === 401) {
+                    showAuthInIcmpTable();
+                    stopAutoRefresh();
+                    throw { name: 'AuthError' };
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.error) {
                     console.error('API Error:', data.error);

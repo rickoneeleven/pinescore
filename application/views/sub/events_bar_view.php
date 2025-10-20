@@ -12,6 +12,7 @@ $config = [
     'defaultFilter' => 'twoPlus',
     'limit' => 5,
     'defaultMinScore' => 1,
+    'strict' => isset($strict_auth) && $strict_auth ? true : false,
 ];
 ?>
 <div class="events-bar" data-events-bar>

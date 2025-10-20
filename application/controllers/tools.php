@@ -85,6 +85,15 @@ class Tools extends CI_Controller
         $this->load->model('groupscore');
         
         header('Content-Type: application/json');
+
+        // Enforce auth strictly when requested to avoid mixing demo data into authenticated views
+        $strict = $this->input->get('strict');
+        $strictAuth = ($strict !== null && (string)$strict !== '' && (int)$strict === 1);
+        $owner_id = $this->session->userdata('user_id');
+        if ($strictAuth && !$owner_id) {
+            echo json_encode(['error' => 'Authentication required']);
+            return;
+        }
         
         if ($group_id) {
             $array = [
@@ -339,7 +348,10 @@ class Tools extends CI_Controller
         $this->load->view('header_view', $data_meta);
         $this->load->view('navTop_view', $data_meta);
         $this->load->view('pingAdd_view', $data);
-        $this->load->view('sub/events_bar_view', ['group_id' => null]);
+        $this->load->view('sub/events_bar_view', [
+            'group_id' => null,
+            'strict_auth' => !empty($data['owner_matches_table']) ? 1 : 0,
+        ]);
         $this->load->view('icmpTable_view', $data);
         $this->load->view('footer_view');
 
@@ -466,7 +478,10 @@ class Tools extends CI_Controller
         $data_meta['owner_matches_table'] = $data['owner_matches_table'];
         $data_meta['group_id'] = $filter_group;
 
-        $events_bar_data = ['group_id' => $filter_group ? (int) $filter_group : null];
+        $events_bar_data = [
+            'group_id' => $filter_group ? (int) $filter_group : null,
+            'strict_auth' => !empty($data['owner_matches_table']) ? 1 : 0,
+        ];
         if ($filter_group && isset($button['group_name'])) {
             $events_bar_data['group_name'] = $button['group_name'];
         }

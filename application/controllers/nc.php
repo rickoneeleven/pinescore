@@ -325,6 +325,7 @@ class Nc extends CI_Controller
         $events_bar_data = [
             'group_id' => $group_id,
             'group_name' => $data['group_name'],
+            'strict_auth' => !empty($data['owner_matches_table']) ? 1 : 0,
         ];
 
         $this->load->view('header_view', $data_meta);

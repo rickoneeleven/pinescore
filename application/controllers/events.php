@@ -47,8 +47,14 @@ class Events extends CI_Controller
     public function bar()
     {
         $owner_id = $this->session->userdata('user_id');
+        $strict = $this->input->get('strict');
+        $strictAuth = ($strict !== null && (string)$strict !== '' && (int)$strict === 1);
         if (!$owner_id) {
-            // Fallback to demo user for unauthenticated requests (align with ICMP table behavior)
+            if ($strictAuth) {
+                $this->output_json(['error' => 'Authentication required'], 401);
+                return;
+            }
+            // Fallback to demo user for unauthenticated requests (legacy behavior)
             $this->load->model('icmpmodel');
             $owner_id = $this->icmpmodel->getUserID();
         }
