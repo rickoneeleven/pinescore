@@ -354,9 +354,16 @@
             })
             .catch(function (err) {
                 if (externallyPaused) {
-                    return; // Ignore errors during pause/abort
+                    return; // Ignore errors during pause
+                }
+                // Ignore errors from aborted or superseded requests
+                if (typeof myRequestId !== 'undefined' && myRequestId !== currentRequestId) {
+                    return;
                 }
                 if (state.filter !== requestFilter) {
+                    return;
+                }
+                if (err && (err.name === 'AbortError' || err.code === 20)) {
                     return;
                 }
                 state.items = [];
