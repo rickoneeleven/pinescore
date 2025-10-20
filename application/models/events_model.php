@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
 
 class Events_model extends CI_Model
 {
-    public function fetch_recent_events($owner_id, $group_id = null, $limit = 5, $filter = 'onePlus')
+    public function fetch_recent_events($owner_id, $group_id = null, $limit = 5, $filter = 'onePlus', $minScore = null)
     {
         $limit = (int) $limit;
         if ($limit < 1) {
@@ -18,7 +18,7 @@ class Events_model extends CI_Model
 
         $filterKey = $this->normalise_filter($filter);
 
-        $this->apply_scope($owner_id, $group_id);
+        $this->apply_scope($owner_id, $group_id, $minScore);
         // Remove 24h cutoff: always consider all history for recent bar
         $this->apply_filter_sql($filterKey);
         $this->order_scope();
@@ -114,7 +114,7 @@ class Events_model extends CI_Model
         return $this->map_rows($query->result());
     }
 
-    private function apply_scope($owner_id, $group_id)
+    private function apply_scope($owner_id, $group_id, $minScore = null)
     {
         $this->db->select('prt.id, prt.ip, pit.note, prt.datetime, prt.email_sent, prt.result, pit.id AS node_id');
         $this->db->from('ping_result_table prt');
@@ -126,6 +126,12 @@ class Events_model extends CI_Model
             $this->db->join('group_associations ga', 'ga.ping_ip_id = pit.id');
             $this->db->where('ga.group_id', $group_id);
             $this->db->where('ga.user_id', $owner_id);
+        }
+
+        // Optional pinescore threshold filter for letterbox use case
+        if ($minScore !== null && is_numeric($minScore) && (int) $minScore > 0) {
+            // Exclude nodes with pinescore <= 0
+            $this->db->where('pit.pinescore >', 0);
         }
     }
 

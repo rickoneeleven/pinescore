@@ -11,6 +11,7 @@ $config = [
     'pollInterval' => 10000,
     'defaultFilter' => 'twoPlus',
     'limit' => 5,
+    'defaultMinScore' => 1,
 ];
 ?>
 <div class="events-bar" data-events-bar>
@@ -21,6 +22,10 @@ $config = [
                 <button type="button" class="events-bar-filter" data-filter="onePlus">1+</button>
                 <button type="button" class="events-bar-filter" data-filter="twoPlus">2+</button>
                 <button type="button" class="events-bar-filter" data-filter="tenPlus">10+</button>
+            </div>
+            <div class="events-bar-filter-group" data-events-bar-score-filter>
+                <button type="button" class="events-bar-filter" data-min-score="1">Score > 0</button>
+                <button type="button" class="events-bar-filter" data-min-score="0">All</button>
             </div>
         </div>
         <a class="events-bar-link" href="<?php echo $timelineUrl; ?>">View timeline</a>

@@ -63,6 +63,18 @@ class Events extends CI_Controller
         $filterParam = $this->input->get('filter');
         $filterKey = $filterParam !== null ? $filterParam : 'onePlus';
 
+        // Optional min score threshold. Default to 1 (Score > 0) for letterbox.
+        $minScoreParam = $this->input->get('min_score');
+        $minScore = null;
+        if ($minScoreParam !== null && $minScoreParam !== '') {
+            if (ctype_digit((string) $minScoreParam) || is_numeric($minScoreParam)) {
+                $minScore = (int) $minScoreParam;
+            }
+        }
+        if ($minScore === null) {
+            $minScore = 1;
+        }
+
         $useLimit = null;
         if ($limitParam !== null && $limitParam !== '') {
             if (ctype_digit((string) $limitParam) || is_numeric($limitParam)) {
@@ -74,7 +86,7 @@ class Events extends CI_Controller
             $useLimit = 5;
         }
 
-        $items = $this->events_model->fetch_recent_events($owner_id, $context['id'], $useLimit, $filterKey);
+        $items = $this->events_model->fetch_recent_events($owner_id, $context['id'], $useLimit, $filterKey, $minScore);
         $this->output_json($items);
     }
 

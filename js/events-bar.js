@@ -15,6 +15,7 @@
     }
 
     var filterContainer = container.querySelector('[data-events-bar-filters]');
+    var scoreFilterContainer = container.querySelector('[data-events-bar-score-filter]');
     var statusClasses = {
         Online: 'events-status-online',
         Offline: 'events-status-offline',
@@ -40,7 +41,8 @@
     var currentRequestId = 0;
     var state = {
         filter: resolveDefaultFilter(config.defaultFilter),
-        items: []
+        items: [],
+        minScore: resolveDefaultMinScore(config.defaultMinScore)
     };
 
     function createCrcTable() {
@@ -94,6 +96,10 @@
         }
         var filterValue = filterOverride || state.filter;
         params.push('filter=' + encodeURIComponent(filterValue));
+        var minScoreValue = parseInt(state.minScore, 10);
+        if (!isNaN(minScoreValue)) {
+            params.push('min_score=' + encodeURIComponent(minScoreValue));
+        }
         if (params.length === 0) {
             return config.endpoint;
         }
@@ -173,6 +179,22 @@
         }
     }
 
+    function updateScoreButtons() {
+        if (!scoreFilterContainer) {
+            return;
+        }
+        var buttons = scoreFilterContainer.querySelectorAll('[data-min-score]');
+        for (var i = 0; i < buttons.length; i += 1) {
+            var button = buttons[i];
+            var val = parseInt(button.getAttribute('data-min-score'), 10) || 0;
+            if (val === (parseInt(state.minScore, 10) || 0)) {
+                button.classList.add('events-bar-filter-active');
+            } else {
+                button.classList.remove('events-bar-filter-active');
+            }
+        }
+    }
+
     function bindFilterEvents() {
         if (!filterContainer) {
             return;
@@ -196,7 +218,33 @@
         updateFilterButtons();
     }
 
+    function bindScoreFilterEvents() {
+        if (!scoreFilterContainer) {
+            return;
+        }
+        scoreFilterContainer.addEventListener('click', function (event) {
+            var target = event.target;
+            if (!target || !target.hasAttribute('data-min-score')) {
+                return;
+            }
+            var next = target.getAttribute('data-min-score');
+            var nextVal = parseInt(next, 10);
+            if (isNaN(nextVal)) {
+                nextVal = 0;
+            }
+            if (nextVal === (parseInt(state.minScore, 10) || 0)) {
+                return;
+            }
+            state.minScore = nextVal;
+            updateScoreButtons();
+            showLoading();
+            load();
+        });
+        updateScoreButtons();
+    }
+
     bindFilterEvents();
+    bindScoreFilterEvents();
 
     function createItem(item) {
         var node = document.createElement('div');
@@ -381,5 +429,13 @@
         showLoading();
         load();
         startPolling();
+    }
+
+    function resolveDefaultMinScore(value) {
+        var n = parseInt(value, 10);
+        if (isNaN(n)) {
+            return 1;
+        }
+        return n;
     }
 })();

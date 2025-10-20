@@ -40,9 +40,9 @@ class EventsTest extends TestCase
                 $this->test = $test;
             }
 
-            public function fetch_recent_events($owner_id, $group_id = null, $limit = 5, $filter = 'onePlus')
+            public function fetch_recent_events($owner_id, $group_id = null, $limit = 5, $filter = 'onePlus', $minScore = null)
             {
-                $this->test->recentArgs = [$owner_id, $group_id, $limit, $filter];
+                $this->test->recentArgs = [$owner_id, $group_id, $limit, $filter, $minScore];
                 return $this->test->recentReturn;
             }
 
@@ -194,7 +194,7 @@ class EventsTest extends TestCase
         $this->controller->bar();
         $response = json_decode(ob_get_clean(), true);
 
-        $this->assertEquals([11, null, 5, 'onePlus'], $this->recentArgs);
+        $this->assertEquals([11, null, 5, 'onePlus', 1], $this->recentArgs);
         $this->assertNotNull($response);
         $this->assertEquals('Edge', $response[0]['note']);
     }
