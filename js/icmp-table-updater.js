@@ -563,7 +563,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             const lastCheck = new Date(data.lastcheck);
             const now = new Date();
             const minutesDiff = (now - lastCheck) / (1000 * 60);
-            if (minutesDiff > 10) {
+            if (minutesDiff > staleMinutes) {
                 row.style.backgroundColor = 'yellow';
                 row.style.color = 'black';
             }
@@ -654,7 +654,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         const minutesDiff = timeDiff / (1000 * 60);
         const daysDiff = Math.floor((now - lastOnlineToggle) / (1000 * 60 * 60 * 24));
 
-        if (minutesDiff > 10) {
+        if (minutesDiff > staleMinutes) {
             return '';
         }
         
@@ -822,7 +822,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         const lastCheck = new Date(data.lastcheck);
         const now = new Date();
         const minutesDiff = (now - lastCheck) / (1000 * 60);
-        if (minutesDiff > 10) {
+        if (minutesDiff > staleMinutes) {
             newRow.style.backgroundColor = 'yellow';
             newRow.style.color = 'black';
         }
