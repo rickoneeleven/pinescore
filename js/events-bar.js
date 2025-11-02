@@ -35,7 +35,7 @@
 
     var crcTable = createCrcTable();
     var pollInterval = typeof config.pollInterval === 'number' ? config.pollInterval : 10000;
-    var staleMinutes = typeof config.staleMinutes === 'number' && config.staleMinutes > 0 ? config.staleMinutes : 10;
+    var staleMinutes = typeof config.staleMinutes === 'number' && config.staleMinutes > 0 ? config.staleMinutes : 1;
     var pollTimer = null;
     var externallyPaused = false;
     var fetchController = null;

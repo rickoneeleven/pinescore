@@ -93,7 +93,7 @@ foreach ($ips as $ip => $latest) {
     $lastcheck_time = new DateTime($latest['lastcheck']);
     $time_difference = $now->diff($lastcheck_time);
     $minutes_difference = $time_difference->days * 24 * 60 + $time_difference->h * 60 + $time_difference->i;
-    $stale_minutes = (int) (config_item('icmp_stale_minutes') ?: 10);
+    $stale_minutes = (int) (config_item('icmp_stale_minutes') ?: 1);
     
     if ($minutes_difference > $stale_minutes) {
         $tr = '<tr style="background-color: yellow; color: black;">';
