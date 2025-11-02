@@ -1,4 +1,4 @@
-DATETIME of last agent review: 24/09/2025 12:48
+DATETIME of last agent review: 02/11/2025 10:22 UTC
 
 CodeIgniter Developers Debug Helper
 ===================================
@@ -21,4 +21,4 @@ Features
 - Exits immediately when `$die` is true; otherwise execution continues.
 - Emits plain text when invoked from the CLI for easier terminal reading.
 
-Load the helper with `$this->load->helper('vayes');` before calling `vdebug()`.
+Load the helper file with `$this->load->file(APPPATH.'helpers/codeigniter-developers-debug-helper/vayes_helper.php');` before calling `vdebug()`. CodeIgniter 2 does not auto-load helpers from subdirectories.
