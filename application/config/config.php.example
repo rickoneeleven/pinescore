@@ -374,5 +374,18 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 
+/*
+|--------------------------------------------------------------------------
+| ICMP Table Staleness Threshold (Minutes)
+|--------------------------------------------------------------------------
+|
+| Controls after how many minutes without a new 'lastcheck' a row is
+| considered stale. Used by both server-side rendering and client-side
+| watchdog for live updates.
+|
+*/
+$config['icmp_stale_minutes'] = 10;
+
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */

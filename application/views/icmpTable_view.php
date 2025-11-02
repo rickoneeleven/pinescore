@@ -93,8 +93,9 @@ foreach ($ips as $ip => $latest) {
     $lastcheck_time = new DateTime($latest['lastcheck']);
     $time_difference = $now->diff($lastcheck_time);
     $minutes_difference = $time_difference->days * 24 * 60 + $time_difference->h * 60 + $time_difference->i;
+    $stale_minutes = (int) (config_item('icmp_stale_minutes') ?: 10);
     
-    if ($minutes_difference > 10) {
+    if ($minutes_difference > $stale_minutes) {
         $tr = '<tr style="background-color: yellow; color: black;">';
     } else {
         if ($latest['last_email_status'] == 'Online' && $latest['count'] == 1) {

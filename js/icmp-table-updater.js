@@ -15,6 +15,10 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     let secondsRemaining = 0;
     let fetchInProgress = false;
     let pausedState = { manual: false, edit: false };
+    let staleMinutes = 10;
+    let lastSuccessAt = Date.now();
+    let staleBannerEl = null;
+    let staleApplied = false;
     
     function debounce(func, delay) {
         let timeout;
@@ -148,6 +152,10 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     function init(options = {}) {
         refreshRate = options.refreshRate || refreshRate;
         currentGroupId = options.groupId || null;
+        if (typeof options.staleMinutes === 'number' && options.staleMinutes > 0) {
+            staleMinutes = options.staleMinutes;
+        }
+        lastSuccessAt = Date.now();
         
         if (options.autoStart) {
             // Always start auto-refresh except during active search
@@ -248,6 +256,8 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             pausedState.manual = true;
             try { document.dispatchEvent(new CustomEvent('icmp:pause', { detail: { reason: 'manual' } })); } catch (e) {}
         }
+        hideStaleBanner();
+        removeStaleStyling();
     }
     
     function updateToggleButton(isActive) {
@@ -484,6 +494,8 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 }
 
                 pendingData = data;
+                lastSuccessAt = Date.now();
+                checkStaleness();
                 updateHealthMetrics(data);
                 updateGroupScores(data);
                 
@@ -524,6 +536,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             })
             .catch(error => {
                 console.error('Fetch Error:', error);
+                checkStaleness();
                 startCountdown(); // Restart countdown even on error
             })
             .finally(() => {
@@ -641,7 +654,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         const minutesDiff = timeDiff / (1000 * 60);
         const daysDiff = Math.floor((now - lastOnlineToggle) / (1000 * 60 * 60 * 24));
 
-        if (minutesDiff > 10) {
+        if (minutesDiff > staleMinutes) {
             return '';
         }
         
@@ -809,7 +822,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         const lastCheck = new Date(data.lastcheck);
         const now = new Date();
         const minutesDiff = (now - lastCheck) / (1000 * 60);
-        if (minutesDiff > 10) {
+        if (minutesDiff > staleMinutes) {
             newRow.style.backgroundColor = 'yellow';
             newRow.style.color = 'black';
         }
@@ -967,13 +980,13 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
 
             const lastCheck = new Date(data.lastcheck);
             const now = new Date();
-            const minutesDiff = (now - lastCheck) / (1000 * 60);
-            if (minutesDiff > 10) {
-                row.style.backgroundColor = 'yellow';
-                row.style.color = 'black';
-            }
-            fragment.appendChild(row);
-        });
+        const minutesDiff = (now - lastCheck) / (1000 * 60);
+        if (minutesDiff > staleMinutes) {
+            row.style.backgroundColor = 'yellow';
+            row.style.color = 'black';
+        }
+        fragment.appendChild(row);
+    });
 
         tableBody.innerHTML = '';
         tableBody.appendChild(fragment);
@@ -987,6 +1000,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         countdownInterval = setInterval(() => {
             secondsRemaining--;
             updateCountdownDisplay();
+            checkStaleness();
             
             if (secondsRemaining <= 0) {
                 fetchAndUpdateTable();
@@ -1028,6 +1042,80 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         
         timerElement.textContent = 'Paused';
         timerElement.style.color = 'orange';
+    }
+
+    function ensureStaleBanner() {
+        if (staleBannerEl) return staleBannerEl;
+        const el = document.createElement('div');
+        el.id = 'icmp-stale-banner';
+        el.style.position = 'fixed';
+        el.style.top = '0';
+        el.style.left = '0';
+        el.style.right = '0';
+        el.style.zIndex = '9999';
+        el.style.padding = '10px 16px';
+        el.style.backgroundColor = '#ffeb3b';
+        el.style.color = '#000';
+        el.style.fontWeight = 'bold';
+        el.style.textAlign = 'center';
+        el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        el.style.display = 'none';
+        el.textContent = 'No live updates. Data may be stale.';
+        document.body.appendChild(el);
+        staleBannerEl = el;
+        return el;
+    }
+
+    function showStaleBanner() {
+        const el = ensureStaleBanner();
+        const mins = Math.floor((Date.now() - lastSuccessAt) / 60000);
+        el.textContent = 'No live updates for ' + mins + ' minutes. Data may be stale.';
+        el.style.display = 'block';
+    }
+
+    function hideStaleBanner() {
+        if (staleBannerEl) staleBannerEl.style.display = 'none';
+    }
+
+    function applyStaleStyling() {
+        if (staleApplied) return;
+        const rows = document.querySelectorAll('#icmpTableBody tr');
+        rows.forEach(r => {
+            r.style.backgroundColor = 'yellow';
+            r.style.color = 'black';
+            try { r.setAttribute('data-stale', '1'); } catch (e) {}
+        });
+        staleApplied = true;
+    }
+
+    function removeStaleStyling() {
+        if (!staleApplied) return;
+        const rows = document.querySelectorAll('#icmpTableBody tr[data-stale="1"]');
+        rows.forEach(r => {
+            r.style.backgroundColor = '';
+            r.style.color = '';
+            r.removeAttribute('data-stale');
+        });
+        staleApplied = false;
+    }
+
+    function checkStaleness() {
+        // Do not show stale state if paused by user or editing
+        const paused = !updateInterval || pausedState.manual || pausedState.edit;
+        if (paused) {
+            hideStaleBanner();
+            removeStaleStyling();
+            return;
+        }
+        const offline = (typeof navigator !== 'undefined' && navigator && navigator.onLine === false);
+        const tooOld = (Date.now() - lastSuccessAt) > (staleMinutes * 60 * 1000);
+        if (offline || tooOld) {
+            showStaleBanner();
+            applyStaleStyling();
+        } else {
+            hideStaleBanner();
+            removeStaleStyling();
+        }
     }
 
     return {
