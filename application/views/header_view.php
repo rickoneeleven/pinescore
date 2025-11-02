@@ -21,7 +21,7 @@
             refreshRate: <?php echo $refresh_content * 1000; ?>,
             groupId: <?php echo isset($group_id) ? $group_id : 'null'; ?>,
             autoStart: true,
-            staleMinutes: <?php echo (int) (config_item('icmp_stale_minutes') ?: 1); ?>
+            staleMinutes: <?php echo (int) (config_item('icmp_stale_minutes') ?: 10); ?>
         };
         window.ownerMatchesTable = <?php echo isset($owner_matches_table) && $owner_matches_table ? 'true' : 'false'; ?>;
     </script>

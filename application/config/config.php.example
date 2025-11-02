@@ -384,7 +384,7 @@ $config['proxy_ips'] = '';
 | watchdog for live updates.
 |
 */
-$config['icmp_stale_minutes'] = 1; // lowered for quick testing
+$config['icmp_stale_minutes'] = 10;
 
 
 /* End of file config.php */
