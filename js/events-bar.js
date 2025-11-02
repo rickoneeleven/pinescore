@@ -35,6 +35,7 @@
 
     var crcTable = createCrcTable();
     var pollInterval = typeof config.pollInterval === 'number' ? config.pollInterval : 10000;
+    var staleMinutes = typeof config.staleMinutes === 'number' && config.staleMinutes > 0 ? config.staleMinutes : 10;
     var pollTimer = null;
     var externallyPaused = false;
     var fetchController = null;
@@ -44,6 +45,10 @@
         items: [],
         minScore: resolveDefaultMinScore(config.defaultMinScore)
     };
+
+    var lastSuccessAt = Date.now();
+    var staleBannerEl = null;
+    var staleApplied = false;
 
     function createCrcTable() {
         var table = [];
@@ -371,7 +376,9 @@
                     return;
                 }
                 state.items = Array.isArray(payload) ? payload : [];
+                lastSuccessAt = Date.now();
                 render(state.items);
+                checkStaleness();
             })
             .catch(function (err) {
                 if (externallyPaused) {
@@ -392,6 +399,7 @@
                 }
                 state.items = [];
                 handleError();
+                checkStaleness();
             });
     }
 
@@ -403,6 +411,13 @@
             return;
         }
         pollTimer = setInterval(load, pollInterval);
+        // Also start a 1s watchdog tick to assess staleness
+        if (typeof window !== 'undefined') {
+            if (window.__eventsBarStaleTimer) {
+                clearInterval(window.__eventsBarStaleTimer);
+            }
+            window.__eventsBarStaleTimer = setInterval(checkStaleness, 1000);
+        }
     }
 
     function showLoading() {
@@ -411,6 +426,115 @@
         loading.className = 'events-empty';
         loading.textContent = 'how you doing today mate?';
         listNode.appendChild(loading);
+    }
+
+    function ensureStaleBanner() {
+        if (staleBannerEl) return staleBannerEl;
+        var el = document.createElement('div');
+        el.id = 'icmp-stale-banner';
+        el.style.position = 'fixed';
+        el.style.top = '0';
+        el.style.left = '0';
+        el.style.right = '0';
+        el.style.zIndex = '9999';
+        el.style.padding = '10px 16px';
+        el.style.backgroundColor = '#ffeb3b';
+        el.style.color = '#000';
+        el.style.fontWeight = 'bold';
+        el.style.textAlign = 'center';
+        el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        el.style.display = 'none';
+        el.textContent = 'No live updates. Data may be stale.';
+        document.body.appendChild(el);
+        staleBannerEl = el;
+        return el;
+    }
+
+    function showStaleBanner() {
+        var el = ensureStaleBanner();
+        var mins = Math.floor((Date.now() - lastSuccessAt) / 60000);
+        if (mins < 0) mins = 0;
+        el.textContent = 'No live updates for ' + mins + ' minutes. Data may be stale.';
+        el.style.display = 'block';
+    }
+
+    function hideStaleBanner() {
+        if (staleBannerEl) staleBannerEl.style.display = 'none';
+    }
+
+    function applyStaleStyling() {
+        if (staleApplied) return;
+        var rows = document.querySelectorAll('#icmpTableBody tr');
+        if (rows && rows.length) {
+            for (var i = 0; i < rows.length; i += 1) {
+                rows[i].style.backgroundColor = 'yellow';
+                rows[i].style.color = 'black';
+                rows[i].setAttribute('data-stale', '1');
+            }
+            staleApplied = true;
+        }
+    }
+
+    function removeStaleStyling() {
+        if (!staleApplied) return;
+        var rows = document.querySelectorAll('#icmpTableBody tr[data-stale="1"]');
+        for (var i = 0; i < rows.length; i += 1) {
+            rows[i].style.backgroundColor = '';
+            rows[i].style.color = '';
+            rows[i].removeAttribute('data-stale');
+        }
+        staleApplied = false;
+    }
+
+    function parseMysqlDateTime(str) {
+        if (!str) return null;
+        var s = String(str).replace(/\u00a0/g, ' ').trim();
+        var m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+        if (m) {
+            return new Date(
+                Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+                Number(m[4]), Number(m[5]), Number(m[6])
+            );
+        }
+        var d = new Date(s);
+        return isNaN(d) ? null : d;
+    }
+
+    function getNewestLastCheckFromDom() {
+        var tbody = document.getElementById('icmpTableBody');
+        if (!tbody) return null;
+        var rows = tbody.querySelectorAll('tr');
+        var newest = 0;
+        for (var i = 0; i < rows.length; i += 1) {
+            var row = rows[i];
+            var cell = row.cells && row.cells[7] ? row.cells[7] : null;
+            if (!cell) continue;
+            var dt = parseMysqlDateTime(cell.textContent || '');
+            if (dt && !isNaN(dt.getTime())) {
+                var t = dt.getTime();
+                if (t > newest) newest = t;
+            }
+        }
+        return newest > 0 ? new Date(newest) : null;
+    }
+
+    function checkStaleness() {
+        if (externallyPaused) {
+            hideStaleBanner();
+            removeStaleStyling();
+            return;
+        }
+        var offline = (typeof navigator !== 'undefined' && navigator && navigator.onLine === false);
+        var tooOld = (Date.now() - lastSuccessAt) > (staleMinutes * 60 * 1000);
+        var newestCheck = getNewestLastCheckFromDom();
+        var dataStale = newestCheck ? ((Date.now() - newestCheck.getTime()) > (staleMinutes * 60 * 1000)) : false;
+        if (offline || tooOld || dataStale) {
+            showStaleBanner();
+            applyStaleStyling();
+        } else {
+            hideStaleBanner();
+            removeStaleStyling();
+        }
     }
 
     function handleIcmpPause() {
