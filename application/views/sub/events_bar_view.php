@@ -13,7 +13,6 @@ $config = [
     'limit' => 5,
     'defaultMinScore' => 1,
     'strict' => isset($strict_auth) && $strict_auth ? true : false,
-    'staleMinutes' => (int) (config_item('icmp_stale_minutes') ?: 1),
 ];
 ?>
 <div class="events-bar" data-events-bar>
