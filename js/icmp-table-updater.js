@@ -560,10 +560,10 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 firstCell.textContent = rowCount;
             }
 
-            const lastCheck = new Date(data.lastcheck);
+            const lastCheck = parseMysqlDateTime(data.lastcheck) || new Date(0);
             const now = new Date();
             const minutesDiff = (now - lastCheck) / (1000 * 60);
-            if (minutesDiff > 10) {
+            if (minutesDiff > staleMinutes) {
                 row.style.backgroundColor = 'yellow';
                 row.style.color = 'black';
             }
@@ -646,10 +646,23 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         return row;
     }
     
+    function parseMysqlDateTime(str) {
+        if (!str) return null;
+        const m = String(str).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+        if (m) {
+            return new Date(
+                Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+                Number(m[4]), Number(m[5]), Number(m[6])
+            );
+        }
+        const d = new Date(str);
+        return isNaN(d) ? null : d;
+    }
+
     function getRowClass(data) {
         const now = new Date();
-        const lastOnlineToggle = new Date(data.last_online_toggle);
-        const lastCheck = new Date(data.lastcheck);
+        const lastOnlineToggle = parseMysqlDateTime(data.last_online_toggle) || new Date();
+        const lastCheck = parseMysqlDateTime(data.lastcheck) || new Date(0);
         const timeDiff = now - lastCheck;
         const minutesDiff = timeDiff / (1000 * 60);
         const daysDiff = Math.floor((now - lastOnlineToggle) / (1000 * 60 * 60 * 24));
@@ -819,7 +832,7 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
             firstCell.textContent = rowIndex + 1;
         }
 
-        const lastCheck = new Date(data.lastcheck);
+        const lastCheck = parseMysqlDateTime(data.lastcheck) || new Date(0);
         const now = new Date();
         const minutesDiff = (now - lastCheck) / (1000 * 60);
         if (minutesDiff > staleMinutes) {
@@ -978,15 +991,15 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
                 firstCell.textContent = rowCount;
             }
 
-            const lastCheck = new Date(data.lastcheck);
+            const lastCheck = parseMysqlDateTime(data.lastcheck) || new Date(0);
             const now = new Date();
-        const minutesDiff = (now - lastCheck) / (1000 * 60);
-        if (minutesDiff > staleMinutes) {
-            row.style.backgroundColor = 'yellow';
-            row.style.color = 'black';
-        }
-        fragment.appendChild(row);
-    });
+            const minutesDiff = (now - lastCheck) / (1000 * 60);
+            if (minutesDiff > staleMinutes) {
+                row.style.backgroundColor = 'yellow';
+                row.style.color = 'black';
+            }
+            fragment.appendChild(row);
+        });
 
         tableBody.innerHTML = '';
         tableBody.appendChild(fragment);
@@ -1099,6 +1112,22 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         staleApplied = false;
     }
 
+    function getNewestLastCheckFromDom() {
+        const rows = document.querySelectorAll('#icmpTableBody tr');
+        let newest = 0;
+        rows.forEach(row => {
+            const cell = row && row.cells ? row.cells[7] : null;
+            if (!cell) return;
+            const raw = (cell.textContent || '').replace(/\u00a0/g, ' ').trim();
+            const dt = parseMysqlDateTime(raw);
+            if (dt && !isNaN(dt.getTime())) {
+                const t = dt.getTime();
+                if (t > newest) newest = t;
+            }
+        });
+        return newest > 0 ? new Date(newest) : null;
+    }
+
     function checkStaleness() {
         // Do not show stale state if paused by user or editing
         const paused = !updateInterval || pausedState.manual || pausedState.edit;
@@ -1109,7 +1138,9 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
         }
         const offline = (typeof navigator !== 'undefined' && navigator && navigator.onLine === false);
         const tooOld = (Date.now() - lastSuccessAt) > (staleMinutes * 60 * 1000);
-        if (offline || tooOld) {
+        const newestCheck = getNewestLastCheckFromDom();
+        const dataStale = newestCheck ? ((Date.now() - newestCheck.getTime()) > (staleMinutes * 60 * 1000)) : false;
+        if (offline || tooOld || dataStale) {
             showStaleBanner();
             applyStaleStyling();
         } else {
