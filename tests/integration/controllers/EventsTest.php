@@ -209,7 +209,7 @@ class EventsTest extends TestCase
         $this->controller->bar();
         ob_end_clean();
 
-        $this->assertEquals([18, null, 25, 'onePlus'], $this->recentArgs);
+        $this->assertEquals([18, null, 25, 'onePlus', 1], $this->recentArgs);
     }
 
     public function testBarPassesFilterParameterWhenProvided()
@@ -221,7 +221,7 @@ class EventsTest extends TestCase
         $this->controller->bar();
         ob_end_clean();
 
-        $this->assertEquals([3, null, 5, 'twoPlus'], $this->recentArgs);
+        $this->assertEquals([3, null, 5, 'twoPlus', 1], $this->recentArgs);
     }
 
     public function testJsonHonorsParametersAndCursor()
