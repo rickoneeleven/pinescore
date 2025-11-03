@@ -147,6 +147,8 @@ class EventsFlowTest extends TestCase
 
     public function testBarRequiresAuthentication()
     {
+        // Enforce strict auth behavior for the events bar in this test
+        $this->input->set('strict', '1');
         ob_start();
         $this->controller->bar();
         $response = json_decode(ob_get_clean(), true);
