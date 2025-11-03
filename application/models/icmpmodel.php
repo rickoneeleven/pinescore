@@ -40,9 +40,9 @@ class IcmpModel extends CI_model
 
             $ping_ids_in_grp = implode(', ', $ping_ids_array);
             if ($this->session->userdata('hideOffline') == 1) {
-                $query_request = "last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND id IN ($ping_ids_in_grp) 
-                    OR last_email_status = 'Online' AND id IN ('$ping_ids_in_grp')";
-                $this->db->where($query_request);
+                $query_request = "(last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND id IN ($ping_ids_in_grp) 
+                    OR last_email_status = 'Online' AND id IN ('$ping_ids_in_grp'))";
+                $this->db->where($query_request, null, false);
             } else {
                 $this->db->where_in('id', $ping_ids_array);
             }
@@ -86,9 +86,9 @@ class IcmpModel extends CI_model
         $owner = $filter['owner'];
         $owner_escaped = $this->db->escape($owner);
         if ($this->session->userdata('hideOffline') == 1 && !isset($filter['group_creation'])) {
-            $query_request = 'last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND owner = '.$owner_escaped." OR last_email_status = 'Online' AND owner = ".$owner_escaped;
+            $query_request = '('.'last_online_toggle > (NOW() - INTERVAL 72 HOUR) AND owner = '.$owner_escaped." OR last_email_status = 'Online' AND owner = ".$owner_escaped.')';
             if (!empty($searchTerm)) {
-                $this->db->where($query_request);
+                $this->db->where($query_request, null, false);
                 $this->addSearchFilter($searchTerm);
                 $query = $this->db->get('ping_ip_table');
             } else {

@@ -20,6 +20,27 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     let staleBannerEl = null;
     let staleApplied = false;
     
+    // Parse a MySQL DATETIME string (YYYY-MM-DD HH:MM:SS) into a Date in local time.
+    // Returns null if input is falsy or invalid.
+    function parseMysqlDateTime(str) {
+        if (!str || typeof str !== 'string') return null;
+        // Expect formats like "2025-11-03 10:54:29" or with timezone omitted
+        const m = str.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/);
+        if (!m) {
+            // Fallback: let Date parse, may be UTC depending on browser
+            const d = new Date(str);
+            return isNaN(d.getTime()) ? null : d;
+        }
+        const year = parseInt(m[1], 10);
+        const month = parseInt(m[2], 10) - 1; // JS months 0-11
+        const day = parseInt(m[3], 10);
+        const hour = parseInt(m[4], 10);
+        const minute = parseInt(m[5], 10);
+        const second = parseInt(m[6], 10);
+        const d = new Date(year, month, day, hour, minute, second, 0);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    
     function debounce(func, delay) {
         let timeout;
         return function(...args) {
