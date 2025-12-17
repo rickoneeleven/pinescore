@@ -18,6 +18,9 @@ echo "<strong>Happy ".date('l')." ".$smiles."</strong> $spaces";
 echo "</div>";
 
 echo "<div id='healthMetrics' style='text-align: right; margin-right: 20px;'>";
+$cycles = isset($cycles_per_minute) ? $cycles_per_minute : 0;
+echo "<span style='color: " . ($cycles >= 5 ? "green" : ($cycles >= 2 ? "orange" : "red")) . "'>";
+echo "cycles/min: " . $cycles . "</span> | ";
 echo "<span style='color: " . ($jobs_per_minute < 1000 ? "orange" : "green") . "'>";
 echo "pings/min: " . number_format($jobs_per_minute) . "</span> | ";
 echo "<span style='color: " . ($failed_jobs_past_day == 0 ? "green" : "red") . "'>";

@@ -135,7 +135,11 @@ class Tools extends CI_Controller
         $this->db->where('metric', 'engine_status');
         $engine_query = $this->db->get('health_dashboard');
         $response['engine_status'] = $engine_query->row()->result;
-        
+
+        $this->db->where('metric', 'cycles_per_minute');
+        $cycles_query = $this->db->get('health_dashboard');
+        $response['cycles_per_minute'] = $cycles_query->num_rows() > 0 ? $cycles_query->row()->result : 0;
+
         echo json_encode($response);
     }
 
@@ -172,6 +176,10 @@ class Tools extends CI_Controller
             $engine_query = $this->db->get('health_dashboard');
             $engine_status = $engine_query->row()->result;
 
+            $this->db->where('metric', 'cycles_per_minute');
+            $cycles_query = $this->db->get('health_dashboard');
+            $cycles_per_minute = $cycles_query->num_rows() > 0 ? $cycles_query->row()->result : 0;
+
             $response = [
                 'ips' => $ips,
                 'owner_matches_table' => $this->securitychecks->ownerMatchesLoggedIn('node'),
@@ -179,6 +187,7 @@ class Tools extends CI_Controller
                 'jobs_per_minute' => $jobs_per_minute,
                 'failed_jobs_past_day' => $failed_jobs_past_day,
                 'engine_status' => $engine_status,
+                'cycles_per_minute' => $cycles_per_minute,
             ];
 
             header('Content-Type: application/json');
@@ -436,7 +445,11 @@ class Tools extends CI_Controller
         $this->db->where('metric', 'engine_status');
         $engine_query = $this->db->get('health_dashboard');
         $engine_status = $engine_query->row()->result;
-        
+
+        $this->db->where('metric', 'cycles_per_minute');
+        $cycles_query = $this->db->get('health_dashboard');
+        $cycles_per_minute = $cycles_query->num_rows() > 0 ? $cycles_query->row()->result : 0;
+
         $this->db->where('metric', 'ping_table_last_truncation');
         $truncation_query = $this->db->get('health_dashboard');
         $last_truncation_timestamp = ($truncation_query->num_rows() > 0) ? $truncation_query->row()->result : null;
@@ -471,6 +484,7 @@ class Tools extends CI_Controller
         $button['jobs_per_minute'] = $jobs_per_minute;
         $button['failed_jobs_past_day'] = $failed_jobs;
         $button['engine_status'] = $engine_status;
+        $button['cycles_per_minute'] = $cycles_per_minute;
 
         $data['owner_matches_table'] = $this->securitychecks->ownerMatchesLoggedIn('node');
         $data['diffPercentAndMs'] = $this->average30days_model->getPercentAndMsForDiff();

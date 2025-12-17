@@ -773,16 +773,19 @@ window.IcmpTableUpdater = window.IcmpTableUpdater || (function() {
     function updateHealthMetrics(data) {
         const metricsContainer = document.querySelector('#healthMetrics');
         if (!metricsContainer) return;
-        
+
+        const cyclesPerMin = parseInt(data.cycles_per_minute) || 0;
         const jobsPerMin = parseInt(data.jobs_per_minute) || 0;
         const failedJobs = parseInt(data.failed_jobs_past_day) || 0;
         const engineStatus = data.engine_status || 'unknown';
-        
+
+        const cyclesColor = cyclesPerMin >= 5 ? 'green' : (cyclesPerMin >= 2 ? 'orange' : 'red');
         const jobsColor = jobsPerMin < 1000 ? 'orange' : 'green';
         const failedColor = failedJobs === 0 ? 'green' : 'red';
         const engineColor = engineStatus === 'active' ? 'green' : 'red';
-        
-        metricsContainer.innerHTML = 
+
+        metricsContainer.innerHTML =
+            `<span style="color: ${cyclesColor}">cycles/min: ${cyclesPerMin}</span> | ` +
             `<span style="color: ${jobsColor}">pings/min: ${jobsPerMin.toLocaleString()}</span> | ` +
             `<span style="color: ${failedColor}">failed jobs (24h): ${failedJobs}</span> | ` +
             `<span style="color: ${engineColor}">engine: ${engineStatus}</span>`;
