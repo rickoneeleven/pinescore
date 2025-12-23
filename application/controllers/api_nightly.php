@@ -73,7 +73,11 @@
                 $this->db->where("created_at < (NOW() - INTERVAL 90 DAY)");
                 $this->db->delete('traceroutes');
                 log_message('debug', 'Deleted old traceroutes records: ' . $this->db->last_query());
-                
+
+                $this->db->where("last_activity < UNIX_TIMESTAMP(NOW() - INTERVAL 7 DAY)");
+                $this->db->delete('ci_sessions');
+                log_message('debug', 'Deleted old ci_sessions records: ' . $this->db->last_query());
+
                 $this->groupscore->CalulateShortTermGroupScore();
             }
 

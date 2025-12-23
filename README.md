@@ -1,4 +1,4 @@
-DATETIME of last agent review: 23 Dec 2025 11:38 (Europe/London)
+DATETIME of last agent review: 23 Dec 2025 11:52 (Europe/London)
 
 # Pinescore ICMP Monitoring
 
@@ -66,7 +66,7 @@ All entries use `lynx --dump` to hit application endpoints.
 | `10 09 * * *` | Purge uploads older than 30 days | `find /home/pinescore/public_html/111/* -mtime +30 -type f -delete` |
 | `0 0 * * 0` | Touch ns_* files weekly to prevent deletion | `find /home/pinescore/public_html/111 -name 'ns_*' -type f -exec touch {} +` |
 
-Note: `api_nightly` truncates `ping_result_table` when AUTO_INCREMENT exceeds 1,000,000,000 and logs to `health_dashboard`.
+Note: `api_nightly` truncates `ping_result_table` when AUTO_INCREMENT exceeds 1,000,000,000, cleans up `ci_sessions` older than 7 days, and logs to `health_dashboard`.
 
 ## Configuration
 
