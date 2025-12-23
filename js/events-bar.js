@@ -346,7 +346,10 @@
         var myRequestId = ++currentRequestId;
         var fetchOptions = {
             credentials: 'same-origin',
-            cache: 'no-store'
+            cache: 'no-store',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         };
         if (fetchController && fetchController.signal) {
             fetchOptions.signal = fetchController.signal;

@@ -384,7 +384,10 @@
 
         fetch(buildUrl(append), {
             credentials: 'same-origin',
-            cache: 'no-store'
+            cache: 'no-store',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
             .then(function (response) {
                 if (!response.ok) {

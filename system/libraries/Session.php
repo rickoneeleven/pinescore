@@ -358,6 +358,12 @@ class CI_Session {
 	 */
 	function sess_update()
 	{
+		// Skip session regeneration for AJAX requests to prevent race conditions
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+		{
+			return;
+		}
+
 		// We only update the session every five minutes by default
 		if (($this->userdata['last_activity'] + $this->sess_time_to_update) >= $this->now)
 		{
